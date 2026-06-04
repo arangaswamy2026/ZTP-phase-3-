@@ -15,6 +15,7 @@ import {
   Layers,
   Box,
   Monitor,
+  Network,
 } from 'lucide-react';
 
 export const allTenantsNavItems: { id: string; icon: any; label: string }[] = [
@@ -47,6 +48,7 @@ export const appNavItems: Record<string, { id: string; icon: any; label: string 
     { id: 'apps', icon: Database, label: 'Private Apps' },
     { id: 'activity', icon: Activity, label: 'Activity' },
     { id: 'reports', icon: BarChart3, label: 'Reports' },
+    { id: 'network', icon: Network, label: 'Network' },
     { id: 'tenant-management', icon: Building2, label: 'Tenant Management' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ],

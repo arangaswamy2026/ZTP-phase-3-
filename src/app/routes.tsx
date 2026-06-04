@@ -26,6 +26,7 @@ import { TenantManagementPage } from "./pages/TenantManagementPage";
 import { InventoryPage } from "./pages/InventoryPage";
 import { BlockedThreatsPage } from "./pages/BlockedThreatsPage";
 import { AllTenantsSystemStatusPage } from "./pages/AllTenantsSystemStatusPage";
+import { NetworkPage } from "./pages/NetworkPage";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
       { path: "inventory", Component: InventoryPage },
       { path: "blocked-threats", Component: BlockedThreatsPage },
       { path: "all-tenants-system-status", Component: AllTenantsSystemStatusPage },
+      { path: "network", Component: NetworkPage },
       { path: "activation", Component: ActivationPage },
       { path: "advanced-settings", Component: AdvancedSettingsPage },
       { path: "downloads", Component: DownloadsPage },
