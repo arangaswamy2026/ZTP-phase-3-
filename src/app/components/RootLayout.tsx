@@ -31,7 +31,7 @@ function RootLayoutContent() {
 
   const handleNavigate = (pageId: string) => {
     // Only exit All Tenants view when navigating to a tenant-specific page
-    const allTenantsPages = ['tenant-management', 'inventory', 'blocked-threats', 'all-tenants-system-status'];
+    const allTenantsPages = ['msp-dashboard', 'tenant-management', 'inventory', 'blocked-threats', 'all-tenants-system-status'];
     if (isAllTenantsView && !allTenantsPages.includes(pageId)) {
       setIsAllTenantsView(false);
     }
@@ -55,7 +55,7 @@ function RootLayoutContent() {
     // Check if "All Tenants" is selected
     if (newTenantId === 'all-tenants') {
       setIsAllTenantsView(true);
-      navigate('/tenant-management');
+      navigate('/msp-dashboard');
       return;
     }
     

@@ -27,6 +27,7 @@ import { InventoryPage } from "./pages/InventoryPage";
 import { BlockedThreatsPage } from "./pages/BlockedThreatsPage";
 import { AllTenantsSystemStatusPage } from "./pages/AllTenantsSystemStatusPage";
 import { NetworkPage } from "./pages/NetworkPage";
+import { MspDashboardPage } from "./pages/MspDashboardPage";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
       { path: "connectors", Component: ConnectorsPage },
       { path: "users", Component: UsersPage },
       { path: "tenants", Component: TenantsPage },
+      { path: "msp-dashboard", Component: MspDashboardPage },
       { path: "tenant-management", Component: TenantManagementPage },
       { path: "inventory", Component: InventoryPage },
       { path: "blocked-threats", Component: BlockedThreatsPage },
@@ -66,4 +68,8 @@ export const router = createBrowserRouter([
       { path: "*", Component: NotFoundPage },
     ],
   },
-]);
+], {
+  // Match the Vite `base` so the app's root URL ("/ZTP-phase-3-/")
+  // resolves to the index route — the Zero Trust Dashboard.
+  basename: import.meta.env.BASE_URL.replace(/\/$/, ""),
+});
