@@ -1,16 +1,25 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Search, Download, RefreshCw, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Search, Download, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
+import { SeverityChip, DataTable, THead, TH, TR, TD } from '../components/ds';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
+// Severity → chip level + bar color. Bar colors reference semantic tokens so a
+// recolor is a one-token edit (Critical → error, High/Medium → warning).
+const SEV: Record<string, { level: 'crit' | 'high' | 'med'; bar: string }> = {
+  Critical: { level: 'crit', bar: 'var(--destructive)' },
+  High:     { level: 'high', bar: 'var(--warning)' },
+  Medium:   { level: 'med',  bar: 'color-mix(in srgb, var(--warning) 55%, #ffffff)' },
+};
+
 const THREAT_TYPES = [
-  { key: 'unauthorized', label: 'Unauthorized Access',          display: 'Unauthorized Access Attempt',       severity: 'High',     sevStyle: 'bg-orange-50 text-orange-700',   barColor: '#f97316' },
-  { key: 'posture',      label: 'Device Posture Failure',       display: 'Non-Compliant Device Blocked',      severity: 'Medium',   sevStyle: 'bg-yellow-50 text-yellow-700',   barColor: '#f59e0b' },
-  { key: 'c2',           label: 'C2 attempts',                  display: 'C2 Attempts',                       severity: 'Critical', sevStyle: 'bg-red-50 text-red-600',         barColor: '#ef4444' },
-  { key: 'lateral',      label: 'Lateral Movement',             display: 'Port Scanning / Lateral Movement',  severity: 'Critical', sevStyle: 'bg-red-50 text-red-600',         barColor: '#ef4444' },
-  { key: 'dns',          label: 'Malicious DNS',                display: 'DNS-Based Threat',                  severity: 'Medium',   sevStyle: 'bg-yellow-50 text-yellow-700',   barColor: '#f59e0b' },
-  { key: 'mfa',          label: 'MFA Failure',                  display: 'MFA Challenge Failed / Bypassed',   severity: 'High',     sevStyle: 'bg-orange-50 text-orange-700',   barColor: '#f97316' },
-  { key: 'geo',          label: 'Geo Block',                    display: 'Geo / Location-Based Block',        severity: 'Medium',   sevStyle: 'bg-yellow-50 text-yellow-700',   barColor: '#f59e0b' },
+  { key: 'unauthorized', label: 'Unauthorized Access',          display: 'Unauthorized Access Attempt',       severity: 'High' },
+  { key: 'posture',      label: 'Device Posture Failure',       display: 'Non-Compliant Device Blocked',      severity: 'Medium' },
+  { key: 'c2',           label: 'C2 attempts',                  display: 'C2 Attempts',                       severity: 'Critical' },
+  { key: 'lateral',      label: 'Lateral Movement',             display: 'Port Scanning / Lateral Movement',  severity: 'Critical' },
+  { key: 'dns',          label: 'Malicious DNS',                display: 'DNS-Based Threat',                  severity: 'Medium' },
+  { key: 'mfa',          label: 'MFA Failure',                  display: 'MFA Challenge Failed / Bypassed',   severity: 'High' },
+  { key: 'geo',          label: 'Geo Block',                    display: 'Geo / Location-Based Block',        severity: 'Medium' },
 ] as const;
 
 type ThreatKey = typeof THREAT_TYPES[number]['key'];
@@ -115,35 +124,21 @@ function exportCSV(headers: string[], rows: (string | number)[][], filename: str
   URL.revokeObjectURL(a.href);
 }
 
-// ── Severity badge ─────────────────────────────────────────────────────────────
-
-function SevBadge({ severity }: { severity: string }) {
-  const style =
-    severity === 'Critical' ? 'bg-red-50 text-red-600 border-red-200' :
-    severity === 'High'     ? 'bg-orange-50 text-orange-700 border-orange-200' :
-                              'bg-yellow-50 text-yellow-700 border-yellow-200';
-  return (
-    <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full border ${style}`}>
-      {severity}
-    </span>
-  );
-}
-
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value, sub, trend, accent }: {
   label: string; value: string; sub?: string; trend?: { text: string; up: boolean }; accent?: boolean;
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 flex-1 min-w-[150px]">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{label}</div>
-      <div className={`text-[28px] font-bold mt-1.5 mb-1 ${accent ? 'text-red-500' : 'text-gray-900'}`}>{value}</div>
+    <div className="bg-card border rounded-2xl shadow-sm p-5 flex-1 min-w-[150px]">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">{label}</div>
+      <div className={`text-[28px] font-bold mt-1.5 mb-1 ${accent ? 'text-destructive' : 'text-foreground'}`}>{value}</div>
       {trend && (
-        <div className={`text-xs font-medium ${trend.up ? 'text-red-500' : 'text-green-600'}`}>
+        <div className={`text-xs font-medium ${trend.up ? 'text-destructive' : 'text-success'}`}>
           {trend.up ? '↑' : '↓'} {trend.text}
         </div>
       )}
-      {sub && <div className="text-xs text-gray-400">{sub}</div>}
+      {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
     </div>
   );
 }
@@ -159,15 +154,15 @@ const RANGES = [
 
 function RangeSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+    <div className="flex border border-border rounded-lg overflow-hidden">
       {RANGES.map((r) => (
         <button
           key={r.key}
           onClick={() => onChange(r.key)}
-          className={`px-3.5 py-1.5 text-xs font-medium border-r border-gray-200 last:border-0 transition-colors ${
+          className={`px-3.5 py-1.5 text-xs font-medium border-r border-border last:border-0 transition-colors ${
             value === r.key
-              ? 'bg-[#FF5D00] text-white'
-              : 'bg-white text-gray-500 hover:bg-gray-50'
+              ? 'bg-action text-action-foreground'
+              : 'bg-card text-muted-foreground hover:bg-muted'
           }`}
         >
           {r.label}
@@ -231,20 +226,20 @@ function AllTenantsView({
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Blocked Threats</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold text-foreground">Blocked Threats</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Real-time view of blocked threats aggregated across all managed tenants. Click any tenant to drill down.
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             Live — refreshes every 5 min
           </span>
           <RangeSelector value={range} onChange={onRangeChange} />
           <button
             onClick={handleExport}
-            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-700 transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             Export CSV
@@ -265,40 +260,38 @@ function AllTenantsView({
       <div className="flex gap-4 flex-wrap items-start">
 
         {/* Threat type breakdown */}
-        <div className="flex-1 min-w-[300px] bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-            <span className="text-sm font-bold text-gray-900">Threat Type Breakdown</span>
-            <span className="text-xs text-gray-400">{rangeLabel[range] ?? ''}</span>
+        <div className="flex-1 min-w-[300px] bg-card border rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+            <span className="text-sm font-medium text-foreground">Threat Type Breakdown</span>
+            <span className="text-xs text-muted-foreground">{rangeLabel[range] ?? ''}</span>
           </div>
           <div className="p-5 space-y-3.5">
             {aggCounts.map((tt) => (
               <div key={tt.key} className="flex items-center gap-3">
-                <span className="text-xs text-gray-700 w-52 shrink-0 leading-snug">{tt.display}</span>
-                <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                <span className="text-xs text-foreground w-52 shrink-0 leading-snug">{tt.display}</span>
+                <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${maxCount > 0 ? Math.round((tt.count / maxCount) * 100) : 0}%`, background: tt.barColor }}
+                    style={{ width: `${maxCount > 0 ? Math.round((tt.count / maxCount) * 100) : 0}%`, background: SEV[tt.severity].bar }}
                   />
                 </div>
-                <span className="text-xs font-semibold text-gray-800 w-8 text-right tabular-nums">{tt.count.toLocaleString()}</span>
-                <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full w-16 text-center ${tt.sevStyle}`}>
-                  {tt.severity}
-                </span>
+                <span className="text-xs font-semibold text-foreground w-8 text-right tabular-nums">{tt.count.toLocaleString()}</span>
+                <SeverityChip level={SEV[tt.severity].level} className="w-16 justify-center">{tt.severity}</SeverityChip>
               </div>
             ))}
           </div>
         </div>
 
         {/* Top tenants by volume */}
-        <div className="w-[340px] min-w-[280px] bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-            <span className="text-sm font-bold text-gray-900">Top Tenants by Volume</span>
-            <span className="text-xs text-gray-400">Bar = total · color = severity</span>
+        <div className="w-[340px] min-w-[280px] bg-card border rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+            <span className="text-sm font-medium text-foreground">Top Tenants by Volume</span>
+            <span className="text-xs text-muted-foreground">Bar = total · color = severity</span>
           </div>
           <div className="p-5">
             {/* Legend */}
-            <div className="flex gap-4 mb-4 text-xs text-gray-400">
-              {[['#ef4444','Critical'],['#f97316','High'],['#f59e0b','Medium']].map(([color, label]) => (
+            <div className="flex gap-4 mb-4 text-xs text-muted-foreground">
+              {[[SEV.Critical.bar,'Critical'],[SEV.High.bar,'High'],[SEV.Medium.bar,'Medium']].map(([color, label]) => (
                 <span key={label} className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-sm" style={{ background: color }} />
                   {label}
@@ -315,14 +308,14 @@ function AllTenantsView({
                   return (
                     <div key={t.id} className="opacity-40 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                        <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
                           <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
                           {t.name}
                         </span>
-                        <span className="text-xs text-gray-400">—</span>
+                        <span className="text-xs text-muted-foreground">—</span>
                       </div>
-                      <div className="h-4 bg-gray-100 rounded" />
-                      <div className="text-[11px] text-gray-400">No blocked threats this period</div>
+                      <div className="h-4 bg-muted rounded" />
+                      <div className="text-[11px] text-muted-foreground">No blocked threats this period</div>
                     </div>
                   );
                 }
@@ -331,41 +324,41 @@ function AllTenantsView({
                     <div className="flex items-center justify-between">
                       <button
                         onClick={() => onDrilldown(t.id)}
-                        className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:underline"
+                        className="flex items-center gap-1.5 text-xs font-medium text-action hover:underline"
                       >
                         <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
                         {t.name}
                       </button>
-                      <span className="text-xs font-bold text-gray-900 tabular-nums">{tot.toLocaleString()}</span>
+                      <span className="text-xs font-bold text-foreground tabular-nums">{tot.toLocaleString()}</span>
                     </div>
-                    <div className="flex h-4 rounded overflow-hidden bg-gray-100" style={{ width: `${barW}%` }}>
+                    <div className="flex h-4 rounded overflow-hidden bg-muted" style={{ width: `${barW}%` }}>
                       {sev.Critical > 0 && (
                         <button
                           title={`Critical: ${sev.Critical}`}
                           onClick={() => onDrilldown(t.id, 'Critical')}
-                          className="h-full hover:brightness-90 transition-filter"
-                          style={{ width: `${(sev.Critical / tot) * 100}%`, background: '#ef4444' }}
+                          className="h-full hover:brightness-90 transition-[filter]"
+                          style={{ width: `${(sev.Critical / tot) * 100}%`, background: SEV.Critical.bar }}
                         />
                       )}
                       {sev.High > 0 && (
                         <button
                           title={`High: ${sev.High}`}
                           onClick={() => onDrilldown(t.id, 'High')}
-                          className="h-full hover:brightness-90 transition-filter"
-                          style={{ width: `${(sev.High / tot) * 100}%`, background: '#f97316' }}
+                          className="h-full hover:brightness-90 transition-[filter]"
+                          style={{ width: `${(sev.High / tot) * 100}%`, background: SEV.High.bar }}
                         />
                       )}
                       {sev.Medium > 0 && (
                         <button
                           title={`Medium: ${sev.Medium}`}
                           onClick={() => onDrilldown(t.id, 'Medium')}
-                          className="h-full hover:brightness-90 transition-filter"
-                          style={{ width: `${(sev.Medium / tot) * 100}%`, background: '#f59e0b' }}
+                          className="h-full hover:brightness-90 transition-[filter]"
+                          style={{ width: `${(sev.Medium / tot) * 100}%`, background: SEV.Medium.bar }}
                         />
                       )}
                     </div>
-                    <div className="flex gap-3 text-[11px] text-gray-400">
-                      <button onClick={() => onDrilldown(t.id, 'Critical')} className="text-red-500 font-semibold hover:underline">
+                    <div className="flex gap-3 text-[11px] text-muted-foreground">
+                      <button onClick={() => onDrilldown(t.id, 'Critical')} className="text-destructive font-semibold hover:underline">
                         {sev.Critical} critical
                       </button>
                       <span>{sev.High} high</span>
@@ -401,7 +394,7 @@ function DrilldownView({
   const allEvents = EVENTS_BY_TENANT[tenantId] ?? [];
 
   const [search,    setSearch]    = useState('');
-  const [filterThreat, setFilterThreat] = useState(presetSeverity ? '' : '');
+  const [filterThreat, setFilterThreat] = useState('');
   const [filterApp, setFilterApp] = useState('');
   const [filterSev, setFilterSev] = useState(presetSeverity ?? '');
   const [page, setPage] = useState(1);
@@ -444,27 +437,27 @@ function DrilldownView({
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-2 transition-colors">
+          <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-2 transition-colors">
             <ChevronLeft className="w-3.5 h-3.5" />
             Blocked Threats
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">{tenant.name} — Blocked Threats</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold text-foreground">{tenant.name} — Blocked Threats</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {filterSev ? `${filterSev} severity threats for this tenant` : 'Blocked threats filtered by tenant'}
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             Live
           </span>
           <RangeSelector value={range} onChange={onRangeChange} />
-          <button onClick={onBack} className="h-8 px-3 text-xs font-medium border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-700 transition-colors">
+          <button onClick={onBack} className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors">
             ← All Tenants
           </button>
           <button
             onClick={handleExport}
-            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-700 transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             Export CSV
@@ -481,22 +474,22 @@ function DrilldownView({
       </div>
 
       {/* Event log */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-          <span className="text-sm font-bold text-gray-900">Event Log — {tenant.name}</span>
-          <span className="text-xs text-gray-400">{filtered.length} event{filtered.length !== 1 ? 's' : ''}</span>
+      <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+          <span className="text-sm font-medium text-foreground">Event Log — {tenant.name}</span>
+          <span className="text-xs text-muted-foreground">{filtered.length} event{filtered.length !== 1 ? 's' : ''}</span>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2.5 flex-wrap px-5 py-3 border-b border-gray-50">
+        <div className="flex items-center gap-2.5 flex-wrap px-5 py-3 border-b border-border">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="search"
               placeholder="Search user or IP…"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="h-8 pl-8 pr-3 w-52 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-gray-400 focus:bg-white"
+              className="h-8 pl-8 pr-3 w-52 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card"
             />
           </div>
           {[
@@ -509,7 +502,7 @@ function DrilldownView({
               key={id}
               value={value}
               onChange={(e) => { set(e.target.value); setPage(1); }}
-              className="h-8 px-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none cursor-pointer text-gray-700"
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
             >
               <option value="">{label}</option>
               {options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -517,7 +510,7 @@ function DrilldownView({
           ))}
           <button
             onClick={() => { setSearch(''); setFilterThreat(''); setFilterApp(''); setFilterSev(''); setPage(1); }}
-            className="h-8 px-3 text-xs font-medium border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-500 transition-colors ml-auto"
+            className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-muted-foreground transition-colors ml-auto"
           >
             Clear Filters
           </button>
@@ -526,44 +519,42 @@ function DrilldownView({
         {/* Table */}
         <div className="overflow-x-auto">
           {allEvents.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
-              <div className="text-3xl mb-3">🛡️</div>
-              <div className="text-sm font-semibold text-gray-600">No blocked threats in selected period</div>
+            <div className="text-center py-16 text-muted-foreground">
+              <Shield className="w-8 h-8 mx-auto mb-3 text-muted-foreground/50" />
+              <div className="text-sm font-semibold text-foreground">No blocked threats in selected period</div>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-10 text-sm text-gray-400">No events match the current filters.</div>
+            <div className="text-center py-10 text-sm text-muted-foreground">No events match the current filters.</div>
           ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
+            <DataTable>
+              <THead>
+                <tr>
                   {['Timestamp','Threat Type','User','Source IP','Destination App','Policy Matched','Severity','Action'].map((h) => (
-                    <th key={h} className="px-4 py-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left whitespace-nowrap">
-                      {h}
-                    </th>
+                    <TH key={h}>{h}</TH>
                   ))}
                 </tr>
-              </thead>
+              </THead>
               <tbody>
                 {pageEvents.map((e, i) => (
-                  <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors">
-                    <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap font-mono">{e.ts}</td>
-                    <td className="px-4 py-3"><SevBadge severity={e.severity} /></td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{e.user}</td>
-                    <td className="px-4 py-3 text-xs font-mono text-gray-500">{e.ip}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{e.app}</td>
-                    <td className="px-4 py-3 text-xs text-gray-400">{e.policy}</td>
-                    <td className="px-4 py-3"><SevBadge severity={e.severity} /></td>
-                    <td className="px-4 py-3 text-xs font-semibold text-red-500">{e.action}</td>
-                  </tr>
+                  <TR key={i}>
+                    <TD className="text-xs text-muted-foreground whitespace-nowrap font-mono">{e.ts}</TD>
+                    <TD className="text-foreground">{e.type}</TD>
+                    <TD className="text-foreground">{e.user}</TD>
+                    <TD className="text-xs font-mono text-muted-foreground">{e.ip}</TD>
+                    <TD className="text-foreground">{e.app}</TD>
+                    <TD className="text-xs text-muted-foreground">{e.policy}</TD>
+                    <TD><SeverityChip level={SEV[e.severity]?.level ?? 'med'}>{e.severity}</SeverityChip></TD>
+                    <TD className="text-xs font-semibold text-destructive">{e.action}</TD>
+                  </TR>
                 ))}
               </tbody>
-            </table>
+            </DataTable>
           )}
         </div>
 
         {/* Pagination */}
         {filtered.length > 0 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-400">
+          <div className="flex items-center justify-between px-5 py-3 border-t border-border text-xs text-muted-foreground">
             <span>
               Showing {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length} events
             </span>
@@ -571,7 +562,7 @@ function DrilldownView({
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={safePage <= 1}
-                className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -580,14 +571,14 @@ function DrilldownView({
                 .map((p, idx, arr) => (
                   <span key={p}>
                     {idx > 0 && arr[idx - 1] !== p - 1 && (
-                      <span className="px-1 text-gray-300">…</span>
+                      <span className="px-1 text-muted-foreground">…</span>
                     )}
                     <button
                       onClick={() => setPage(p)}
                       className={`w-7 h-7 flex items-center justify-center rounded-md border text-xs font-medium transition-colors ${
                         p === safePage
-                          ? 'bg-[#FF5D00] text-white border-[#FF5D00]'
-                          : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                          ? 'bg-action text-action-foreground border-action'
+                          : 'border-border hover:bg-muted text-foreground'
                       }`}
                     >
                       {p}
@@ -597,7 +588,7 @@ function DrilldownView({
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={safePage >= totalPages}
-                className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
