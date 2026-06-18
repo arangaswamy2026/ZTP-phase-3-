@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Search, Copy, ArrowLeft, MoreVertical, RefreshCw, AlertTriangle, Info } from 'lucide-react';
+import { Search, Copy, ArrowLeft, MoreVertical, RefreshCw, AlertTriangle, Info, Package } from 'lucide-react';
+import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
 
 /* ── Data model ── */
 type Tier = 'Essential' | 'Advanced' | 'Premier';
@@ -49,10 +50,12 @@ function copyToClipboard(text: string, setCopied: (v: boolean) => void) {
   setTimeout(() => setCopied(false), 1800);
 }
 
+// Tier is categorical (not a status); neutral chip styling keeps it clear of
+// the semantic status colors.
 function tierStyle(tier: Tier): string {
-  if (tier === 'Premier') return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
-  if (tier === 'Advanced') return 'bg-purple-50 text-purple-700 border border-purple-200';
-  return 'bg-blue-50 text-blue-700 border border-blue-200';
+  if (tier === 'Premier') return 'bg-action-subtle text-action';
+  if (tier === 'Advanced') return 'bg-muted text-foreground';
+  return 'bg-muted text-muted-foreground';
 }
 
 function expiryStatus(t: TenantRecord): ExpStatus {
@@ -65,7 +68,7 @@ function expiryStatus(t: TenantRecord): ExpStatus {
 /* ── Sub-components ── */
 function TierBadge({ tier }: { tier: Tier }) {
   return (
-    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-md ${tierStyle(tier)}`}>
+    <span className={`text-[11px] font-semibold uppercase tracking-[0.04em] px-2.5 py-0.5 rounded-full ${tierStyle(tier)}`}>
       {tier}
     </span>
   );
@@ -76,38 +79,36 @@ function ExpiryCell({ t }: { t: TenantRecord }) {
   if (status === 'expired') {
     return (
       <div>
-        <span className="text-xs font-semibold bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-full">
-          Support Expired
-        </span>
-        <div className="text-[11px] text-gray-400 mt-0.5">{t.expiry}</div>
+        <StatusBadge variant="error">Support Expired</StatusBadge>
+        <div className="text-[11px] text-muted-foreground mt-0.5">{t.expiry}</div>
       </div>
     );
   }
   if (status === 'expiring') {
     return (
       <div>
-        <span className="text-sm font-semibold text-red-600">{t.expiry}</span>
-        <div className="text-[11px] text-orange-500 font-semibold mt-0.5">
+        <span className="text-sm font-semibold text-foreground">{t.expiry}</span>
+        <div className="text-[11px] text-warning font-semibold mt-0.5">
           Renew · {t.expDays}d left
         </div>
       </div>
     );
   }
-  return <span className="text-sm text-gray-700">{t.expiry}</span>;
+  return <span className="text-sm text-foreground">{t.expiry}</span>;
 }
 
 function FirmwareCell({ t }: { t: TenantRecord }) {
   if (t.firmware === 'Unknown') {
     return (
       <div>
-        <span className="text-sm text-gray-400">Unknown</span>
+        <span className="text-sm text-muted-foreground">Unknown</span>
         {t.firmwareSeen && (
-          <div className="text-[11px] text-gray-300 mt-0.5">{t.firmwareSeen}</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5">{t.firmwareSeen}</div>
         )}
       </div>
     );
   }
-  return <span className="font-mono text-[12.5px] text-gray-700">{t.firmware}</span>;
+  return <span className="font-mono text-[13px] text-foreground">{t.firmware}</span>;
 }
 
 function CopyButton({ value }: { value: string }) {
@@ -115,7 +116,7 @@ function CopyButton({ value }: { value: string }) {
   return (
     <button
       onClick={(e) => { e.stopPropagation(); copyToClipboard(value, setCopied); }}
-      className="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-colors"
+      className="w-6 h-6 rounded-md border border-border bg-card flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       title={copied ? 'Copied!' : 'Copy activation key'}
     >
       <Copy className="w-3 h-3" />
@@ -128,17 +129,17 @@ function DetailField({
   label, value, note, source,
 }: { label: string; value: React.ReactNode; note?: string; source?: string }) {
   return (
-    <div className="p-4 border-b border-gray-50 last:border-0">
+    <div className="p-4 border-b border-border last:border-0">
       <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{label}</span>
+        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.04em]">{label}</span>
         {source && (
-          <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+          <span className="text-[11px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
             {source}
           </span>
         )}
       </div>
-      <div className="text-sm font-semibold text-gray-900 flex items-center gap-2">{value}</div>
-      {note && <div className="text-[11px] text-gray-400 mt-1">{note}</div>}
+      <div className="text-sm font-semibold text-foreground flex items-center gap-2">{value}</div>
+      {note && <div className="text-[11px] text-muted-foreground mt-1">{note}</div>}
     </div>
   );
 }
@@ -154,7 +155,7 @@ function SolutionDetail({
     <div>
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-4 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Back to Inventory
@@ -162,13 +163,13 @@ function SolutionDetail({
 
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{tenant.friendly}</h1>
-          <p className="text-sm text-gray-500 mt-1">Complete ZTP subscription &amp; licensing record for this tenant</p>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">{tenant.friendly}</h1>
+          <p className="text-sm text-muted-foreground mt-1">Complete ZTP subscription &amp; licensing record for this tenant</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => copyToClipboard(tenant.key!, setCopiedKey)}
-            className="h-8 px-3 text-sm border border-gray-200 rounded-lg bg-white hover:bg-gray-50 font-medium text-gray-700 transition-colors"
+            className="h-8 px-3 text-sm border border-border rounded-lg bg-card hover:bg-muted font-medium text-foreground transition-colors"
           >
             {copiedKey ? 'Copied!' : 'Copy Activation Key'}
           </button>
@@ -177,19 +178,19 @@ function SolutionDetail({
 
       {/* Renewal CTA */}
       {status === 'expiring' && (
-        <div className="flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-xl p-4 mb-5">
-          <div className="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
-            <RefreshCw className="w-4 h-4 text-orange-600" />
+        <div className="flex items-center gap-3 bg-warning-subtle border border-warning/30 rounded-2xl p-4 mb-5">
+          <div className="size-9 bg-warning/15 rounded-lg flex items-center justify-center shrink-0">
+            <RefreshCw className="w-4 h-4 text-warning" />
           </div>
           <div className="flex-1">
-            <div className="text-sm font-semibold text-orange-900">
+            <div className="text-sm font-semibold text-foreground">
               Support expires in {tenant.expDays} days
             </div>
-            <div className="text-xs text-orange-700 mt-0.5">
+            <div className="text-xs text-muted-foreground mt-0.5">
               Renew now to avoid a service lapse.
             </div>
           </div>
-          <button className="h-8 px-3 text-sm bg-[#FF5D00] text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+          <button className="h-8 px-3 text-sm bg-action text-action-foreground rounded-lg font-semibold hover:bg-action-hover transition-colors">
             Request Renewal
           </button>
         </div>
@@ -197,41 +198,34 @@ function SolutionDetail({
 
       {/* Stale banner */}
       {tenant.stale && (
-        <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3 mb-5 text-sm text-gray-500">
+        <div className="flex items-center gap-3 bg-muted border border-border rounded-2xl p-3 mb-5 text-sm text-muted-foreground">
           <AlertTriangle className="w-4 h-4 shrink-0" />
-          Licensing API unavailable — showing cached data <strong className="text-gray-700 ml-1">as of 29 May 2026, 08:12 UTC</strong>.
+          Licensing API unavailable — showing cached data <strong className="text-foreground ml-1">as of 29 May 2026, 08:12 UTC</strong>.
         </div>
       )}
 
       {/* Field record */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+      <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md">
-              ZTP
-            </span>
-            <span className="text-sm font-bold text-gray-900">Solution Record</span>
+            <StatusBadge variant="info">ZTP</StatusBadge>
+            <span className="text-sm font-medium text-foreground">Solution Record</span>
           </div>
           {status === 'expired' ? (
-            <span className="text-xs font-semibold bg-red-50 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full">
-              Support Expired
-            </span>
+            <StatusBadge variant="error">Support Expired</StatusBadge>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-green-50 text-green-700 border border-green-200 px-2.5 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              Active
-            </span>
+            <StatusBadge variant="success" dot>Active</StatusBadge>
           )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="md:border-r md:border-gray-50">
+          <div className="md:border-r md:border-border">
             <DetailField
               label="Subscription Activation Key"
               source="Licensing API"
               value={
                 <span className="inline-flex items-center gap-2">
-                  <span className="font-mono text-[12.5px]">{maskKey(tenant.key!)}</span>
+                  <span className="font-mono text-[13px]">{maskKey(tenant.key!)}</span>
                   <CopyButton value={tenant.key!} />
                 </span>
               }
@@ -240,18 +234,14 @@ function SolutionDetail({
             <DetailField
               label="Product Type"
               source="System"
-              value={
-                <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md">
-                  ZTP
-                </span>
-              }
+              value={<StatusBadge variant="info">ZTP</StatusBadge>}
             />
             <DetailField
               label="License Count"
               source="Licensing API"
               value={
                 tenant.count === 0
-                  ? <span className="text-yellow-700">0 seats (no seats allocated)</span>
+                  ? <span className="text-warning">0 seats (no seats allocated)</span>
                   : <span>{tenant.count} seats</span>
               }
             />
@@ -301,17 +291,17 @@ function NoZTPState({ name, onBack }: { name: string; onBack: () => void }) {
     <div>
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-4 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Back to Inventory
       </button>
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">{name}</h1>
-      <p className="text-sm text-gray-500 mb-5">ZTP solution inventory</p>
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm py-14 text-center text-gray-500">
-        <div className="text-4xl mb-3 opacity-30">📦</div>
-        <div className="text-sm font-semibold text-gray-700">No ZTP subscription for this tenant</div>
-        <div className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
+      <h1 className="text-2xl font-semibold text-foreground mb-1">{name}</h1>
+      <p className="text-sm text-muted-foreground mb-5">ZTP solution inventory</p>
+      <div className="bg-card border rounded-2xl shadow-sm py-14 text-center text-muted-foreground">
+        <Package className="w-10 h-10 mx-auto mb-3 text-muted-foreground/40" />
+        <div className="text-sm font-semibold text-foreground">No ZTP subscription for this tenant</div>
+        <div className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
           This tenant has no active ZTP subscription — no record is shown.
         </div>
       </div>
@@ -354,48 +344,48 @@ export function InventoryPage() {
     <div className="space-y-5 pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">ZTP Solution Inventory</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-semibold text-foreground">ZTP Solution Inventory</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Subscription &amp; licensing details for all managed tenants — manage audits, renewals, and tier upgrades in one place.
         </p>
       </div>
 
       {/* Stale data banner */}
       {anyStale && (
-        <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-500">
-          <AlertTriangle className="w-4 h-4 shrink-0 text-gray-400" />
+        <div className="flex items-center gap-3 bg-muted border border-border rounded-2xl p-3 text-sm text-muted-foreground">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-muted-foreground" />
           <span>
             Licensing API is currently unavailable. Showing cached data{' '}
-            <strong className="text-gray-700">as of 29 May 2026, 08:12 UTC</strong>.
+            <strong className="text-foreground">as of 29 May 2026, 08:12 UTC</strong>.
           </span>
         </div>
       )}
 
       {/* Table card */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
         {/* Table header / filters */}
         <div className="flex items-center justify-between px-5 py-4">
           <div>
-            <div className="text-base font-bold text-gray-900">Managed Tenants</div>
-            <div className="text-xs text-gray-400 mt-0.5">
+            <div className="text-base font-medium text-foreground">Managed Tenants</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
               ZTP subscription record per tenant · Licensing API is the ground-truth source
             </div>
           </div>
           <div className="flex items-center gap-2.5">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search tenants..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-8 pl-8 pr-3 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-gray-400 focus:bg-white w-52"
+                className="h-8 pl-8 pr-3 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card w-52"
               />
             </div>
             <select
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value as any)}
-              className="h-8 px-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none cursor-pointer text-gray-700"
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
             >
               <option value="all">All Tiers</option>
               <option value="Essential">Essential</option>
@@ -405,7 +395,7 @@ export function InventoryPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="h-8 px-2.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none cursor-pointer text-gray-700"
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
             >
               <option value="all">All Statuses</option>
               <option value="active">Active</option>
@@ -416,119 +406,112 @@ export function InventoryPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-y border-gray-100">
+          <DataTable>
+            <THead>
+              <tr>
                 {['Tenant / Friendly Name', 'Product', 'Activation Key', 'Licenses', 'Tier', 'Support Expiry', 'Firmware', 'Actions'].map((col, i) => (
-                  <th
-                    key={col}
-                    className={`px-4 py-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider text-left whitespace-nowrap ${i === 7 ? 'text-right' : ''}`}
-                  >
-                    {col}
-                  </th>
+                  <TH key={col} className={i === 7 ? 'text-right' : ''}>{col}</TH>
                 ))}
               </tr>
-            </thead>
+            </THead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
                   <td colSpan={8}>
-                    <div className="text-center py-12 text-sm text-gray-400">
+                    <div className="text-center py-12 text-sm text-muted-foreground">
                       No matching records — adjust your search or filters.
                     </div>
                   </td>
                 </tr>
               ) : rows.map((t) => (
-                <tr
+                <TR
                   key={t.id}
                   onClick={() => { setOpenKebab(null); setSelectedId(t.id); }}
-                  className="border-b border-gray-50 last:border-0 hover:bg-gray-50/70 cursor-pointer transition-colors"
+                  className="cursor-pointer"
                 >
                   {/* Tenant name */}
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-sm text-gray-900">{t.name}</div>
-                    <div className="text-[11px] text-gray-400 mt-0.5">{t.friendly}</div>
-                  </td>
+                  <TD>
+                    <div className="font-semibold text-[13px] text-foreground">{t.name}</div>
+                    <div className="text-[11px] text-muted-foreground mt-0.5">{t.friendly}</div>
+                  </TD>
 
                   {/* Product */}
-                  <td className="px-4 py-3">
-                    <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md">
-                      ZTP
-                    </span>
-                  </td>
+                  <TD>
+                    <StatusBadge variant="info">ZTP</StatusBadge>
+                  </TD>
 
                   {/* Activation key */}
-                  <td className="px-4 py-3">
+                  <TD>
                     <span className="inline-flex items-center gap-2">
-                      <span className="font-mono text-[12px] text-gray-600">{maskKey(t.key!)}</span>
+                      <span className="font-mono text-[13px] text-muted-foreground">{maskKey(t.key!)}</span>
                       <CopyButton value={t.key!} />
                     </span>
-                  </td>
+                  </TD>
 
                   {/* Licenses */}
-                  <td className="px-4 py-3">
+                  <TD>
                     {t.count === 0
-                      ? <span className="text-sm text-yellow-700 font-medium">0 seats</span>
-                      : <span className="text-sm text-gray-700">{t.count} seats</span>
+                      ? <span className="text-sm text-warning font-medium">0 seats</span>
+                      : <span className="text-sm text-foreground">{t.count} seats</span>
                     }
-                  </td>
+                  </TD>
 
                   {/* Tier */}
-                  <td className="px-4 py-3">
+                  <TD>
                     <TierBadge tier={t.tier!} />
-                  </td>
+                  </TD>
 
                   {/* Expiry */}
-                  <td className="px-4 py-3">
+                  <TD>
                     <ExpiryCell t={t} />
-                  </td>
+                  </TD>
 
                   {/* Firmware */}
-                  <td className="px-4 py-3">
+                  <TD>
                     <FirmwareCell t={t} />
-                  </td>
+                  </TD>
 
                   {/* Actions */}
-                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                  <TD className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="relative inline-block">
                       <button
                         onClick={(e) => { e.stopPropagation(); setOpenKebab(openKebab === t.id ? null : t.id); }}
-                        className="w-7 h-7 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors"
+                        className="w-7 h-7 rounded-lg border border-transparent hover:border-border hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                       >
                         <MoreVertical className="w-4 h-4" />
                       </button>
                       {openKebab === t.id && (
-                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg w-48 z-20 overflow-hidden p-1">
+                        <div className="absolute right-0 top-full mt-1 bg-card border rounded-2xl shadow-lg w-48 z-20 overflow-hidden p-1">
                           <button
                             onClick={() => { setOpenKebab(null); setSelectedId(t.id); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg text-left"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg text-left"
                           >
                             View Details
                           </button>
                           <button
                             onClick={() => { copyToClipboard(t.key!, setCopied); setOpenKebab(null); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg text-left"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg text-left"
                           >
                             Copy Activation Key
                           </button>
                         </div>
                       )}
                     </div>
-                  </td>
-                </tr>
+                  </TD>
+                </TR>
               ))}
             </tbody>
-          </table>
+          </DataTable>
         </div>
 
-        <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-400">
+        <div className="px-4 py-3 border-t border-border text-xs text-muted-foreground">
           Showing {rows.length} ZTP subscription record{rows.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {/* Info note */}
-      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-sm text-blue-800">
-        <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
+      <div className="flex items-start gap-3 bg-action-subtle border border-action/20 rounded-2xl p-3.5 text-sm text-foreground">
+        <Info className="w-4 h-4 shrink-0 mt-0.5 text-action" />
         <span>
           Tenants without an active ZTP subscription do not appear in this inventory.
           Firmware version is sourced from device telemetry and updates on device check-in.
