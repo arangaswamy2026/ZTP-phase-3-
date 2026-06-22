@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronUp, Info, ArrowRight, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, ArrowRight, X } from 'lucide-react';
 import { Button } from './ui/button';
 
 // Trust level options
@@ -535,28 +535,7 @@ export function DeviceTrustProfile({ onBack, onSave, onCancel }: DeviceTrustProf
   };
 
   return (
-    <div className="flex flex-col gap-[32px] w-full max-w-[1136px] mx-auto pb-[40px]">
-      {/* Back button */}
-      <button
-        onClick={onBack}
-        className="flex items-center gap-[8px] w-fit group"
-      >
-        <ArrowLeft className="w-[16px] h-[16px] text-[#364153]" />
-        <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] tracking-[-0.15px] text-[#364153] group-hover:underline">
-          Back to Profiles
-        </span>
-      </button>
-
-      {/* Header */}
-      <div className="flex flex-col gap-[8px]">
-        <h1 className="font-['Inter',sans-serif] font-bold text-[28px] leading-[36px] tracking-[-0.5px] text-[#101828]">
-          Device Trust Profile
-        </h1>
-        <p className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] text-[#6a7282]">
-          Define the security checks every user's device must pass. Devices that fail will have their access automatically restricted.
-        </p>
-      </div>
-
+    <div className="flex flex-col gap-[32px] w-full">
       {/* Info banner */}
       <div className="flex items-start gap-[8px] bg-[#eff6ff] border border-[#c7dfff] rounded-[10px] px-[12px] py-[8px]">
         <Info className="w-[16px] h-[16px] text-[#1c398e] shrink-0 mt-[2px]" />

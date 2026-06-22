@@ -9,20 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ChevronRight, Edit2, Trash2, RotateCcw, Plus, Calendar, Clock } from "lucide-react";
 
-interface AdvancedSettingsProps {
-  onBackToDashboard: () => void;
-}
-
-export function AdvancedSettings({ onBackToDashboard }: AdvancedSettingsProps) {
+export function AdvancedSettings() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Advanced Settings</h1>
-        <Button variant="outline" onClick={onBackToDashboard}>
-          Back to Dashboard
-        </Button>
-      </div>
-
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm min-h-[600px]">
         <Tabs defaultValue="device" className="w-full">
           <div className="border-b border-gray-200 px-4 pt-2">
