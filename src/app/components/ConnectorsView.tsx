@@ -129,13 +129,6 @@ export function ConnectorsView() {
   return (
     <div className="space-y-6 pb-10">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">System Status</h1>
-        <p className="text-gray-600 mt-1">
-          Monitor the health and connectivity of your ZTP infrastructure
-        </p>
-      </div>
-
-      <div>
         <h2 className="text-sm font-semibold text-gray-900 mb-4">Connectors and Tunnels</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {connectors.map((c) => (

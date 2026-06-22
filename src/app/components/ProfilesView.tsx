@@ -338,19 +338,10 @@ export function ProfilesView({ onCreateProfile, onEditProfile }: ProfilesViewPro
     <div className="flex flex-col gap-[32px] w-full">
       {/* Page header */}
       <div className="flex items-center justify-between w-full">
-        <div className="flex flex-col gap-[4px]">
-          <span className="font-['Inter',sans-serif] font-bold text-[20px] leading-[28px] tracking-[-0.45px] text-[#101828]">
-            Security Profiles
-          </span>
-          <span className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
-            Create and manage reusable security profiles to apply to access policies.
-          </span>
-        </div>
-
         {/* Search */}
         <div className="relative w-[256px]">
           <Search className="absolute left-[10px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-[#99A1AF]" />
-          
+
         </div>
       </div>
 

@@ -8,16 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 export function DownloadsView() {
   return (
      <div className="space-y-6">
-       {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-gray-900 text-[24px] font-bold">Downloads</h1>
-            <p className="text-gray-600 mt-1">
-              Download clients, agents, and tools
-            </p>
-          </div>
-        </div>
-
         {/* Unified Client Section - Prominent */}
         <Card className="border-l-4 border-l-[#0066CC]">
            <CardHeader>
