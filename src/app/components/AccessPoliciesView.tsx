@@ -524,7 +524,7 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
         <div className="w-full">
           {/* Header */}
           <div className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-            <div className="flex items-center px-[36px] py-[12px]">
+            <div className="flex items-center px-[16px] py-[12px]">
               <div className="flex-1">
                 <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
                   Policy Name
@@ -561,12 +561,7 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
                 className="relative border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa] cursor-pointer min-h-[100px]"
                 onClick={() => onPolicyClick?.(filtered[0])}
               >
-                <div className="flex items-start px-[36px] py-[16px]">
-                  {/* Drag handle */}
-                  <div className="absolute left-0 top-[40px] pl-[8px] pr-[12px] w-[40px]">
-                    <DragHandleIcon />
-                  </div>
-
+                <div className="flex items-start px-[16px] py-[16px]">
                   {/* Policy Name */}
                   <div className="flex-1 flex flex-col gap-[2px] pr-[40px]">
                     <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#101828]">
@@ -757,7 +752,7 @@ function SPAPoliciesTable({
         <div className="w-full">
           {/* Header */}
           <div className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-            <div className="flex items-center px-[36px] py-[12px]">
+            <div className="flex items-center px-[16px] py-[12px]">
               <div className="flex-1">
                 <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
                   Policy Name
@@ -794,12 +789,7 @@ function SPAPoliciesTable({
                 className="relative border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa] cursor-pointer min-h-[91px]"
                 onClick={() => onPolicyClick?.(policies[0])}
               >
-                <div className="flex items-start px-[36px] py-[16px]">
-                  {/* Drag handle */}
-                  <div className="absolute left-0 top-[35px] pl-[8px] pr-[12px] w-[40px]">
-                    <DragHandleIcon />
-                  </div>
-
+                <div className="flex items-start px-[16px] py-[16px]">
                   {/* Policy Name */}
                   <div className="flex-1 flex flex-col gap-[2px] pr-[40px]">
                     <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#101828]">
