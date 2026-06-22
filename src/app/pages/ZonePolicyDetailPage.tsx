@@ -1,8 +1,7 @@
-import React from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Edit2, Copy, Trash2, Shield, Laptop, Globe, AlertTriangle } from 'lucide-react';
+import { Edit2, Trash2, Shield, Laptop, Globe, AlertTriangle } from 'lucide-react';
 import { MOCK_POLICIES, type Badge as PolicyBadge } from '../components/policies/PolicyData';
 import { PageHeader } from '../components/PageHeader';
 

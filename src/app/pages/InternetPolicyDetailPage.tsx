@@ -4,7 +4,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../com
 import {
   Edit,
   Trash2,
-  Copy,
   Info,
   Shield,
   Lock,
@@ -218,40 +217,40 @@ export function InternetPolicyDetailPage() {
         title={policy.name}
         subtitle={policy.description}
         back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-[6px] rounded-[8px] border-black/10"
+              onClick={() => navigate(`/internet-policy/${policy.id}/edit`)}
+            >
+              <Edit className="w-[14px] h-[14px]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
+                Edit Policy
+              </span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-[6px] rounded-[8px] border-red-200 text-red-600 hover:bg-red-50">
+              <Trash2 className="w-[14px] h-[14px]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
+                Delete
+              </span>
+            </Button>
+          </div>
+        }
       />
 
       {/* Header Card */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden">
         <div className="px-[28px] pt-[24px] pb-[20px] flex flex-col gap-[20px]">
-          {/* Badges + Actions */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[8px]">
-              <span className="inline-flex items-center rounded-full border border-[#c4b5fd] bg-[#ede9fe] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#7c3aed]">
-                Internet Policy
-              </span>
-              <span className="inline-flex items-center rounded-[6px] border border-[#e5e7eb] bg-[#f3f4f6] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[10px] leading-[15px] tracking-[0.12px] text-[#6a7282]">
-                Default
-              </span>
-            </div>
-            <div className="flex items-center gap-[8px]">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-[6px] rounded-[8px] border-black/10"
-                onClick={() => navigate(`/internet-policy/${policy.id}/edit`)}
-              >
-                <Edit className="w-[14px] h-[14px]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
-                  Edit Policy
-                </span>
-              </Button>
-              <Button variant="outline" size="sm" className="gap-[6px] rounded-[8px] border-red-200 text-red-600 hover:bg-red-50">
-                <Trash2 className="w-[14px] h-[14px]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
-                  Delete
-                </span>
-              </Button>
-            </div>
+          {/* Badges */}
+          <div className="flex items-center gap-[8px]">
+            <span className="inline-flex items-center rounded-full border border-[#c4b5fd] bg-[#ede9fe] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#7c3aed]">
+              Internet Policy
+            </span>
+            <span className="inline-flex items-center rounded-[6px] border border-[#e5e7eb] bg-[#f3f4f6] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[10px] leading-[15px] tracking-[0.12px] text-[#6a7282]">
+              Default
+            </span>
           </div>
         </div>
       </div>

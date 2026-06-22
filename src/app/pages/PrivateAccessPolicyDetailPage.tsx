@@ -3,10 +3,7 @@ import { Button } from '../components/ui/button';
 import {
   Edit,
   Trash2,
-  Copy,
   CheckCircle2,
-  User,
-  Server,
   Shield,
 } from 'lucide-react';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
