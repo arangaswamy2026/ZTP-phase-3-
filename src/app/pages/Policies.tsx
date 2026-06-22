@@ -5,6 +5,7 @@ import { PrivateAccessPolicyModal } from '../components/policies/PrivateAccessPo
 import { CreateZonePolicyModal } from '../components/policies/CreateZonePolicyModal';
 import { CreateInternetAccessPolicyModal } from '../components/policies/CreateInternetAccessPolicyModal';
 import { CreatePrivateAccessPolicyModal } from '../components/policies/CreatePrivateAccessPolicyModal';
+import { PageHeader } from '../components/PageHeader';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
@@ -86,15 +87,15 @@ export default function Policies() {
     <div className="space-y-8 pb-10">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold text-[#101828] leading-7">Policies</h1>
-          <p className="text-base text-[#6a7282] leading-6">Manage your security policies across all vectors.</p>
-        </div>
+        <PageHeader
+          title="Policies"
+          subtitle="Manage your security policies across Internet, Private, and Zone-based traffic."
+        />
         <div className="relative w-64">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-[#99a1af]" />
-          <Input 
-            placeholder="Search policies..." 
-            className="pl-9 h-9 bg-white border-[rgba(0,0,0,0)] text-sm" 
+          <Input
+            placeholder="Search policies..."
+            className="pl-9 h-9 bg-white border-[rgba(0,0,0,0)] text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
