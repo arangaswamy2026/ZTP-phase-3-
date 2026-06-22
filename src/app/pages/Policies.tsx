@@ -86,20 +86,20 @@ export default function Policies() {
   return (
     <div className="space-y-8 pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <PageHeader
-          title="Policies"
-          subtitle="Manage your security policies across Internet, Private, and Zone-based traffic."
+      <PageHeader
+        title="Policies"
+        subtitle="Manage your security policies across Internet, Private, and Zone-based traffic."
+      />
+
+      {/* Search row */}
+      <div className="relative w-64">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-[#99a1af]" />
+        <Input
+          placeholder="Search policies..."
+          className="pl-9 h-9 bg-white border-[rgba(0,0,0,0)] text-sm"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="relative w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-[#99a1af]" />
-          <Input
-            placeholder="Search policies..."
-            className="pl-9 h-9 bg-white border-[rgba(0,0,0,0)] text-sm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
       </div>
 
       {/* Zone Based Policies Section */}
