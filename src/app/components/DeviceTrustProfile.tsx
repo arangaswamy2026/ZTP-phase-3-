@@ -490,12 +490,11 @@ function TrustFactorItem({
 
 // Main component
 interface DeviceTrustProfileProps {
-  onBack: () => void;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export function DeviceTrustProfile({ onBack, onSave, onCancel }: DeviceTrustProfileProps) {
+export function DeviceTrustProfile({ onSave, onCancel }: DeviceTrustProfileProps) {
   const [trustFactors, setTrustFactors] = useState<
     Array<{
       name: string;

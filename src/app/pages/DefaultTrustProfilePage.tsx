@@ -13,7 +13,6 @@ export function DefaultTrustProfilePage() {
         back={{ label: 'Back to Security Profiles', onClick: () => navigate('/profiles') }}
       />
       <DeviceTrustProfile
-        onBack={() => navigate('/profiles')}
         onSave={() => navigate('/profiles')}
         onCancel={() => navigate('/profiles')}
       />

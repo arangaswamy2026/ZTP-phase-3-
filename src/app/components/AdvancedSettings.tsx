@@ -6,8 +6,7 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { ChevronRight, Edit2, Trash2, RotateCcw, Plus, Calendar, Clock } from "lucide-react";
+import { ChevronRight, Edit2, Trash2, RotateCcw, Plus, Calendar } from "lucide-react";
 
 export function AdvancedSettings() {
   return (
