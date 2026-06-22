@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RefreshCw, Plus, Filter, ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 
 const TABS = ['Device', 'Zones/Interfaces', 'Routes', 'NAT', 'WLB'] as const;
 type Tab = typeof TABS[number];
@@ -526,13 +527,10 @@ export function NetworkPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#101828] tracking-[0.07px]">Advanced Settings</h1>
-        <button className="px-4 py-2 h-9 text-sm font-medium text-[#0a0a0a] bg-white border border-black/10 rounded-lg hover:bg-gray-50 transition-colors">
-          Back to Dashboard
-        </button>
-      </div>
+      <PageHeader
+        title="Network"
+        subtitle="Configure zones, interfaces, routes, and NAT policies"
+      />
 
       {/* Main card */}
       <div className="bg-white border border-[#e5e7eb] rounded-xl shadow-sm overflow-hidden">

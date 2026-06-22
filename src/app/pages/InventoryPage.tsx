@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Copy, ArrowLeft, MoreVertical, RefreshCw, AlertTriangle, Info, Package } from 'lucide-react';
 import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { PageHeader } from '../components/PageHeader';
 
 /* ── Data model ── */
 type Tier = 'Essential' | 'Advanced' | 'Premier';
@@ -153,28 +154,19 @@ function SolutionDetail({
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Inventory
-      </button>
-
-      <div className="flex items-start justify-between gap-4 mb-5">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">{tenant.friendly}</h1>
-          <p className="text-sm text-muted-foreground mt-1">Complete ZTP subscription &amp; licensing record for this tenant</p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
+      <PageHeader
+        title={tenant.friendly}
+        subtitle="Complete ZTP subscription & licensing record for this tenant"
+        back={{ label: 'Back to Inventory', onClick: onBack }}
+        actions={
           <button
             onClick={() => copyToClipboard(tenant.key!, setCopiedKey)}
             className="h-8 px-3 text-sm border border-border rounded-lg bg-card hover:bg-muted font-medium text-foreground transition-colors"
           >
             {copiedKey ? 'Copied!' : 'Copy Activation Key'}
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Renewal CTA */}
       {status === 'expiring' && (
@@ -342,13 +334,10 @@ export function InventoryPage() {
 
   return (
     <div className="space-y-5 pb-10">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">ZTP Solution Inventory</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Subscription &amp; licensing details for all managed tenants — manage audits, renewals, and tier upgrades in one place.
-        </p>
-      </div>
+      <PageHeader
+        title="ZTP Solution Inventory"
+        subtitle="Subscription & licensing details for all managed tenants — manage audits, renewals, and tier upgrades in one place."
+      />
 
       {/* Stale data banner */}
       {anyStale && (

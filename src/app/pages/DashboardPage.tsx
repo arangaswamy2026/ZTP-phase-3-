@@ -9,6 +9,7 @@ import { Download } from 'lucide-react';
 import type { LifecycleStage } from '../components/TopBar';
 import { useTenant } from '../contexts/TenantContext';
 import { ActivationFlow } from '../components/activation/ActivationFlow';
+import { PageHeader } from '../components/PageHeader';
 
 interface OutletContext {
   lifecycleStage: LifecycleStage;
@@ -28,16 +29,10 @@ export function DashboardPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-gray-900 text-[24px] font-bold">Zero Trust Dashboard</h1>
-          </div>
-          <p className="text-gray-600">
-            Monitor and manage your zero trust security posture
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Zero Trust Dashboard"
+        subtitle="Monitor and manage your zero trust security posture"
+      />
 
       <DashboardVariants 
         variant={dashboardVariant} 
