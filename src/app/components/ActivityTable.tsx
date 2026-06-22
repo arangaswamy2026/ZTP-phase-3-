@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { PageHeader } from './PageHeader';
 
 // ── Activity data ────────────────────────────────────────────────────
 
@@ -402,28 +403,23 @@ export function ActivityTable() {
 
   return (
     <div className="flex flex-col gap-[16px] w-full">
-      {/* Page header */}
-      <div className="flex items-center justify-between w-full">
-        <div className="flex flex-col gap-[4px]">
-          <span className="font-['Inter',sans-serif] font-bold text-[20px] leading-[28px] tracking-[-0.45px] text-[#101828]">
-            Activity Log
-          </span>
-          <span className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
-            View and audit user sessions and security events
-          </span>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-[8px] rounded-[8px] border-black/10 px-[11px] py-[6px]"
-          onClick={handleExport}
-        >
-          <Download className="w-[16px] h-[16px]" />
-          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#0a0a0a]">
-            Export
-          </span>
-        </Button>
-      </div>
+      <PageHeader
+        title="Activity Log"
+        subtitle="View and audit user sessions and security events"
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-[8px] rounded-[8px] border-black/10 px-[11px] py-[6px]"
+            onClick={handleExport}
+          >
+            <Download className="w-[16px] h-[16px]" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#0a0a0a]">
+              Export
+            </span>
+          </Button>
+        }
+      />
 
       {/* Table card */}
       <div className="bg-white rounded-[10px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] overflow-hidden w-full">

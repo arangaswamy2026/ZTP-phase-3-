@@ -124,53 +124,51 @@ export function ReportsPage() {
   const rangeLabel: Record<Range, string> = { '24h': 'Last 24 hours', '7d': 'Last 7 days', '30d': 'Last 30 days', 'custom': 'Custom range' };
 
   return (
-    <div className="space-y-6 -mx-8 -mt-8">
-      <div className="bg-white border-b border-[#e5e7eb] px-6 py-4">
-        <PageHeader
-          title="Reports"
-          subtitle="Blocked threats, activity, and security posture for this tenant"
-          actions={
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Time range dropdown */}
-              <select
-                value={range}
-                onChange={e => { setRange(e.target.value as Range); setPage(1); }}
-                className="text-xs font-medium px-3 py-1.5 border border-[#e5e7eb] rounded-md text-[#6b7280] bg-white focus:outline-none focus:border-[#f05a23]"
-              >
-                {(['24h','7d','30d','custom'] as Range[]).map(r => (
-                  <option key={r} value={r}>{rangeLabel[r]}</option>
-                ))}
-              </select>
-              {/* Custom date pickers */}
-              {range === 'custom' && (
-                <div className="flex items-center gap-2 text-xs">
-                  <input type="date" value={customFrom}
-                    onChange={e => { setCustomFrom(e.target.value); applyCustom(e.target.value, customTo); }}
-                    className={`px-2 py-1.5 border rounded-md text-[#111827] ${customErr ? 'border-red-500' : 'border-[#e5e7eb]'}`}
-                  />
-                  <span className="text-[#6b7280]">to</span>
-                  <input type="date" value={customTo}
-                    onChange={e => { setCustomTo(e.target.value); applyCustom(customFrom, e.target.value); }}
-                    className={`px-2 py-1.5 border rounded-md text-[#111827] ${customErr ? 'border-red-500' : 'border-[#e5e7eb]'}`}
-                  />
-                  {customErr && <span className="text-red-500 text-xs">Start must be before end</span>}
-                </div>
-              )}
-              {/* Export */}
-              <button
-                onClick={() => exportCSV(filtered)}
-                title="Export CSV"
-                aria-label="Export CSV"
-                className="flex items-center justify-center p-2 text-[#6b7280] bg-white border border-[#e5e7eb] rounded-md hover:bg-gray-50"
-              >
-                <Download size={15} />
-              </button>
-            </div>
-          }
-        />
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Reports"
+        subtitle="Blocked threats, activity, and security posture for this tenant"
+        actions={
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Time range dropdown */}
+            <select
+              value={range}
+              onChange={e => { setRange(e.target.value as Range); setPage(1); }}
+              className="text-xs font-medium px-3 py-1.5 border border-[#e5e7eb] rounded-md text-[#6b7280] bg-white focus:outline-none focus:border-[#f05a23]"
+            >
+              {(['24h','7d','30d','custom'] as Range[]).map(r => (
+                <option key={r} value={r}>{rangeLabel[r]}</option>
+              ))}
+            </select>
+            {/* Custom date pickers */}
+            {range === 'custom' && (
+              <div className="flex items-center gap-2 text-xs">
+                <input type="date" value={customFrom}
+                  onChange={e => { setCustomFrom(e.target.value); applyCustom(e.target.value, customTo); }}
+                  className={`px-2 py-1.5 border rounded-md text-[#111827] ${customErr ? 'border-red-500' : 'border-[#e5e7eb]'}`}
+                />
+                <span className="text-[#6b7280]">to</span>
+                <input type="date" value={customTo}
+                  onChange={e => { setCustomTo(e.target.value); applyCustom(customFrom, e.target.value); }}
+                  className={`px-2 py-1.5 border rounded-md text-[#111827] ${customErr ? 'border-red-500' : 'border-[#e5e7eb]'}`}
+                />
+                {customErr && <span className="text-red-500 text-xs">Start must be before end</span>}
+              </div>
+            )}
+            {/* Export */}
+            <button
+              onClick={() => exportCSV(filtered)}
+              title="Export CSV"
+              aria-label="Export CSV"
+              className="flex items-center justify-center p-2 text-[#6b7280] bg-white border border-[#e5e7eb] rounded-md hover:bg-gray-50"
+            >
+              <Download size={15} />
+            </button>
+          </div>
+        }
+      />
 
-      <div className="px-6 space-y-5">
+      <div className="space-y-5">
         {/* ── Stat cards ──────────────────────────────────────── */}
         <div className="grid grid-cols-5 gap-4">
           {[
