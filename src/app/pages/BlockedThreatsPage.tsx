@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Search, Download, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { SeverityChip, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { PageHeader } from '../components/PageHeader';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -225,12 +226,7 @@ function AllTenantsView({
     <div className="space-y-5 pb-10">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Blocked Threats</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Real-time view of blocked threats aggregated across all managed tenants. Click any tenant to drill down.
-          </p>
-        </div>
+        <PageHeader title="Blocked Threats" />
         <div className="flex items-center gap-2.5 flex-wrap">
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />

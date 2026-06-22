@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, RefreshCw, ChevronRight, Server, Wifi, Globe, Shield, AlertTriangle } from 'lucide-react';
 import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { PageHeader } from '../components/PageHeader';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -308,12 +309,7 @@ export function AllTenantsSystemStatusPage() {
   return (
     <div className="space-y-6 pb-10">
       {/* Page title */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">System Status</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Monitor the health and connectivity of your ZTP infrastructure
-        </p>
-      </div>
+      <PageHeader title="System Status" />
 
       {/* Infrastructure status cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">

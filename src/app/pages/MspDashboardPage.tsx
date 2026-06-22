@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { TenantAvatar } from '../components/TenantAvatar';
 import { SeverityChip, StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { PageHeader } from '../components/PageHeader';
 
 // Uniform widget height — chosen to fit the content of the tallest widgets
 // (threat breakdown, domains table, tenant table) without inner scrolling.
@@ -260,10 +261,7 @@ export function MspDashboardPage() {
     <div className="space-y-6 pb-10">
       {/* Header — title left, Active Tenants summary auto-spaced to the right */}
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">MSP Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Consolidated Zero Trust posture across all managed tenants</p>
-        </div>
+        <PageHeader title="MSP Dashboard" />
         <div className="flex items-center gap-3 bg-card border rounded-2xl shadow-sm px-5 py-3 shrink-0">
           <div className="size-10 rounded-2xl bg-muted flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-muted-foreground" />
