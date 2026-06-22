@@ -922,15 +922,6 @@ export function AccessPoliciesView({ onCreatePolicy, onEditPolicy }: AccessPolic
     <div className="flex flex-col gap-[32px] w-full">
       {/* Page header */}
       <div className="flex flex-col gap-[16px] w-full">
-        <div className="flex flex-col gap-[4px]">
-          <span className="font-['Inter',sans-serif] font-bold text-[20px] leading-[28px] tracking-[-0.45px] text-[#101828]">
-            Policies
-          </span>
-          <span className="font-['Inter',sans-serif] font-normal text-[16px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
-            Manage and review all your access policies across Internet, Private, and Zone-based traffic.
-          </span>
-        </div>
-
         {/* Search and Filter */}
         <div className="flex items-center gap-[8px]">
           {/* Search Input */}

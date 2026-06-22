@@ -11,11 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from './ui/table';
-import { 
-  Users, 
-  Settings, 
-  RefreshCw, 
-  CheckCircle2, 
+import {
+  Users,
+  RefreshCw,
+  CheckCircle2,
   Search,
   Filter
 } from 'lucide-react';
@@ -126,8 +125,12 @@ function userInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function IDPManagement() {
-  const [isReconfiguring, setIsReconfiguring] = React.useState(false);
+interface IDPManagementProps {
+  isReconfiguring?: boolean;
+  onReconfigureClose?: () => void;
+}
+
+export function IDPManagement({ isReconfiguring = false, onReconfigureClose }: IDPManagementProps) {
   const { getTenantData } = useTenant();
   const tenantData = getTenantData();
   
@@ -138,21 +141,6 @@ export function IDPManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900 text-[24px] font-bold">Users</h1>
-          <p className="text-gray-600 mt-1">
-            View your configured identity source and user directory
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => setIsReconfiguring(true)}>
-            <Settings className="w-4 h-4 mr-2" />
-            Reconfigure IDP
-          </Button>
-        </div>
-      </div>
-
       {/* Users List */}
       <Card className="border-gray-200">
         <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-4">

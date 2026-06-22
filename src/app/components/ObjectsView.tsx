@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { 
-  Plus, 
-  Search, 
-  MoreHorizontal, 
-  Edit, 
+import {
+  Search,
+  MoreHorizontal,
+  Edit,
   Trash2,
   Shield,
   Users,
@@ -146,23 +145,6 @@ export function ObjectsView({ onCreateObject, onEditObject }: ObjectsViewProps) 
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900 mb-1">Objects</h1>
-          <p className="text-sm text-gray-600">
-            Define reusable objects for use in access policies and security rules
-          </p>
-        </div>
-        <Button 
-          onClick={() => onCreateObject?.(activeTab)}
-          className="bg-[#FF5D00] hover:bg-[#FF5D00]/90"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Object
-        </Button>
-      </div>
-
       {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
