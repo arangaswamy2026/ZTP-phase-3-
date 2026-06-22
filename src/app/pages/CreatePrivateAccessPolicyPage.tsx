@@ -6,13 +6,13 @@ import { Label } from '../components/ui/label';
 import { Checkbox } from '../components/ui/checkbox';
 import { Textarea } from '../components/ui/textarea';
 import {
-  ArrowLeft,
   Check,
   Plus,
   Minus,
   ChevronDown,
   X,
 } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 import { toast } from 'sonner@2.0.3';
 
 const USERS_LIST = ['Alice', 'John', 'Sarah', 'Michael', 'Emily', 'David'];
@@ -169,31 +169,10 @@ export function CreatePrivateAccessPolicyPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
-      {/* Back button */}
-      <button
-        onClick={handleCancel}
-        className="flex items-center gap-[6px] text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ArrowLeft className="w-[16px] h-[16px]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-          Back to Access Policies
-        </span>
-      </button>
-
-      {/* Page Header */}
-      <div className="flex flex-col gap-[8px]">
-        <div className="flex items-center gap-[10px]">
-          <h1 className="font-['Inter',sans-serif] font-bold text-[22px] leading-[28px] tracking-[-0.5px] text-[#101828]">
-            New Private Access Policy
-          </h1>
-          <span className="inline-flex items-center rounded-full border border-[#1447e6] bg-white px-[13px] py-[4px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#1447e6]">
-            Private Policy
-          </span>
-        </div>
-        <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
-          Configure access rules and security conditions for your organization
-        </p>
-      </div>
+      <PageHeader
+        title="Create Private Access Policy"
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+      />
 
       {/* General Information */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">

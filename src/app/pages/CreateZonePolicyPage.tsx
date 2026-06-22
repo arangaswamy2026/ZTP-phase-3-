@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { ArrowLeft, Network, Users, Save, Shield, AlertTriangle, CheckCircle2, X, Info, Plus, Minus } from 'lucide-react';
+import { Network, Users, Save, Shield, AlertTriangle, CheckCircle2, X, Info, Plus, Minus } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
 import { toast } from 'sonner@2.0.3';
 import { SecurityControlCard, CATEGORY_LIST, APP_LIST, GEO_LIST } from '../components/SecurityControlCard';
@@ -220,35 +221,10 @@ export function CreateZonePolicyPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
-      {/* Back button */}
-      <button
-        onClick={handleCancel}
-        className="flex items-center gap-[6px] text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ArrowLeft className="w-[16px] h-[16px]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-          {isEdit ? 'Back to Policy' : 'Back to Access Policies'}
-        </span>
-      </button>
-
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-[4px]">
-          <div className="flex items-center gap-[10px]">
-            <h1 className="font-['Inter',sans-serif] font-bold text-[22px] leading-[28px] tracking-[-0.5px] text-[#101828]">
-              {isEdit ? 'Edit Zone Policy' : 'Create Zone Policy'}
-            </h1>
-            <span className="inline-flex items-center rounded-full border border-[#f97316] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#f97316]">
-              Zone Policy
-            </span>
-          </div>
-          <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
-            {isEdit
-              ? 'Modify the zone-based policy configuration below.'
-              : 'Configure a new policy to control traffic between network zones on the Zero Trust Connector.'}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={isEdit ? 'Edit Zone Policy' : 'Create Zone Policy'}
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+      />
 
       {/* Policy Name & Description */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden">

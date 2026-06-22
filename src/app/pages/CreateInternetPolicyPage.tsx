@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from '../components/ui/select';
 import {
-  ArrowLeft,
   Save,
   Shield,
   AlertTriangle,
@@ -24,6 +23,7 @@ import {
   Minus,
   ChevronDown,
 } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
 import { toast } from 'sonner@2.0.3';
 
@@ -281,42 +281,17 @@ export function CreateInternetPolicyPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
-      {/* Back button */}
-      <button
-        onClick={handleCancel}
-        className="flex items-center gap-[6px] text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ArrowLeft className="w-[16px] h-[16px]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-          Back to Access Policies
+      <PageHeader
+        title="Create Internet Policy"
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+      />
+
+      {/* Info Banner */}
+      <div className="flex items-center gap-[8px] bg-white border border-[#e5e7eb] rounded-[8px] px-[12px] py-[8px]">
+        <Info className="w-[14px] h-[14px] text-[#3b82f6] shrink-0" />
+        <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+          Internet access policy always allows traffic from selected sources to the destination.
         </span>
-      </button>
-
-      {/* Page Header */}
-      <div className="flex flex-col gap-[24px]">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-[4px]">
-            <div className="flex items-center gap-[10px]">
-              <h1 className="font-['Inter',sans-serif] font-bold text-[22px] leading-[28px] tracking-[-0.5px] text-[#101828]">
-                New Internet Access Policy
-              </h1>
-              <span className="inline-flex items-center rounded-full border border-[#c4b5fd] bg-[#ede9fe] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#7c3aed]">
-                Internet Policy
-              </span>
-            </div>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
-              Configure a new policy to control user traffic to the public internet with category filtering and threat protection.
-            </p>
-          </div>
-        </div>
-
-        {/* Info Banner */}
-        <div className="flex items-center gap-[8px] bg-white border border-[#e5e7eb] rounded-[8px] px-[12px] py-[8px]">
-          <Info className="w-[14px] h-[14px] text-[#3b82f6] shrink-0" />
-          <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
-            Internet access policy always allows traffic from selected sources to the destination.
-          </span>
-        </div>
       </div>
 
       {/* General Information */}
