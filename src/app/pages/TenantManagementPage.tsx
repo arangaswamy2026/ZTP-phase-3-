@@ -1,17 +1,13 @@
-import { useMemo, useState, Fragment } from 'react';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   Search,
-  ChevronDown,
-  ChevronRight,
   Settings,
-  ArrowUpRight,
-  RefreshCw,
   AlertTriangle,
   CircleCheck,
   Clock,
-  Cpu,
   Copy,
+  X,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { TenantAvatar } from '../components/TenantAvatar';
@@ -163,7 +159,7 @@ function ColHead({ children, align = 'left', className = '' }: { children: React
   );
 }
 
-function RowActions({ tenant }: { tenant: Tenant }) {
+function RowActions({ tenant, onViewDetails }: { tenant: Tenant; onViewDetails: () => void }) {
   if (tenant.status === 'Pending Setup') {
     return (
       <Button variant="outline" size="sm" className="h-8 rounded-lg gap-1.5">
@@ -172,7 +168,7 @@ function RowActions({ tenant }: { tenant: Tenant }) {
     );
   }
   return (
-    <Button variant="outline" size="sm" className="h-8 rounded-lg">
+    <Button variant="outline" size="sm" className="h-8 rounded-lg" onClick={onViewDetails}>
       View Details
     </Button>
   );
@@ -203,36 +199,70 @@ function urgencyRank(t: Tenant): number {
 }
 const byUrgency = (a: Tenant, b: Tenant) => urgencyRank(a) - urgencyRank(b) || a.name.localeCompare(b.name);
 
-// Pending tenants cannot be renewed / updated, so they are not selectable for bulk actions.
-const isSelectable = (t: Tenant) => t.status !== 'Pending Setup';
-
-function Check({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+function TenantDetailModal({ tenant, onClose }: { tenant: Tenant; onClose: () => void }) {
   return (
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      onClick={(e) => e.stopPropagation()}
-      className="w-4 h-4 rounded border-input text-action focus:ring-action cursor-pointer accent-action"
-    />
-  );
-}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-2xl mx-4 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-8 py-6 border-b border-border">
+          <div className="flex items-center gap-4">
+            <TenantAvatar size={40} />
+            <div>
+              <div className="text-lg font-semibold text-foreground">{tenant.name}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <StatusBadge status={tenant.status} />
+                <TierBadge tier={tenant.tier} />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        {/* Body */}
+        <div className="px-8 py-6 space-y-6">
+          {/* Licensing & Usage */}
+          <div>
+            <h3 className="text-sm font-bold text-foreground mb-3">Licensing &amp; Usage</h3>
+            <div className="grid grid-cols-3 gap-x-10">
+              <Detail label="License Breakdown" value={tenant.status === 'Pending Setup' ? 'Not provisioned' : `${tenant.licensesUsed} of ${tenant.licensesTotal} assigned`} />
+              <Detail label="Policies" value={tenant.policies != null ? String(tenant.policies) : '—'} />
+              <Detail label="Users" value={tenant.users != null ? String(tenant.users) : '—'} />
+            </div>
+          </div>
 
-function BulkActionBar({ count, onClear }: { count: number; onClear: () => void }) {
-  if (count === 0) return null;
-  return (
-    <div className="flex items-center justify-between gap-3 bg-action text-action-foreground rounded-2xl px-4 py-2.5">
-      <span className="text-sm font-medium">{count} tenant{count > 1 ? 's' : ''} selected</span>
-      <div className="flex items-center gap-2">
-        <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-medium transition-colors">
-          <RefreshCw className="w-3.5 h-3.5" /> Renew
-        </button>
-        <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white/15 hover:bg-white/25 text-sm font-medium transition-colors">
-          <Cpu className="w-3.5 h-3.5" /> Update firmware
-        </button>
-        <button onClick={onClear} className="h-8 px-3 rounded-lg text-sm font-medium text-white/80 hover:text-white transition-colors">
-          Clear
-        </button>
+          <div className="border-t border-border" />
+
+          {/* Health & Compliance */}
+          <div>
+            <h3 className="text-sm font-bold text-foreground mb-3">Health &amp; Compliance</h3>
+            <div className="grid grid-cols-2 gap-x-10">
+              <Detail label="Firmware" value={tenant.firmware ?? 'Unknown'} flag={tenant.firmwareOutdated ? 'Update available' : undefined} />
+              <Detail label="Support Expiry" value={tenant.supportExpiry ?? '—'} flag={tenant.expired ? 'Expired' : undefined} flagTone="red" />
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* Account */}
+          <div>
+            <h3 className="text-sm font-bold text-foreground mb-3">Account</h3>
+            <div className="grid grid-cols-3 gap-x-10">
+              <Detail label="Activation Date" value={tenant.activationDate} />
+              <Detail label="Last Activity" value={tenant.lastActivity ?? '—'} />
+              <ActivationKey value={tenant.activationKey} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -241,40 +271,13 @@ function BulkActionBar({ count, onClear }: { count: number; onClear: () => void 
 
 // ── OPTION B — Attention-first triage view ────────────────────────────────────────
 
-type AttnFilter = 'all' | 'renewal' | 'expired' | 'firmware' | 'pending';
-
 function OptionB({ search }: { search: string }) {
   const agg = useAggregates();
-  const [filter, setFilter] = useState<AttnFilter>('all');
-  const [open, setOpen] = useState<string | null>(null);
-  const [sel, setSel] = useState<Set<string>>(new Set());
-
-  const matchesFilter = (t: Tenant) => {
-    switch (filter) {
-      case 'renewal': return t.status === 'Active' && !t.expired && t.renewalDays !== null && t.renewalDays <= 60;
-      case 'expired': return !!t.expired;
-      case 'firmware': return t.status === 'Active' && (t.firmwareOutdated || !t.firmware);
-      case 'pending': return t.status === 'Pending Setup';
-      default: return true;
-    }
-  };
+  const [modalTenant, setModalTenant] = useState<Tenant | null>(null);
 
   const rows = TENANTS
-    .filter((t) => t.name.toLowerCase().includes(search.toLowerCase()) && matchesFilter(t))
+    .filter((t) => t.name.toLowerCase().includes(search.toLowerCase()))
     .sort(byUrgency);
-
-  const selectable = rows.filter(isSelectable);
-  const allSelected = selectable.length > 0 && selectable.every((t) => sel.has(t.id));
-  const toggle = (id: string) => setSel((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const toggleAll = () => setSel(allSelected ? new Set() : new Set(selectable.map((t) => t.id)));
-
-  const chips: { id: AttnFilter; label: string; count: number; tone?: 'red' | 'amber' }[] = [
-    { id: 'all', label: 'All Tenants', count: TENANTS.length },
-    { id: 'renewal', label: 'Needs Renewal', count: agg.renewalsDue, tone: 'amber' },
-    { id: 'expired', label: 'Expired', count: agg.expired, tone: 'red' },
-    { id: 'firmware', label: 'Firmware Outdated', count: agg.firmwareAttention, tone: 'amber' },
-    { id: 'pending', label: 'Pending Setup', count: agg.pending },
-  ];
 
   return (
     <div className="space-y-5">
@@ -289,36 +292,11 @@ function OptionB({ search }: { search: string }) {
         </div>
       </div>
 
-      {/* Filter chips */}
-      <div className="flex flex-wrap gap-2">
-        {chips.map((c) => {
-          const active = filter === c.id;
-          const dot = c.tone === 'red' ? 'bg-destructive' : c.tone === 'amber' ? 'bg-warning' : 'bg-muted-foreground';
-          return (
-            <button
-              key={c.id}
-              onClick={() => setFilter(c.id)}
-              className={`inline-flex items-center gap-2 h-8 px-3 rounded-full border text-sm font-medium transition-colors ${
-                active ? 'bg-action text-action-foreground border-action' : 'bg-card text-foreground border-border hover:bg-muted'
-              }`}
-            >
-              {c.id !== 'all' && <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : dot}`} />}
-              {c.label}
-              <span className={`text-xs tabular-nums ${active ? 'text-white/70' : 'text-muted-foreground'}`}>{c.count}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <BulkActionBar count={sel.size} onClear={() => setSel(new Set())} />
-
-      {/* Lean triage table with expandable detail */}
+      {/* Triage table */}
       <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="bg-muted border-b border-border">
             <tr>
-              <ColHead className="w-10"><Check checked={allSelected} onChange={toggleAll} /></ColHead>
-              <ColHead className="w-8"> </ColHead>
               <ColHead>Tenant</ColHead>
               <ColHead>Status</ColHead>
               <ColHead>Tier</ColHead>
@@ -328,74 +306,45 @@ function OptionB({ search }: { search: string }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((t) => {
-              const isOpen = open === t.id;
-              return (
-                <Fragment key={t.id}>
-                  <tr
-                    className={`border-b border-border transition-colors cursor-pointer ${sel.has(t.id) ? 'bg-action-subtle' : 'hover:bg-muted/60'}`}
-                    onClick={() => setOpen(isOpen ? null : t.id)}
-                  >
-                    <td className="pl-4 py-4">{isSelectable(t) && <Check checked={sel.has(t.id)} onChange={() => toggle(t.id)} />}</td>
-                    <td className="py-4 text-muted-foreground">
-                      {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2.5">
-                      <TenantAvatar size={32} />
-                      <span className="text-[13px] font-medium text-foreground">{t.name}</span>
-                    </div>
-                  </td>
-                    <td className="px-4 py-4"><StatusBadge status={t.status} /></td>
-                    <td className="px-4 py-4"><TierBadge tier={t.tier} /></td>
-                    <td className="px-4 py-4">
-                      {t.status === 'Pending Setup'
-                        ? <span className="text-sm text-muted-foreground">—</span>
-                        : <LicenseMeter used={t.licensesUsed} total={t.licensesTotal} compact />}
-                    </td>
-                    <td className="px-4 py-4"><RenewalPill tenant={t} /></td>
-                    <td className="px-4 py-4 text-right" onClick={(e) => e.stopPropagation()}><RowActions tenant={t} /></td>
-                  </tr>
-                  {isOpen && (
-                    <tr className="bg-muted/40 border-b border-border">
-                      <td colSpan={2} />
-                      <td colSpan={6} className="px-4 py-5">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4">
-                          <Detail label="License Breakdown" value={t.status === 'Pending Setup' ? 'Not provisioned' : `${t.licensesUsed} of ${t.licensesTotal} assigned`} />
-                          <Detail label="Firmware" value={t.firmware ?? 'Unknown'} flag={t.firmwareOutdated ? 'Update available' : undefined} />
-                          <Detail label="Policies" value={t.policies != null ? String(t.policies) : '—'} />
-                          <Detail label="Users" value={t.users != null ? String(t.users) : '—'} />
-                          <Detail label="Support Expiry" value={t.supportExpiry ?? '—'} flag={t.expired ? 'Expired' : undefined} flagTone="red" />
-                          <Detail label="Activation Date" value={t.activationDate} />
-                          <Detail label="Last Activity" value={t.lastActivity ?? '—'} />
-                          <ActivationKey value={t.activationKey} />
-                          <div className="flex items-end gap-2 md:col-span-3">
-                            {(t.renewalDays !== null && (t.expired || t.renewalDays <= 60)) && (
-                              <Button size="sm" className="h-8 rounded-lg gap-1.5 bg-action hover:bg-action-hover text-action-foreground">
-                                <RefreshCw className="w-3.5 h-3.5" /> Renew
-                              </Button>
-                            )}
-                            <Button variant="outline" size="sm" className="h-8 rounded-lg gap-1.5">
-                              View Details <ArrowUpRight className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
+            {rows.map((t) => (
+              <tr
+                key={t.id}
+                className="border-b border-border transition-colors cursor-pointer hover:bg-muted/60"
+                onClick={() => setModalTenant(t)}
+              >
+                <td className="px-4 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-2.5">
+                    <TenantAvatar size={32} />
+                    <span className="text-[13px] font-medium text-foreground">{t.name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-4"><StatusBadge status={t.status} /></td>
+                <td className="px-4 py-4"><TierBadge tier={t.tier} /></td>
+                <td className="px-4 py-4">
+                  {t.status === 'Pending Setup'
+                    ? <span className="text-sm text-muted-foreground">—</span>
+                    : <LicenseMeter used={t.licensesUsed} total={t.licensesTotal} compact />}
+                </td>
+                <td className="px-4 py-4"><RenewalPill tenant={t} /></td>
+                <td className="px-4 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                  <RowActions tenant={t} onViewDetails={() => setModalTenant(t)} />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
         {rows.length === 0 && (
-          <div className="px-4 py-10 text-center text-sm text-muted-foreground">No tenants match this filter.</div>
+          <div className="px-4 py-10 text-center text-sm text-muted-foreground">No tenants match your search.</div>
         )}
         <div className="px-4 py-3 border-t border-border text-xs text-muted-foreground flex items-center gap-1.5">
           <CircleCheck className="w-3.5 h-3.5 text-success" />
-          {rows.length} of {TENANTS.length} tenants shown · click a row to see full inventory &amp; licensing detail
+          {rows.length} of {TENANTS.length} tenants shown · click a row to view full detail
         </div>
       </div>
+
+      {modalTenant && (
+        <TenantDetailModal tenant={modalTenant} onClose={() => setModalTenant(null)} />
+      )}
     </div>
   );
 }

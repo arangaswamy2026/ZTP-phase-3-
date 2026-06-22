@@ -25,7 +25,7 @@ import { useTenant } from '../contexts/TenantContext';
 const mockUsers = [
   {
     id: 'usr_001',
-    name: 'victor',
+    name: 'Victor Reyes',
     email: 'victor@getbnn.com',
     roles: 'Chromebook-ITP, role-device-ownership, auth-role-august',
     deviceName: 'Victor-MacBook-Pro',
@@ -33,7 +33,7 @@ const mockUsers = [
   },
   {
     id: 'usr_002',
-    name: 'Vladyslav',
+    name: 'Vladyslav Petrov',
     email: 'vladyslav@banyansecurity.io',
     roles: 'auth-role-mohini-2feb, role-device-ownership',
     deviceName: 'Vlad-Windows-PC',
@@ -41,7 +41,7 @@ const mockUsers = [
   },
   {
     id: 'usr_003',
-    name: 'nicolas',
+    name: 'Nicolas Moreau',
     email: 'nicolas@getbnn.com',
     roles: 'role-device-ownership, auth-role-august-r...',
     deviceName: 'Nicolas-Laptop',
@@ -49,7 +49,7 @@ const mockUsers = [
   },
   {
     id: 'usr_004',
-    name: 'syed',
+    name: 'Syed Khan',
     email: 'syed@getbnn.com',
     roles: 'role-device-ownership, auth-role-august-r...',
     deviceName: '-',
@@ -57,7 +57,7 @@ const mockUsers = [
   },
   {
     id: 'usr_005',
-    name: 'suhaan',
+    name: 'Suhaan Malik',
     email: 'suhaan@getbnn.com',
     roles: 'role-device-ownership, auth-role-august-r...',
     deviceName: 'Suhaan-Desktop',
@@ -65,7 +65,7 @@ const mockUsers = [
   },
   {
     id: 'usr_006',
-    name: 'rohit',
+    name: 'Rohit Sharma',
     email: 'rohit@getbnn.com',
     roles: 'Chromebook-ITP, role-device-ownership, a...',
     deviceName: 'Rohit-Surface',
@@ -73,7 +73,7 @@ const mockUsers = [
   },
   {
     id: 'usr_007',
-    name: 'vaishnavi',
+    name: 'Vaishnavi Kawade',
     email: 'vaishnavi.kawade+group@spryiq.co',
     roles: 'auth-role-mohini-2feb, role-device-ownership',
     deviceName: 'Vaishnavi-MacBook-Air',
@@ -81,7 +81,7 @@ const mockUsers = [
   },
   {
     id: 'usr_008',
-    name: 'Sathish',
+    name: 'Sathish Kumar',
     email: 'satkumar@sonicwall.com',
     roles: 'auth-role-mohini-2feb, UnAuth-Sathish, r...',
     deviceName: 'Sathish-Dell-XPS',
@@ -89,7 +89,7 @@ const mockUsers = [
   },
   {
     id: 'usr_009',
-    name: 'Sathish',
+    name: 'Sathish Raman',
     email: 'sathish@getbnn.com',
     roles: 'auth-role-mohini-2feb, Chromebook-ITP, ...',
     deviceName: 'Sathish-Mobile',
@@ -97,7 +97,7 @@ const mockUsers = [
   },
   {
     id: 'usr_010',
-    name: 'gauri',
+    name: 'Gauri Nair',
     email: 'gauri@getbnn.com',
     roles: 'Chromebook-ITP, role-device-ownership, c...',
     deviceName: 'Gauri-ThinkPad',
@@ -105,13 +105,26 @@ const mockUsers = [
   },
   {
     id: 'usr_011',
-    name: 'dan',
+    name: 'Dan Walsh',
     email: 'dan@getbnn.com',
     roles: 'Chromebook-ITP, role-device-ownership, a...',
     deviceName: '-',
     lastLogin: '-'
   }
 ];
+
+/** Initials from a person's name: first + last initial (e.g. "Victor Reyes" → "VR"). */
+const HONORIFICS = new Set(['dr', 'mr', 'mrs', 'ms', 'mx', 'prof', 'sir']);
+function userInitials(name: string): string {
+  let parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  // Drop a leading honorific so the initials reflect the actual first + last name.
+  if (parts.length > 1 && HONORIFICS.has(parts[0].replace(/\.$/, '').toLowerCase())) {
+    parts = parts.slice(1);
+  }
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 export function IDPManagement() {
   const [isReconfiguring, setIsReconfiguring] = React.useState(false);
@@ -169,8 +182,8 @@ export function IDPManagement() {
                 <TableCell>
                     <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs">
-                                {user.name.substring(0, 2).toUpperCase()}
+                            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs font-medium">
+                                {userInitials(user.name)}
                             </AvatarFallback>
                         </Avatar>
                         <div className="font-medium text-[#1f2123]">{user.name}</div>
