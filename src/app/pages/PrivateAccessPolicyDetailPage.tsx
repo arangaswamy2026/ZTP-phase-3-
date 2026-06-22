@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   Copy,
@@ -11,6 +10,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
+import { PageHeader } from '../components/PageHeader';
 
 // Enriched SPA policy data for the detail view
 const SPA_POLICY_DETAILS: Record<string, {
@@ -188,59 +188,44 @@ export function PrivateAccessPolicyDetailPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[900px] pb-[40px]">
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/access-policies')}
-        className="flex items-center gap-[6px] text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ArrowLeft className="w-[16px] h-[16px]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-          Back to Access Policies
-        </span>
-      </button>
+      <PageHeader
+        title={details.title}
+        subtitle={details.subtitle}
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+        actions={
+          <div className="flex items-center gap-[8px]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-[6px] rounded-[8px] border-black/10"
+              onClick={() => navigate(`/private-access-policy/${policy.id}/edit`)}
+            >
+              <Edit className="w-[14px] h-[14px]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
+                Edit Policy
+              </span>
+            </Button>
+            <Button variant="outline" size="sm" className="gap-[6px] rounded-[8px] border-red-200 text-red-600 hover:bg-red-50">
+              <Trash2 className="w-[14px] h-[14px]" />
+              <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
+                Delete
+              </span>
+            </Button>
+          </div>
+        }
+      />
 
       {/* Header Card */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden">
         <div className="px-[28px] pt-[24px] pb-[20px] flex flex-col gap-[20px]">
-          {/* Badges + Actions */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[8px]">
-              <span className="inline-flex items-center rounded-full border border-[#c4b5fd] bg-[#ede9fe] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#7c3aed]">
-                Private Policy
-              </span>
-              <span className="inline-flex items-center rounded-[6px] border border-[#e5e7eb] bg-[#f3f4f6] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[10px] leading-[15px] tracking-[0.12px] text-[#6a7282]">
-                {policy.source}
-              </span>
-            </div>
-            <div className="flex items-center gap-[8px]">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-[6px] rounded-[8px] border-black/10"
-                onClick={() => navigate(`/private-access-policy/${policy.id}/edit`)}
-              >
-                <Edit className="w-[14px] h-[14px]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
-                  Edit Policy
-                </span>
-              </Button>
-              <Button variant="outline" size="sm" className="gap-[6px] rounded-[8px] border-red-200 text-red-600 hover:bg-red-50">
-                <Trash2 className="w-[14px] h-[14px]" />
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">
-                  Delete
-                </span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Title + description */}
-          <div className="flex flex-col gap-[4px]">
-            <h1 className="font-['Inter',sans-serif] font-bold text-[22px] leading-[28px] tracking-[-0.5px] text-[#101828]">
-              {details.title}
-            </h1>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
-              {details.subtitle}
-            </p>
+          {/* Badges */}
+          <div className="flex items-center gap-[8px]">
+            <span className="inline-flex items-center rounded-full border border-[#c4b5fd] bg-[#ede9fe] px-[12px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#7c3aed]">
+              Private Policy
+            </span>
+            <span className="inline-flex items-center rounded-[6px] border border-[#e5e7eb] bg-[#f3f4f6] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[10px] leading-[15px] tracking-[0.12px] text-[#6a7282]">
+              {policy.source}
+            </span>
           </div>
         </div>
       </div>

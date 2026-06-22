@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   Copy,
@@ -17,6 +16,7 @@ import {
   Ban,
 } from 'lucide-react';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
+import { PageHeader } from '../components/PageHeader';
 
 // Enriched SIA policy data for the detail view
 const SIA_POLICY_DETAILS: Record<string, {
@@ -214,16 +214,11 @@ export function InternetPolicyDetailPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/access-policies')}
-        className="flex items-center gap-[6px] text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ArrowLeft className="w-[16px] h-[16px]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-          Back to Access Policies
-        </span>
-      </button>
+      <PageHeader
+        title={policy.name}
+        subtitle={policy.description}
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+      />
 
       {/* Header Card */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden">
@@ -257,16 +252,6 @@ export function InternetPolicyDetailPage() {
                 </span>
               </Button>
             </div>
-          </div>
-
-          {/* Title + description */}
-          <div className="flex flex-col gap-[4px]">
-            <h1 className="font-['Inter',sans-serif] font-bold text-[22px] leading-[28px] tracking-[-0.5px] text-[#101828]">
-              Allow Engineering internet; block Netflix.
-            </h1>
-            <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
-              Baseline internet security and threat protection
-            </p>
           </div>
         </div>
       </div>

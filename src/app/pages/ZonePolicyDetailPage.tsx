@@ -2,8 +2,9 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { ChevronLeft, Edit2, Copy, Trash2, Shield, Laptop, Globe, AlertTriangle } from 'lucide-react';
+import { Edit2, Copy, Trash2, Shield, Laptop, Globe, AlertTriangle } from 'lucide-react';
 import { MOCK_POLICIES, type Badge as PolicyBadge } from '../components/policies/PolicyData';
+import { PageHeader } from '../components/PageHeader';
 
 // Badge renderer component
 function BadgeRenderer({ badge }: { badge: PolicyBadge }) {
@@ -47,50 +48,36 @@ export function ZonePolicyDetailPage() {
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-[900px] px-6 py-6">
-      {/* Back Button */}
-      <button 
-        onClick={() => navigate('/access-policies')}
-        className="flex items-center gap-1.5 text-[#6a7282] hover:text-[#101828] transition-colors w-fit"
-      >
-        <ChevronLeft className="w-4 h-4" />
-        <span className="font-medium text-sm">Back to Access Policies</span>
-      </button>
+      <PageHeader
+        title={policy.name}
+        subtitle={policy.description}
+        back={{ label: 'Back to Access Policies', onClick: () => navigate('/access-policies') }}
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/zone-policy/${policy.id}/edit`)}
+              className="flex items-center gap-1.5 px-3 h-8 bg-white border border-[rgba(0,0,0,0.1)] rounded-lg hover:bg-gray-50"
+            >
+              <Edit2 className="w-4 h-4" />
+              <span className="text-sm font-medium">Edit Policy</span>
+            </button>
+            <button className="flex items-center gap-1.5 px-3 h-8 bg-white border border-[#ffc9c9] rounded-lg hover:bg-[#fff5f5]">
+              <Trash2 className="w-4 h-4 text-[#e7000b]" />
+              <span className="text-sm font-medium text-[#e7000b]">Delete</span>
+            </button>
+          </div>
+        }
+      />
 
       {/* Main Header Card */}
       <div className="bg-white rounded-xl border border-[#e5e7eb] shadow-sm overflow-hidden">
         <div className="pl-7 pr-7 pt-6 pb-5 space-y-5">
-          {/* Badges and Actions Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="border border-[#f97316] rounded-full px-3.5 py-1">
-                <span className="text-xs font-medium text-[#f97316]">Zone Policy</span>
-              </div>
-              <div className="bg-[#f3f4f6] border border-[#e5e7eb] rounded-md px-2 py-0.5"><span className="text-[10px] font-medium text-[#6a7282] tracking-[0.12px]">{policy.source}</span></div>
+          {/* Badges Row */}
+          <div className="flex items-center gap-2">
+            <div className="border border-[#f97316] rounded-full px-3.5 py-1">
+              <span className="text-xs font-medium text-[#f97316]">Zone Policy</span>
             </div>
-
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => navigate(`/zone-policy/${policy.id}/edit`)}
-                className="flex items-center gap-1.5 px-3 h-8 bg-white border border-[rgba(0,0,0,0.1)] rounded-lg hover:bg-gray-50"
-              >
-                <Edit2 className="w-4 h-4" />
-                <span className="text-sm font-medium">Edit Policy</span>
-              </button>
-              <button className="flex items-center gap-1.5 px-3 h-8 bg-white border border-[#ffc9c9] rounded-lg hover:bg-[#fff5f5]">
-                <Trash2 className="w-4 h-4 text-[#e7000b]" />
-                <span className="text-sm font-medium text-[#e7000b]">Delete</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Title and Description */}
-          <div className="space-y-1">
-            <h1 className="text-[22px] font-bold text-[#101828] leading-7 tracking-[-0.5px]">
-              Enable IoT devices to access the internet.
-            </h1>
-            <p className="text-sm text-[#6a7282] leading-5">
-              Allow outbound traffic from Employee Zone
-            </p>
+            <div className="bg-[#f3f4f6] border border-[#e5e7eb] rounded-md px-2 py-0.5"><span className="text-[10px] font-medium text-[#6a7282] tracking-[0.12px]">{policy.source}</span></div>
           </div>
         </div>
       </div>
