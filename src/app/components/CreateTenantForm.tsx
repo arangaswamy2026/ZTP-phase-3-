@@ -88,7 +88,7 @@ export function CreateTenantForm({ onBack, onCreate }: CreateTenantFormProps) {
         </div>
         
         <div className="text-center">
-          <h1 className="font-['Inter'] font-medium text-[30px] leading-[45px] tracking-[0.3955px] text-[#101828] mb-2">
+          <h1 className="font-['Inter'] font-bold text-[30px] leading-[45px] tracking-[0.3955px] text-[#101828] mb-2">
             Create New Tenant
           </h1>
           <p className="font-['Inter'] font-normal text-[16px] leading-[24px] tracking-[-0.3125px] text-[#4a5565]">

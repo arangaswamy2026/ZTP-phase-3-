@@ -130,7 +130,7 @@ export function ZoneConfiguration({ onContinue, onBack, onCancel, availableInter
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">Zones</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Zones</h2>
           <p className="text-sm text-gray-500">Configure security zones and inspection services.</p>
         </div>
         

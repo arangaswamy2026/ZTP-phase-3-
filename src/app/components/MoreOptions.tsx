@@ -61,7 +61,7 @@ export function MoreOptions({ onContinue, onCancel }: MoreOptionsProps) {
                 <Users className="h-6 w-6 text-blue-700" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Identity & SSO</h3>
+                <h3 className="font-bold text-gray-900">Identity & SSO</h3>
                 <p className="text-sm text-gray-600">
                   Configure Single Sign-On and authentication providers
                 </p>
@@ -81,7 +81,7 @@ export function MoreOptions({ onContinue, onCancel }: MoreOptionsProps) {
                 <Settings className="h-6 w-6 text-purple-700" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Advanced Networking</h3>
+                <h3 className="font-bold text-gray-900">Advanced Networking</h3>
                 <p className="text-sm text-gray-600">
                   DNS, NAT, Port Forwarding, and WAN Failover
                 </p>

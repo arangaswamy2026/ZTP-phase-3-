@@ -302,7 +302,7 @@ export function PoliciesView() {
 
       {/* Flow Visualization */}
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-gray-900">Traffic Flow</h4>
+        <h4 className="text-sm font-bold text-gray-900">Traffic Flow</h4>
         <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-white">
             <div className="flex flex-col items-center gap-1 text-center w-1/3">
                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
@@ -331,7 +331,7 @@ export function PoliciesView() {
 
       {/* Detailed Fields */}
       <div className="space-y-4">
-         <h4 className="text-sm font-semibold text-gray-900">Policy Details</h4>
+         <h4 className="text-sm font-bold text-gray-900">Policy Details</h4>
          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="p-3 bg-gray-50 rounded-md">
                <dt className="text-xs font-medium text-gray-500 uppercase">Source</dt>

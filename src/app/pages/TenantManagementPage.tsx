@@ -8,11 +8,22 @@ import {
   Clock,
   Copy,
   X,
+  MoreHorizontal,
+  Download,
+  RefreshCw,
+  SlidersHorizontal,
+  Users,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { TenantAvatar } from '../components/TenantAvatar';
 import { StatusBadge as DSStatusBadge } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 
 // ── Unified tenant data (merges activation + inventory/licensing) ─────────────────
 
@@ -40,7 +51,7 @@ interface Tenant {
 
 const TENANTS: Tenant[] = [
   {
-    id: '1', name: 'Acme Corporation', status: 'Active', tier: 'Premier',
+    id: '1', name: 'Acme Corporation', status: 'Active', tier: 'Advanced',
     licensesUsed: 42, licensesTotal: 50, policies: 8, users: 6,
     supportExpiry: '09 Jul 2026', renewalDays: 35, firmware: '7.1.2',
     activationDate: '14 Oct 2026', lastActivity: '2 hrs ago', activationKey: 'ACME-9F2K-7QX4-7H8J',
@@ -160,7 +171,78 @@ function ColHead({ children, align = 'left', className = '' }: { children: React
   );
 }
 
+function DownloadUnifiedClientModal({ tenant, onClose }: { tenant: Tenant; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText('INV-8829-XJ4').catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+      <div
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between px-6 pt-6 pb-4">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Download Unified Client</h2>
+            <p className="text-sm text-muted-foreground mt-1">Share these details with your users to get them started.</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        {/* Body */}
+        <div className="px-6 pb-6 space-y-5">
+          {/* Invite section */}
+          <div className="bg-muted/50 border border-border rounded-xl p-5">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="mt-0.5 text-action">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-action">Invite Users to Download Client App</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Share these following details with the users via email</div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1.5">Invite Code</div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-9 bg-background border border-input rounded-lg px-3 flex items-center text-sm font-mono text-foreground">
+                    INV-8829-XJ4
+                  </div>
+                  <button
+                    onClick={copy}
+                    className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-input bg-background text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  >
+                    {copied ? <CircleCheck className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Download button */}
+          <Button className="w-full gap-2">
+            <Download className="w-4 h-4" />
+            Download Client Installer
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RowActions({ tenant, onViewDetails }: { tenant: Tenant; onViewDetails: () => void }) {
+  const [showDownload, setShowDownload] = useState(false);
+
   if (tenant.status === 'Pending Setup') {
     return (
       <Button variant="outline" size="sm" className="h-8 rounded-lg gap-1.5">
@@ -169,9 +251,32 @@ function RowActions({ tenant, onViewDetails }: { tenant: Tenant; onViewDetails: 
     );
   }
   return (
-    <Button variant="outline" size="sm" className="h-8 rounded-lg" onClick={onViewDetails}>
-      View Details
-    </Button>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="inline-flex items-center justify-center w-8 h-8 rounded-[10px] border border-black/10 bg-transparent text-foreground hover:bg-[var(--color-surface-subtle)] transition-colors cursor-pointer">
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={onViewDetails} className="gap-2">
+            <SlidersHorizontal className="w-4 h-4" />
+            View Details
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setShowDownload(true)} className="gap-2">
+            <Download className="w-4 h-4" />
+            Download Unified Client
+          </DropdownMenuItem>
+          <DropdownMenuItem className="gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Renew
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {showDownload && (
+        <DownloadUnifiedClientModal tenant={tenant} onClose={() => setShowDownload(false)} />
+      )}
+    </>
   );
 }
 
@@ -204,7 +309,7 @@ function TenantDetailModal({ tenant, onClose }: { tenant: Tenant; onClose: () =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
-        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-2xl mx-4 overflow-hidden"
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-[1000px] mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -229,35 +334,31 @@ function TenantDetailModal({ tenant, onClose }: { tenant: Tenant; onClose: () =>
             </button>
           </div>
         </div>
-        {/* Body */}
-        <div className="px-8 py-6 space-y-6">
+        {/* Body — sections stacked vertically */}
+        <div className="divide-y divide-border border-t border-border">
           {/* Licensing & Usage */}
-          <div>
-            <h3 className="text-sm font-bold text-foreground mb-3">Licensing &amp; Usage</h3>
-            <div className="grid grid-cols-3 gap-x-10">
+          <div className="px-8 py-6">
+            <h3 className="text-sm font-bold text-foreground mb-4">Licensing &amp; Usage</h3>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
               <Detail label="License Breakdown" value={tenant.status === 'Pending Setup' ? 'Not provisioned' : `${tenant.licensesUsed} of ${tenant.licensesTotal} assigned`} />
               <Detail label="Policies" value={tenant.policies != null ? String(tenant.policies) : '—'} />
               <Detail label="Users" value={tenant.users != null ? String(tenant.users) : '—'} />
             </div>
           </div>
 
-          <div className="border-t border-border" />
-
           {/* Health & Compliance */}
-          <div>
-            <h3 className="text-sm font-bold text-foreground mb-3">Health &amp; Compliance</h3>
-            <div className="grid grid-cols-2 gap-x-10">
+          <div className="px-8 py-6">
+            <h3 className="text-sm font-bold text-foreground mb-4">Health &amp; Compliance</h3>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
               <Detail label="Firmware" value={tenant.firmware ?? 'Unknown'} flag={tenant.firmwareOutdated ? 'Update available' : undefined} />
               <Detail label="Support Expiry" value={tenant.supportExpiry ?? '—'} flag={tenant.expired ? 'Expired' : undefined} flagTone="red" />
             </div>
           </div>
 
-          <div className="border-t border-border" />
-
           {/* Account */}
-          <div>
-            <h3 className="text-sm font-bold text-foreground mb-3">Account</h3>
-            <div className="grid grid-cols-3 gap-x-10">
+          <div className="px-8 py-6">
+            <h3 className="text-sm font-bold text-foreground mb-4">Account</h3>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
               <Detail label="Activation Date" value={tenant.activationDate} />
               <Detail label="Last Activity" value={tenant.lastActivity ?? '—'} />
               <ActivationKey value={tenant.activationKey} />

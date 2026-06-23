@@ -1,30 +1,29 @@
 import { useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
-import {
-  Download,
-  Users,
-  ArrowRight,
-} from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { TenantAvatar } from '../components/TenantAvatar';
-import { SeverityChip, StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { StatusBadge, DataTable, THead, TH, TR, TD, DashboardWidget } from '../components/ds';
+import type { WidgetPeriod } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
-
-// Uniform widget height — chosen to fit the content of the tallest widgets
-// (threat breakdown, domains table, tenant table) without inner scrolling.
-const WIDGET_H = 'h-[400px]';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 // Severity bar colors reference the semantic tokens so a recolor is a one-token
 // edit. CRITICAL → error, HIGH/MEDIUM → warning.
 const THREAT_BREAKDOWN = [
-  { label: 'Unauthorized Access Attempt',      count: 584, severity: 'HIGH',     color: 'var(--warning)' },
-  { label: 'Non-Compliant Device Blocked',     count: 449, severity: 'MEDIUM',   color: 'var(--warning)' },
-  { label: 'C2 Attempts',                      count: 51,  severity: 'CRITICAL', color: 'var(--destructive)' },
-  { label: 'Port Scanning / Lateral Movement', count: 32,  severity: 'CRITICAL', color: 'var(--destructive)' },
-  { label: 'DNS-Based Threat',                 count: 201, severity: 'MEDIUM',   color: 'var(--warning)' },
-  { label: 'MFA Challenge Failed / Bypassed',  count: 229, severity: 'HIGH',     color: 'var(--warning)' },
-  { label: 'Geo / Location-Based Block',       count: 184, severity: 'MEDIUM',   color: 'var(--warning)' },
+  { label: 'Unauthorized Access Attempt',      count: 584 },
+  { label: 'Non-Compliant Device Blocked',     count: 449 },
+  { label: 'C2 Attempts',                      count: 51  },
+  { label: 'Port Scanning / Lateral Movement', count: 32  },
+  { label: 'DNS-Based Threat',                 count: 201 },
+  { label: 'MFA Challenge Failed / Bypassed',  count: 229 },
+  { label: 'Geo / Location-Based Block',       count: 184 },
+];
+
+const TENANT_ACTIONS = [
+  { name: 'Global Services LLC',      allowed: 4_364_951, blocked: 764_051 },
+  { name: 'Enterprise Solutions',     allowed: 3_528_455, blocked: 673_285 },
+  { name: 'Acme Corporation',         allowed: 2_469_112, blocked: 615_346 },
+  { name: 'Riverside Dental Office',  allowed:   987_816, blocked: 262_584 },
 ];
 
 // Deterministic 30-day daily web-traffic series per tenant (LCG-seeded so the
@@ -70,74 +69,10 @@ const TENANT_BREAKDOWN = [
 
 // ── Sub-components ──────────────────────────────────────────────────────────────
 
-// Uniform widget shell — every dashboard widget uses the same fixed height so
-// the grid stays even and content fits without scrolling.
-function Widget({
-  title,
-  sub,
-  link,
-  children,
-  className = '',
-  bodyClass = '',
-}: {
-  title?: string;
-  sub?: string;
-  link?: string;
-  children: ReactNode;
-  className?: string;
-  bodyClass?: string;
-}) {
-  return (
-    <div className={`bg-card border rounded-2xl shadow-sm flex flex-col overflow-hidden ${WIDGET_H} ${className}`}>
-      {(title || link) && (
-        <div className="flex items-center justify-between gap-2 px-5 pt-4 pb-3 shrink-0">
-          <div className="text-sm font-medium text-foreground">
-            {title}
-            {sub && <span className="ml-1.5 text-xs font-normal text-muted-foreground">{sub}</span>}
-          </div>
-          {link && (
-            <button className="text-sm font-medium text-action hover:underline inline-flex items-center gap-1 shrink-0">
-              {link} <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-      )}
-      <div className={`flex-1 min-h-0 ${bodyClass}`}>{children}</div>
-    </div>
-  );
-}
-
-const SEV_LEVEL: Record<string, 'crit' | 'high' | 'med'> = {
-  CRITICAL: 'crit',
-  HIGH: 'high',
-  MEDIUM: 'med',
-};
-
 function TrendCell({ trend, dir }: { trend: string; dir: string }) {
   if (dir === 'up')   return <span className="text-xs font-semibold text-destructive">▲ {trend}</span>;
   if (dir === 'down') return <span className="text-xs font-semibold text-success">▼ {trend}</span>;
   return <span className="text-xs font-medium text-muted-foreground">— {trend}</span>;
-}
-
-function DonutChart() {
-  // 89% allowed (success), 11% blocked (error). Circumference for r=40 ≈ 251.33.
-  const r = 40;
-  const c = 2 * Math.PI * r;
-  const allowed = 0.89;
-  return (
-    <svg width="96" height="96" viewBox="0 0 96 96" className="shrink-0">
-      <circle cx="48" cy="48" r={r} fill="none" stroke="var(--destructive)" strokeWidth="10" />
-      <circle
-        cx="48" cy="48" r={r} fill="none" stroke="var(--success)" strokeWidth="10"
-        strokeDasharray={`${c * allowed} ${c}`}
-        strokeLinecap="round"
-        transform="rotate(-90 48 48)"
-      />
-      <text x="48" y="53" textAnchor="middle" className="fill-foreground" style={{ fontSize: 18, fontWeight: 700 }}>
-        89%
-      </text>
-    </svg>
-  );
 }
 
 function fmtK(n: number): string {
@@ -255,154 +190,201 @@ function TrafficLineChart() {
 // ── Page ────────────────────────────────────────────────────────────────────────
 
 export function MspDashboardPage() {
+  const navigate = useNavigate();
   const maxThreat = Math.max(...THREAT_BREAKDOWN.map((t) => t.count));
+  const [trafficPeriod, setTrafficPeriod] = useState<WidgetPeriod>('30d');
+  const [threatPeriod, setThreatPeriod] = useState<WidgetPeriod>('30d');
+  const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('30d');
+  const [actionsPeriod, setActionsPeriod] = useState<WidgetPeriod>('30d');
+  const [tenantPeriod, setTenantPeriod] = useState<WidgetPeriod>('30d');
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header — title left, Active Tenants summary auto-spaced to the right */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <PageHeader title="MSP Dashboard" />
-        <div className="flex items-center gap-3 bg-card border rounded-2xl shadow-sm px-5 py-3 shrink-0">
-          <div className="size-10 rounded-2xl bg-muted flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 text-muted-foreground" />
-          </div>
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Active Tenants</div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-semibold text-foreground leading-none">4</span>
-              <span className="text-sm font-medium text-muted-foreground">/ 5</span>
-            </div>
-          </div>
-          <div className="text-xs text-muted-foreground border-l border-border pl-3">1 pending setup</div>
-        </div>
-      </div>
+      <PageHeader title="Dashboard" />
 
-      {/* Uniform widget grid — every widget shares the same width & height */}
+      {/* Uniform widget grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Web Traffic Trend */}
-        <Widget title="Web Traffic Trend" sub="· requests / day · last 30 days">
+        <DashboardWidget
+          title="Web Traffic Trend"
+          sub="· requests / day"
+          period={trafficPeriod}
+          onPeriodChange={setTrafficPeriod}
+          className="h-[400px]"
+        >
           <TrafficLineChart />
-        </Widget>
+        </DashboardWidget>
 
         {/* Blocked Threats */}
-        <Widget title="Blocked Threats" sub="· by type · all tenants" link="View all">
+        <DashboardWidget
+          title="Blocked Threats"
+          period={threatPeriod}
+          onPeriodChange={setThreatPeriod}
+          onViewAll={() => navigate('/blocked-threats')}
+          className="h-[400px]"
+        >
           <div className="h-full overflow-auto px-5 pb-5">
             <div className="space-y-3">
               {THREAT_BREAKDOWN.map((t) => (
                 <div key={t.label} className="flex items-center gap-3">
                   <span className="text-xs text-foreground w-48 shrink-0 leading-snug">{t.label}</span>
                   <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${Math.round((t.count / maxThreat) * 100)}%`, background: t.color }} />
+                    <div className="h-full rounded-full bg-muted-foreground/50" style={{ width: `${Math.round((t.count / maxThreat) * 100)}%` }} />
                   </div>
                   <span className="text-xs font-semibold text-foreground w-8 text-right tabular-nums">{t.count}</span>
-                  <SeverityChip level={SEV_LEVEL[t.severity]} className="w-16 justify-center">{t.severity}</SeverityChip>
                 </div>
               ))}
             </div>
           </div>
-        </Widget>
+        </DashboardWidget>
 
         {/* Top Domains & Traffic */}
-        <Widget title="Top Domains & Traffic" link="View all domains" bodyClass="overflow-auto">
+        <DashboardWidget
+          title="Top Domains & Traffic"
+          period={domainsPeriod}
+          onPeriodChange={setDomainsPeriod}
+          onViewAll={() => {}}
+          viewAllLabel="View all domains"
+          bodyClass="overflow-auto"
+          className="h-[400px]"
+        >
           <DataTable>
             <THead className="sticky top-0">
               <tr>
-                {['Domain / Destination', 'Requests', 'Tenants', 'Trend'].map((h) => (
-                  <TH key={h} className="px-5">{h}</TH>
+                {['Domain / Destination', 'Type', 'Requests'].map((h) => (
+                  <TH key={h} className="px-4">{h}</TH>
                 ))}
               </tr>
             </THead>
             <tbody>
               {TOP_DOMAINS.map((d) => (
                 <TR key={d.domain}>
-                  <TD className="px-5">
-                    <span className="text-[13px] text-foreground">{d.domain}</span>
-                    <StatusBadge variant={d.badge === 'Shadow IT' ? 'warning' : 'success'} className="ml-2">{d.badge}</StatusBadge>
+                  <TD className="px-4">
+                    <span className="text-[13px] text-foreground whitespace-nowrap">{d.domain}</span>
                   </TD>
-                  <TD className="px-5 tabular-nums">{d.requests}</TD>
-                  <TD className="px-5">{d.tenants}</TD>
-                  <TD className="px-5"><TrendCell trend={d.trend} dir={d.dir} /></TD>
+                  <TD className="px-4">
+                    <StatusBadge variant={d.badge === 'Shadow IT' ? 'warning' : 'success'}>{d.badge}</StatusBadge>
+                  </TD>
+                  <TD className="px-4 tabular-nums whitespace-nowrap">
+                    <span className="text-[13px] text-foreground">{d.requests}</span>
+                    {d.dir !== 'flat' && (
+                      <span className={`ml-2 text-xs font-semibold ${d.dir === 'up' ? 'text-destructive' : 'text-success'}`}>
+                        {d.dir === 'up' ? '▲' : '▼'} {d.trend}
+                      </span>
+                    )}
+                    {d.dir === 'flat' && (
+                      <span className="ml-2 text-xs text-muted-foreground">— stable</span>
+                    )}
+                  </TD>
                 </TR>
               ))}
             </tbody>
           </DataTable>
-        </Widget>
+        </DashboardWidget>
 
         {/* Actions Breakdown */}
-        <Widget title="Actions Breakdown" sub="· 30d">
-          <div className="h-full flex flex-col items-center justify-center gap-5 px-5 pb-5">
-            <DonutChart />
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2.5 h-2.5 rounded-sm bg-success" />
-                <span className="font-semibold text-foreground">13.7M</span>
-                <span className="text-muted-foreground">Allowed (89%)</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-2.5 h-2.5 rounded-sm bg-destructive" />
-                <span className="font-semibold text-foreground">1.73M</span>
-                <span className="text-muted-foreground">Blocked (11%)</span>
-              </div>
+        <DashboardWidget
+          title="Actions Breakdown"
+          period={actionsPeriod}
+          onPeriodChange={setActionsPeriod}
+          className="h-[400px]"
+        >
+          <div className="h-full flex flex-col justify-start gap-4 px-5 pb-5">
+            {/* Legend */}
+            <div className="flex items-center gap-4 shrink-0">
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="w-3 h-2 rounded-sm" style={{ background: '#22c55e' }} /> Allowed
+              </span>
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="w-3 h-2 rounded-sm" style={{ background: '#ef4444' }} /> Blocked
+              </span>
+            </div>
+            {/* Per-tenant rows — two-column: name | bar + labels */}
+            <div className="space-y-3.5">
+              {TENANT_ACTIONS.map((t) => {
+                const total = t.allowed + t.blocked;
+                const allowedPct = (t.allowed / total) * 100;
+                const blockedPct = (t.blocked / total) * 100;
+                return (
+                  <div key={t.name} className="flex items-center gap-4">
+                    {/* Tenant name column */}
+                    <span className="text-xs font-medium text-foreground w-36 shrink-0 leading-snug">{t.name}</span>
+                    {/* Bar column with hover tooltip */}
+                    <div className="flex-1 relative group">
+                      <div className="flex h-2.5 rounded-full overflow-hidden w-full gap-px cursor-default">
+                        <div style={{ width: `${allowedPct}%`, background: '#22c55e' }} className="rounded-l-full" />
+                        <div style={{ width: `${blockedPct}%`, background: '#ef4444' }} className="rounded-r-full" />
+                      </div>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col items-start bg-card border rounded-lg shadow-lg px-3 py-2 pointer-events-none z-20 whitespace-nowrap gap-1">
+                        <div className="flex items-center gap-2 text-[11px]">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: '#22c55e' }} />
+                          <span className="text-muted-foreground">Allowed</span>
+                          <span className="font-semibold text-foreground tabular-nums">{allowedPct.toFixed(0)}%</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px]">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: '#ef4444' }} />
+                          <span className="text-muted-foreground">Blocked</span>
+                          <span className="font-semibold tabular-nums" style={{ color: '#ef4444' }}>{blockedPct.toFixed(0)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </Widget>
+        </DashboardWidget>
 
-        {/* Tenant Breakdown — full width, same height */}
-        <Widget title="Tenant Breakdown" link="Manage tenants" className="lg:col-span-2" bodyClass="overflow-auto">
+        {/* Tenant Breakdown — full width */}
+        <DashboardWidget
+          title="Tenant Breakdown"
+          period={tenantPeriod}
+          onPeriodChange={setTenantPeriod}
+          onViewAll={() => {}}
+          viewAllLabel="Manage tenants"
+          bodyClass="overflow-auto"
+          className="h-[400px] lg:col-span-2"
+        >
           <DataTable>
             <THead className="sticky top-0">
               <tr>
                 {['Tenant', 'Status', 'Endpoints', 'Policies', 'Web Traffic (30D)', 'Threats Blocked', 'Last Activity', ''].map((h, i) => (
-                  <TH key={i} className="px-5">{h}</TH>
+                  <TH key={i} className="px-3">{h}</TH>
                 ))}
               </tr>
             </THead>
             <tbody>
               {TENANT_BREAKDOWN.map((t) => (
                 <TR key={t.name}>
-                  <TD className="px-5">
-                    <div className="flex items-center gap-2.5">
-                      <TenantAvatar size={32} />
+                  <TD className="px-3">
+                    <div className="flex items-center gap-2 whitespace-nowrap">
+                      <TenantAvatar size={28} />
                       <span className="text-[13px] font-medium text-foreground">{t.name}</span>
                     </div>
                   </TD>
-                  <TD className="px-5">
+                  <TD className="px-3">
                     <StatusBadge variant={t.status === 'Active' ? 'success' : 'warning'} dot>
                       {t.status}
                     </StatusBadge>
                   </TD>
-                  <TD className="px-5">{t.endpoints}</TD>
-                  <TD className="px-5">{t.policies}</TD>
-                  <TD className="px-5 tabular-nums">{t.traffic}</TD>
-                  <TD className="px-5 tabular-nums">{t.threats}</TD>
-                  <TD className="px-5 text-muted-foreground">{t.activity}</TD>
-                  <TD className="px-5 text-right">
-                    <button className="text-sm font-medium text-action hover:underline inline-flex items-center gap-1">
-                      {t.action} {t.action === 'View' && <ArrowRight className="w-3.5 h-3.5" />}
+                  <TD className="px-3 tabular-nums">{t.endpoints}</TD>
+                  <TD className="px-3 tabular-nums">{t.policies}</TD>
+                  <TD className="px-3 tabular-nums">{t.traffic}</TD>
+                  <TD className="px-3 tabular-nums">{t.threats}</TD>
+                  <TD className="px-3 text-muted-foreground whitespace-nowrap">{t.activity}</TD>
+                  <TD className="px-3 text-right">
+                    <button className="text-sm font-medium text-action hover:underline whitespace-nowrap">
+                      {t.action}
                     </button>
                   </TD>
                 </TR>
               ))}
             </tbody>
           </DataTable>
-        </Widget>
+        </DashboardWidget>
       </div>
 
-      {/* Download Unified Client — moved to footer */}
-      <div className="bg-card border rounded-2xl shadow-sm px-5 py-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="size-10 rounded-2xl bg-muted flex items-center justify-center shrink-0">
-            <Download className="w-5 h-5 text-muted-foreground" />
-          </div>
-          <div>
-            <div className="text-sm font-medium text-foreground">Download Unified Client</div>
-            <div className="text-xs text-muted-foreground mt-0.5">Deploy the unified security agent to all enabled tenants to ensure full zero trust compliance.</div>
-          </div>
-        </div>
-        <button className="h-9 px-4 text-sm font-medium border rounded-lg bg-card hover:bg-muted text-foreground transition-colors whitespace-nowrap">
-          View Details
-        </button>
-      </div>
     </div>
   );
 }

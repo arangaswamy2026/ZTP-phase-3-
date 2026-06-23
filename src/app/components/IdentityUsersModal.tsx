@@ -86,7 +86,7 @@ export function IdentityUsersModal({ isOpen, onClose, onSave }: IdentityUsersMod
           {selectedMethod === 'local' ? (
             <div className="space-y-6">
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <h3 className="text-lg font-medium text-gray-900">Invite Users</h3>
+                <h3 className="text-lg font-bold text-gray-900">Invite Users</h3>
                 
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -139,7 +139,7 @@ export function IdentityUsersModal({ isOpen, onClose, onSave }: IdentityUsersMod
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-gray-900">User List</h3>
+                  <h3 className="text-base font-bold text-gray-900">User List</h3>
                   <span className="text-xs text-gray-500">Page 1 of 1</span>
                 </div>
                 

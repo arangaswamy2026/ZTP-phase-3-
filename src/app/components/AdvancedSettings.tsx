@@ -52,7 +52,7 @@ export function AdvancedSettings() {
           <TabsContent value="device" className="p-6 space-y-8">
             {/* General Section */}
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">General</h3>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">General</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
                 <div className="flex items-center gap-4">
                   <Label className="w-32 text-right text-gray-600">Name</Label>
@@ -69,7 +69,7 @@ export function AdvancedSettings() {
 
             {/* Administrator Name Section */}
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Administrator Name</h3>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Administrator Name</h3>
               <div className="flex items-center gap-4 max-w-4xl">
                 <Label className="w-32 text-right text-gray-600">Administrator Login Name</Label>
                 <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export function AdvancedSettings() {
 
             {/* Time Settings Section */}
             <section>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Time Settings</h3>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Time Settings</h3>
               <div className="space-y-4 max-w-4xl">
                 <div className="flex items-center gap-4">
                   <Label className="w-64 text-right text-gray-600">Set time automatically using NTP</Label>

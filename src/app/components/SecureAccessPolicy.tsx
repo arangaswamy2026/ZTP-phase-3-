@@ -67,7 +67,7 @@ function AccessActionCard({ type, selected, onClick }: AccessActionCardProps) {
         ) : (
           <XCircle className={`w-[24px] h-[24px] ${selected ? 'text-[#d4183d]' : 'text-[#6a7282]'}`} />
         )}
-        <span className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">
+        <span className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">
           {isAllow ? 'Allow' : 'Block'}
         </span>
       </div>
@@ -356,7 +356,7 @@ function TrustFactorCard({ icon: Icon, title, description, trustLevel, enabled, 
             <Icon className={`w-[18px] h-[18px] ${enabled ? 'text-white' : 'text-[#6a7282]'}`} />
           </div>
           <div className="flex flex-col gap-[4px]">
-            <h3 className="font-['Inter',sans-serif] font-semibold text-[15px] leading-[20px] text-[#101828]">
+            <h3 className="font-['Inter',sans-serif] font-bold text-[15px] leading-[20px] text-[#101828]">
               {title}
             </h3>
             <Badge className={`${levelColors[trustLevel]} hover:${levelColors[trustLevel]} w-fit border-none text-[11px] px-[8px] py-[2px]`}>
@@ -656,7 +656,7 @@ export function SecureAccessPolicy() {
       {/* 3. Action (Segmented Control) */}
       <div className="flex flex-col gap-[16px]">
         <div className="flex flex-col gap-[4px]">
-          <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">
+          <h2 className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">
             Action
           </h2>
         </div>
@@ -669,7 +669,7 @@ export function SecureAccessPolicy() {
       {/* FROM (Source) */}
       <div className="flex flex-col gap-[16px] flex-1 min-w-0">
         <div className="flex flex-col gap-[4px]">
-          <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">
+          <h2 className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">
             Source
           </h2>
           <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
@@ -768,7 +768,7 @@ export function SecureAccessPolicy() {
       {/* 5. Destination */}
       <div className="flex flex-col gap-[16px] flex-1 min-w-0">
         <div className="flex flex-col gap-[4px]">
-          <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">
+          <h2 className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">
             Destination
           </h2>
           <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
@@ -891,7 +891,7 @@ export function SecureAccessPolicy() {
       {/* 6. Device Trust */}
       <div className="flex flex-col gap-[16px]">
         <div className="flex flex-col gap-[4px]">
-          <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">Device Trust</h2>
+          <h2 className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">Device Trust</h2>
           <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
             Select the minimum trust level required. If a device's trust factors are not satisfied, the consequence shown on each card applies.
           </p>
@@ -1057,7 +1057,7 @@ export function SecureAccessPolicy() {
       {/* 7. Trust Profile */}
       <div className="flex flex-col gap-[16px]">
         <div className="flex flex-col gap-[4px]">
-          <h2 className="font-['Inter',sans-serif] font-semibold text-[18px] leading-[24px] text-[#101828]">
+          <h2 className="font-['Inter',sans-serif] font-bold text-[18px] leading-[24px] text-[#101828]">
             Trust Profile
           </h2>
           <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">

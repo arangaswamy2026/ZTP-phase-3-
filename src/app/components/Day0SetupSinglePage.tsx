@@ -456,7 +456,7 @@ export function Day0SetupSinglePage({ onComplete, onCancel, activeView = 'single
         <div className="bg-white border rounded-lg p-6 animate-in fade-in slide-in-from-top-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Configuration Validation</h3>
+              <h3 className="text-lg font-bold text-gray-900">Configuration Validation</h3>
               <p className="text-sm text-gray-500">
                 Validate your configuration before deploying to the device.
               </p>

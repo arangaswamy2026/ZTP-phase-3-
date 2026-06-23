@@ -311,7 +311,7 @@ export function PolicyBuilder({ policyId, onBack, onSave }: PolicyBuilderProps) 
                  <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
                     <Users className="h-5 w-5" />
                  </div>
-                 <h2 className="font-semibold text-gray-900">1. Access Intent</h2>
+                 <h2 className="font-bold text-gray-900">1. Access Intent</h2>
               </div>
               <div className="text-sm font-medium text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                  {getIntentSentence()}
@@ -380,7 +380,7 @@ export function PolicyBuilder({ policyId, onBack, onSave }: PolicyBuilderProps) 
                  <div className="bg-green-100 p-2 rounded-lg text-green-700">
                     <Shield className="h-5 w-5" />
                  </div>
-                 <h2 className="font-semibold text-gray-900">2. Trust Conditions</h2>
+                 <h2 className="font-bold text-gray-900">2. Trust Conditions</h2>
               </div>
               {trustValidationFailed && (
                   <span className="text-sm text-amber-600 font-medium flex items-center gap-1">
@@ -463,7 +463,7 @@ export function PolicyBuilder({ policyId, onBack, onSave }: PolicyBuilderProps) 
                  <div className="bg-purple-100 p-2 rounded-lg text-purple-700">
                     <Server className="h-5 w-5" />
                  </div>
-                 <h2 className="font-semibold text-gray-900">3. Enforcement & Scope</h2>
+                 <h2 className="font-bold text-gray-900">3. Enforcement & Scope</h2>
               </div>
            </div>
 
@@ -525,7 +525,7 @@ export function PolicyBuilder({ policyId, onBack, onSave }: PolicyBuilderProps) 
                  <div className="bg-orange-100 p-2 rounded-lg text-orange-700">
                     <Lock className="h-5 w-5" />
                  </div>
-                 <h2 className="font-semibold text-gray-900">4. Security Controls</h2>
+                 <h2 className="font-bold text-gray-900">4. Security Controls</h2>
               </div>
            </div>
 

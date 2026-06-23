@@ -168,148 +168,92 @@ function SidebarVariant({ showOnboarding, onDismiss, onAdvancedSettings }: { sho
 }
 
 // ----------------------------------------------------------------------
-// Shared Summary Cards (Refactored for "Service Health")
+// Shared Summary Cards — composed card patterns from design system
 // ----------------------------------------------------------------------
-const summaryData = [
-  {
-    title: 'ZTC Health',
-    value: 'Healthy',
-    subtitle: 'All systems operational',
-    positive: true,
-    icon: Activity,
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
-    type: 'health'
-  },
-  {
-    title: 'Web Activity',
-    icon: Globe,
-    color: 'text-[#0066CC]',
-    bgColor: 'bg-blue-50',
-    type: 'activity',
-    stats: [
-      { label: 'Allowed', value: '3,084,358', change: '+32%' },
-      { label: 'Non-Compliance Blocks', value: '82,487', change: '+18,690%' }
-    ]
-  },
-  {
-    title: 'Policy Coverage',
-    value: '3',
-    subtitle: 'Policies enforced',
-    icon: Shield,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    type: 'stat'
-  },
-  {
-    title: 'User Sessions',
-    value: '7',
-    subtitle: '5 Active now',
-    change: '+5%',
-    positive: true,
-    icon: Users,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    type: 'stat'
-  },
-];
-
 function SummaryCards() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {/* Service Health */}
-      <Card className="p-6 rounded-lg shadow-sm border-gray-200 flex flex-col h-full">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-lg bg-green-50">
+
+      {/* Service Health — status-list card */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-5 h-5 text-green-600" />
           </div>
-          <h3 className="text-base font-semibold text-gray-900">Service Health</h3>
-        </div>
-        <div className="flex-1 flex flex-col">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">ZT Connector</span>
-              <span className="text-sm text-green-600 font-medium">Online</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Cloud connectivity</span>
-              <span className="text-sm text-green-600 font-medium">Connected</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900">Global edge network</span>
-              <span className="text-sm text-green-600 font-medium">Online</span>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Web Traffic */}
-      <Card className="p-6 rounded-lg shadow-sm border-gray-200 flex flex-col h-full">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-lg bg-blue-50">
-            <Globe className="w-5 h-5 text-[#0066CC]" />
-          </div>
-          <h3 className="text-base font-semibold text-gray-900">
-            Web traffic <span className="text-gray-400 font-normal text-sm ml-2">Last 30 days</span>
-          </h3>
-        </div>
-        <div className="space-y-6">
-          <div>
-            <div className="text-sm text-gray-500 mb-1">Allowed</div>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-gray-900 tracking-tight">3,084,358</span>
-              <div className="flex items-center text-xs font-medium bg-gray-50 px-1.5 py-0.5 rounded text-gray-900">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +32%
-              </div>
-            </div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 mb-1">Non-Compliance Blocks</div>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-gray-900 tracking-tight">82,487</span>
-              <div className="flex items-center text-xs font-medium bg-gray-50 px-1.5 py-0.5 rounded text-gray-900">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +18,690%
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Policies */}
-      <Card className="p-6 rounded-lg shadow-sm border-gray-200 flex flex-col h-full">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-lg bg-purple-50">
-            <Shield className="w-5 h-5 text-purple-600" />
-          </div>
-          <h3 className="text-base font-semibold text-gray-900">Policies</h3>
+          <p className="text-base font-semibold text-gray-900 leading-tight m-0">Service Health</p>
         </div>
         <div>
-          <div className="text-sm text-gray-500 mb-1">Coverage</div>
-          <span className="text-2xl font-bold text-gray-900 tracking-tight">3</span>
+          {[
+            { label: 'ZT Connector', value: 'Online' },
+            { label: 'Cloud connectivity', value: 'Connected' },
+            { label: 'Global edge network', value: 'Online' },
+          ].map((row, i, arr) => (
+            <div
+              key={row.label}
+              className={`flex items-center justify-between py-[7px] text-sm ${i < arr.length - 1 ? 'border-b border-gray-100' : ''}`}
+            >
+              <span className="font-medium text-gray-900">{row.label}</span>
+              <span className="font-medium text-gray-500">{row.value}</span>
+            </div>
+          ))}
         </div>
-      </Card>
+      </div>
 
-      {/* Clients */}
-      <Card className="p-6 rounded-lg shadow-sm border-gray-200 flex flex-col h-full">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 rounded-lg bg-orange-50">
+      {/* Web Traffic — metric-stack card */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+            <Globe className="w-5 h-5 text-[#0066CC]" />
+          </div>
+          <p className="text-base font-semibold text-gray-900 leading-tight m-0">
+            Web traffic
+            <span className="text-gray-400 font-normal text-sm ml-1.5">Last 30 days</span>
+          </p>
+        </div>
+        <div className="mb-4">
+          <div className="text-sm text-gray-500 mb-1">Allowed</div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-gray-900 leading-none">3,084,358</span>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold bg-gray-100 text-gray-900 rounded-full px-2 py-0.5">
+              <TrendingUp className="w-2.5 h-2.5" />+32%
+            </span>
+          </div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-500 mb-1">Non-Compliance Blocks</div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-gray-900 leading-none">82,487</span>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold bg-gray-100 text-gray-900 rounded-full px-2 py-0.5">
+              <TrendingUp className="w-2.5 h-2.5" />+18,690%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Policies — compact stat card */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+            <Shield className="w-5 h-5 text-purple-600" />
+          </div>
+          <p className="text-base font-semibold text-gray-900 leading-tight m-0">Policies</p>
+        </div>
+        <div className="text-[2.5rem] font-bold leading-none mb-0.5 text-[#0066CC]">3</div>
+        <div className="text-sm text-gray-500">Policies enforced</div>
+      </div>
+
+      {/* Endpoints — compact stat card */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
             <Users className="w-5 h-5 text-orange-600" />
           </div>
-          <h3 className="text-base font-semibold text-gray-900">Endpoints</h3>
+          <p className="text-base font-semibold text-gray-900 leading-tight m-0">Endpoints</p>
         </div>
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <div className="text-sm text-gray-500 mb-1">Online / Total</div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-gray-900 tracking-tight">7</span>
-              <span className="text-lg text-gray-400 font-medium">/ 12</span>
-            </div>
-          </div>
+        <div className="text-[2.5rem] font-bold leading-none mb-0.5 text-[#0066CC]">7</div>
+        <div className="text-sm text-gray-500">↑ 5% vs prior period</div>
+      </div>
 
-        </div>
-      </Card>
     </div>
   );
 }

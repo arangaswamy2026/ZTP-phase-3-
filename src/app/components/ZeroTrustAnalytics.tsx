@@ -310,7 +310,7 @@ export function ZeroTrustAnalytics() {
         {/* Top Users */}
         <div className="bg-white border border-gray-200 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Top Users</h3>
+            <h3 className="text-base font-bold text-gray-900">Top Users</h3>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 h-8 px-2">
               View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -342,7 +342,7 @@ export function ZeroTrustAnalytics() {
         {/* Top Applications */}
         <div className="bg-white border border-gray-200 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Top Applications</h3>
+            <h3 className="text-base font-bold text-gray-900">Top Applications</h3>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 h-8 px-2">
               View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -372,7 +372,7 @@ export function ZeroTrustAnalytics() {
         {/* Top Domains */}
         <div className="bg-white border border-gray-200 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Top Domains</h3>
+            <h3 className="text-base font-bold text-gray-900">Top Domains</h3>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 h-8 px-2">
               View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -415,7 +415,7 @@ export function ZeroTrustAnalytics() {
         {/* Policy Hits */}
         <div className="bg-white border border-gray-200 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Policy Hits</h3>
+            <h3 className="text-base font-bold text-gray-900">Policy Hits</h3>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 h-8 px-2">
               View Details <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -451,7 +451,7 @@ export function ZeroTrustAnalytics() {
         {/* Posture Failures */}
         <div className="bg-white border border-gray-200 rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-900">Posture Failures</h3>
+            <h3 className="text-base font-bold text-gray-900">Posture Failures</h3>
             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 h-8 px-2">
               Remediate <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -509,7 +509,7 @@ export function ZeroTrustAnalytics() {
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">Day-0 Deployment Status</h3>
+            <h3 className="text-base font-bold text-gray-900">Day-0 Deployment Status</h3>
             <p className="text-sm text-gray-600 mt-1">Onboarding and protection completeness</p>
           </div>
           <Button variant="outline" size="sm">

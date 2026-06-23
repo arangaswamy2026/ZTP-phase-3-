@@ -27,7 +27,7 @@ export function PageHeader({ title, subtitle, actions, back }: PageHeaderProps) 
           className={
             isDetail
               ? 'text-[1.375rem] font-bold leading-[1.27] tracking-[-0.031em] text-[#1a1a1a] m-0'
-              : 'text-2xl font-semibold leading-tight tracking-[-0.0036em] text-[#1a1a1a] m-0'
+              : 'text-2xl font-bold leading-tight tracking-[-0.0036em] text-[#1a1a1a] m-0'
           }
         >
           {title}

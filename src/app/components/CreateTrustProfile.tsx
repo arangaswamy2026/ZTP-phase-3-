@@ -439,7 +439,7 @@ export function TrustProfileModal({ open, onOpenChange }: TrustProfileModalProps
         {/* Modal Header */}
         <div className="flex items-center justify-between p-[24px] pb-[16px] border-b border-[#e5e7eb] sticky top-0 bg-white z-10">
           <div className="flex flex-col gap-[4px]">
-            <h2 className="font-['Inter',sans-serif] font-semibold text-[20px] leading-[28px] text-[#101828]">
+            <h2 className="font-['Inter',sans-serif] font-bold text-[20px] leading-[28px] text-[#101828]">
               Default Trust Profile
             </h2>
             <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#6a7282]">
@@ -458,7 +458,7 @@ export function TrustProfileModal({ open, onOpenChange }: TrustProfileModalProps
         <div className="flex flex-col gap-[16px] p-[24px]">
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-[4px]">
-              <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[22px] text-[#101828]">
+              <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[22px] text-[#101828]">
                 Trust Factors
               </h3>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -590,7 +590,7 @@ export function CreateTrustProfile({ onBack, onComplete }: CreateTrustProfilePro
         <div className="flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-[4px]">
-              <h2 className="font-['Inter',sans-serif] font-semibold text-[20px] leading-[26px] text-[#101828]">
+              <h2 className="font-['Inter',sans-serif] font-bold text-[20px] leading-[26px] text-[#101828]">
                 Trust Factors
               </h2>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">

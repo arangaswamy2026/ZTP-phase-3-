@@ -127,7 +127,7 @@ export function ZoneBasedPolicyDetailsModal({
           <div className="grid grid-cols-2 gap-8">
             {/* Source */}
             <div>
-              <h3 className="text-sm font-semibold text-[#101828] mb-3">Source</h3>
+              <h3 className="text-sm font-bold text-[#101828] mb-3">Source</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs text-[#6a7282]">IP Range:</span>
@@ -159,7 +159,7 @@ export function ZoneBasedPolicyDetailsModal({
 
             {/* Destination */}
             <div className="col-start-2">
-              <h3 className="text-sm font-semibold text-[#101828] mb-3">Destination</h3>
+              <h3 className="text-sm font-bold text-[#101828] mb-3">Destination</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs text-[#6a7282]">IP Range:</span>
@@ -182,7 +182,7 @@ export function ZoneBasedPolicyDetailsModal({
 
         {/* Security Controls Section */}
         <div className="px-6 pb-6">
-          <h3 className="text-sm font-semibold text-[#101828] mb-4">Security Controls</h3>
+          <h3 className="text-sm font-bold text-[#101828] mb-4">Security Controls</h3>
 
           <div className="space-y-3">
             {/* Category Blocking */}

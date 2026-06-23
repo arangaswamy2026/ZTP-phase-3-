@@ -61,21 +61,15 @@ const MOCK_ACTIVITIES: Activity[] = [
 function ActionBadge({ action }: { action: 'Allowed' | 'Blocked' }) {
   if (action === 'Allowed') {
     return (
-      <div className="inline-flex items-center gap-[6px] rounded-[8px] border border-[#b9f8cf] bg-[#f0fdf4] px-[8px] py-[3px]">
-        <div className="w-[8px] h-[8px] rounded-full bg-[#008236]" />
-        <span className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#008236]">
-          Allowed
-        </span>
-      </div>
+      <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[12px] text-[#16a34a]">
+        Allowed
+      </span>
     );
   }
   return (
-    <div className="inline-flex items-center gap-[6px] rounded-[8px] bg-[#d4183d] px-[8px] py-[3px]">
-      <XCircle className="w-[14px] h-[14px] text-white" />
-      <span className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-white">
-        Blocked
-      </span>
-    </div>
+    <span className="inline-flex items-center rounded-[8px] bg-[#d4183d1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[12px] text-[#d4183d]">
+      Blocked
+    </span>
   );
 }
 

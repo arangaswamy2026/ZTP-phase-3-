@@ -104,7 +104,7 @@ export function IdentityConfiguration({
              <div className="mt-6 space-y-8 border-t pt-6 animate-in fade-in slide-in-from-top-2">
                 <div className="space-y-6">
                    <div className="flex items-center justify-between border-b pb-2">
-                      <h3 className="text-lg font-medium text-gray-900">Invite Users</h3>
+                      <h3 className="text-lg font-bold text-gray-900">Invite Users</h3>
                    </div>
                    
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -142,7 +142,7 @@ export function IdentityConfiguration({
                 </div>
 
                 <div className="space-y-4">
-                   <h3 className="text-base font-medium text-[#1e2828]">User List</h3>
+                   <h3 className="text-base font-bold text-[#1e2828]">User List</h3>
                    <div className="border-t border-[#e2e8f4]">
                       <Table>
                          <TableHeader className="bg-neutral-50 h-[36px]">

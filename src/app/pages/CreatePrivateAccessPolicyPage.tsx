@@ -176,7 +176,7 @@ export function CreatePrivateAccessPolicyPage() {
       {/* General Information */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
-          <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+          <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
             General Information
           </h3>
 
@@ -209,7 +209,7 @@ export function CreatePrivateAccessPolicyPage() {
       {/* Action */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
-          <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+          <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
             Action
           </h3>
 
@@ -242,7 +242,7 @@ export function CreatePrivateAccessPolicyPage() {
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
               Source
             </h3>
             <button
@@ -367,7 +367,7 @@ export function CreatePrivateAccessPolicyPage() {
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
               Destination
             </h3>
             <button
@@ -567,7 +567,7 @@ export function CreatePrivateAccessPolicyPage() {
       {/* Device Trust */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
-          <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+          <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
             Device Trust
           </h3>
           <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -584,7 +584,7 @@ export function CreatePrivateAccessPolicyPage() {
                   : 'border-[#e5e7eb] bg-white hover:border-[#d1d5db]'
               }`}
             >
-              <h4 className="font-['Inter',sans-serif] font-semibold text-[15px] leading-[20px] text-[#101828]">
+              <h4 className="font-['Inter',sans-serif] font-bold text-[15px] leading-[20px] text-[#101828]">
                 High Trust Level
               </h4>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -601,7 +601,7 @@ export function CreatePrivateAccessPolicyPage() {
                   : 'border-[#e5e7eb] bg-white hover:border-[#d1d5db]'
               }`}
             >
-              <h4 className="font-['Inter',sans-serif] font-semibold text-[15px] leading-[20px] text-[#101828]">
+              <h4 className="font-['Inter',sans-serif] font-bold text-[15px] leading-[20px] text-[#101828]">
                 Medium Trust Level
               </h4>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -618,7 +618,7 @@ export function CreatePrivateAccessPolicyPage() {
                   : 'border-[#e5e7eb] bg-white hover:border-[#d1d5db]'
               }`}
             >
-              <h4 className="font-['Inter',sans-serif] font-semibold text-[15px] leading-[20px] text-[#101828]">
+              <h4 className="font-['Inter',sans-serif] font-bold text-[15px] leading-[20px] text-[#101828]">
                 Low Trust Level
               </h4>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -635,7 +635,7 @@ export function CreatePrivateAccessPolicyPage() {
                   : 'border-[#e5e7eb] bg-white hover:border-[#d1d5db]'
               }`}
             >
-              <h4 className="font-['Inter',sans-serif] font-semibold text-[15px] leading-[20px] text-[#101828]">
+              <h4 className="font-['Inter',sans-serif] font-bold text-[15px] leading-[20px] text-[#101828]">
                 Ignore Trust Level
               </h4>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] leading-[18px] text-[#6a7282]">
@@ -652,7 +652,7 @@ export function CreatePrivateAccessPolicyPage() {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-[4px]">
               <div className="flex items-center gap-[8px]">
-                <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+                <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
                   Default Trust Profile
                 </h3>
                 <span className="inline-flex items-center rounded-[6px] bg-[#dcfce7] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[11px] text-[#16a34a]">

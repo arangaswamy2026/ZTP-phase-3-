@@ -188,7 +188,7 @@ export function Day0Onboarding({ onComplete, onBack }: Day0OnboardingProps) {
       <aside className="w-[280px] bg-white border-r border-gray-200 flex flex-col shrink-0 z-10">
         <div className="flex-1 overflow-y-auto pt-6 pb-20">
           <div className="px-5 mb-3">
-            <h2 className="text-[16px] font-semibold text-gray-900">Default Configuration</h2>
+            <h2 className="text-[16px] font-bold text-gray-900">Default Configuration</h2>
           </div>
           
           <div className="px-2">
@@ -226,7 +226,7 @@ export function Day0Onboarding({ onComplete, onBack }: Day0OnboardingProps) {
         {/* Header */}
         <header className="h-[100px] bg-white border-b border-gray-200 shrink-0 flex items-center justify-between px-6">
            <div className="flex flex-col justify-center h-full">
-              <h1 className="text-2xl font-semibold text-gray-900">{activeStepData.headerTitle}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{activeStepData.headerTitle}</h1>
               <p className="text-gray-600 mt-1">{activeStepData.description}</p>
            </div>
            
@@ -300,7 +300,7 @@ export function Day0Onboarding({ onComplete, onBack }: Day0OnboardingProps) {
                   <div className="mx-auto w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                     <Check className="w-8 h-8 text-[#0066CC]" />
                   </div>
-                  <h2 className="text-xl font-medium text-gray-900 mb-2">{activeStepData.headerTitle}</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">{activeStepData.headerTitle}</h2>
                   <p className="text-gray-600 mb-6">{activeStepData.description}</p>
                   <Button onClick={handleContinue} className="bg-[#0066CC] hover:bg-[#0052A3] text-white">
                     Continue to Next Step

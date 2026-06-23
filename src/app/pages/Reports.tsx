@@ -250,7 +250,7 @@ export default function Reports() {
         {/* Top User Requests */}
         <div className="bg-white border border-[#e5e7eb] rounded-[10px] p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[#101828]">Top User Requests</h3>
+            <h3 className="text-base font-bold text-[#101828]">Top User Requests</h3>
             <button className="text-sm text-[#6a7282] hover:text-[#101828]">View All</button>
           </div>
           <div className="space-y-3 flex-1">
@@ -277,7 +277,7 @@ export default function Reports() {
         {/* Top Applications Accessed */}
         <div className="bg-white border border-[#e5e7eb] rounded-[10px] p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[#101828]">Top Applications Accessed</h3>
+            <h3 className="text-base font-bold text-[#101828]">Top Applications Accessed</h3>
             <button className="text-sm text-[#6a7282] hover:text-[#101828]">View All</button>
           </div>
           <div className="space-y-3 flex-1">
@@ -296,7 +296,7 @@ export default function Reports() {
         {/* Top Domains Accessed */}
         <div className="bg-white border border-[#e5e7eb] rounded-[10px] p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[#101828]">Top Domains Accessed</h3>
+            <h3 className="text-base font-bold text-[#101828]">Top Domains Accessed</h3>
             <button className="text-sm text-[#6a7282] hover:text-[#101828]">View All</button>
           </div>
           <div className="space-y-3 flex-1">
@@ -332,7 +332,7 @@ export default function Reports() {
         {/* Policy Hits */}
         <div className="bg-white border border-[#e5e7eb] rounded-[10px] p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[#101828]">Policy Hits</h3>
+            <h3 className="text-base font-bold text-[#101828]">Policy Hits</h3>
             <button className="text-sm text-[#6a7282] hover:text-[#101828]">View All</button>
           </div>
           <div className="space-y-3 flex-1">
@@ -364,7 +364,7 @@ export default function Reports() {
         {/* Endpoints */}
         <div className="bg-white border border-[#e5e7eb] rounded-[10px] p-5 lg:col-span-2 flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-[#101828]">Endpoints</h3>
+            <h3 className="text-base font-bold text-[#101828]">Endpoints</h3>
             <button className="text-sm text-[#6a7282] hover:text-[#101828]">View All</button>
           </div>
           

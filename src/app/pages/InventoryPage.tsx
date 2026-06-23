@@ -288,7 +288,7 @@ function NoZTPState({ name, onBack }: { name: string; onBack: () => void }) {
         <ArrowLeft className="w-3.5 h-3.5" />
         Back to Inventory
       </button>
-      <h1 className="text-2xl font-semibold text-foreground mb-1">{name}</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-1">{name}</h1>
       <p className="text-sm text-muted-foreground mb-5">ZTP solution inventory</p>
       <div className="bg-card border rounded-2xl shadow-sm py-14 text-center text-muted-foreground">
         <Package className="w-10 h-10 mx-auto mb-3 text-muted-foreground/40" />

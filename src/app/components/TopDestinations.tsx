@@ -13,7 +13,7 @@ export function TopDestinations() {
     <Card className="p-6 rounded-lg shadow-sm border-gray-200 h-full">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-gray-900 font-medium">Top Destinations</h3>
+          <h3 className="text-gray-900 font-bold">Top Destinations</h3>
           <p className="text-sm text-gray-500">Most visited domains by volume</p>
         </div>
         <span className="text-xs text-[#0066CC] font-medium cursor-pointer hover:underline">View All</span>

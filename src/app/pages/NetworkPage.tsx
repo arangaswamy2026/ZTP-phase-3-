@@ -60,7 +60,7 @@ function DeviceTab() {
     <div className="p-6 space-y-0">
       {/* General */}
       <section className="pb-6">
-        <h3 className="text-base font-semibold text-[#101828] mb-4">General</h3>
+        <h3 className="text-base font-bold text-[#101828] mb-4">General</h3>
         <div className="flex items-center gap-4">
           <label className="w-64 text-right text-sm font-medium text-[#4a5565] shrink-0">Name</label>
           <input
@@ -73,7 +73,7 @@ function DeviceTab() {
       <div className="border-t border-[#f3f4f6]" />
       {/* Administrator Name */}
       <section className="py-6">
-        <h3 className="text-base font-semibold text-[#101828] mb-4">Administrator Name</h3>
+        <h3 className="text-base font-bold text-[#101828] mb-4">Administrator Name</h3>
         <div className="flex items-center gap-4">
           <label className="w-64 text-right text-sm font-medium text-[#4a5565] shrink-0">Administrator Login Name</label>
           <div className="flex gap-3">
@@ -91,7 +91,7 @@ function DeviceTab() {
       <div className="border-t border-[#f3f4f6]" />
       {/* Time Settings */}
       <section className="py-6">
-        <h3 className="text-base font-semibold text-[#101828] mb-4">Time Settings</h3>
+        <h3 className="text-base font-bold text-[#101828] mb-4">Time Settings</h3>
         <div className="space-y-5">
           <div className="flex items-center gap-4">
             <span className="w-64 text-right text-sm font-medium text-[#4a5565]">Set time automatically using NTP</span>

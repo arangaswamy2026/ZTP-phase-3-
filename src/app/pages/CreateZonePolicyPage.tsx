@@ -296,7 +296,7 @@ export function CreateZonePolicyPage() {
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
               Source
             </h3>
             <button
@@ -481,7 +481,7 @@ export function CreateZonePolicyPage() {
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
           <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-semibold text-[16px] leading-[24px] text-[#101828]">
+            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
               Destination
             </h3>
             <button

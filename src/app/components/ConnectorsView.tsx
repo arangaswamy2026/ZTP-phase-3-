@@ -32,7 +32,7 @@ const connectors: ConnectorCard[] = [
 function StatusBadge({ status }: { status: 'online' | 'offline' }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${
+      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-[8px] ${
         status === 'online'
           ? 'bg-green-50 text-green-700 border border-green-200'
           : 'bg-gray-100 text-gray-500 border border-gray-200'
@@ -97,7 +97,7 @@ function ConnectorCard({ connector }: { connector: ConnectorCard }) {
             {connector.internalDomains.map((domain) => (
               <span
                 key={domain}
-                className="text-xs text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded"
+                className="inline-flex items-center h-[24px] text-[11px] font-semibold text-[#6a7282] bg-[#ececf0] border border-[#e5e7eb] px-[8px] rounded-[8px]"
               >
                 {domain}
               </span>

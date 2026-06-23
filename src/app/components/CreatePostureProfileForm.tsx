@@ -165,7 +165,7 @@ export function CreatePostureProfileForm({
           {/* Section 1: Basic Info */}
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium text-gray-900 mb-3">Basic Information</h3>
+              <h3 className="font-bold text-gray-900 mb-3">Basic Information</h3>
             </div>
             
             <div className="space-y-2">
@@ -208,7 +208,7 @@ export function CreatePostureProfileForm({
           {/* Section 2: Trust Factors / Device Checks */}
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium text-gray-900 mb-1">Device Trust Checks</h3>
+              <h3 className="font-bold text-gray-900 mb-1">Device Trust Checks</h3>
               <p className="text-sm text-gray-500">
                 Select which security controls to validate on devices
               </p>
@@ -298,7 +298,7 @@ export function CreatePostureProfileForm({
           {/* Section 3: Trust Score Logic */}
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium text-gray-900 mb-1">Trust Score Logic</h3>
+              <h3 className="font-bold text-gray-900 mb-1">Trust Score Logic</h3>
               <p className="text-sm text-gray-500">
                 Define how trust levels are assigned based on check results
               </p>

@@ -97,7 +97,7 @@ const ZoneFlowDiagram = ({ config }: { config: ZoneFlowConfig }) => {
 
   return (
     <div className="mt-4 bg-slate-50 rounded-xl border border-slate-200 p-5">
-      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Traffic Control Visualization</h4>
+      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Traffic Control Visualization</h4>
       <div className="space-y-3">
         {renderFlow('Employee Zone', <Laptop size={16} />, 'Internet', <Globe size={16} />, config.lanToWan)}
         {renderFlow('Internet', <Globe size={16} />, 'Employee Zone', <Laptop size={16} />, config.wanToLan)}
@@ -375,7 +375,7 @@ export function SecurityPolicies({ onNext, onBack }: SecurityPoliciesProps) {
       {/* Template Selection */}
       <div>
          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Available Templates</h3>
+            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Available Templates</h3>
             <Button 
                variant="ghost" 
                size="sm" 
@@ -408,7 +408,7 @@ export function SecurityPolicies({ onNext, onBack }: SecurityPoliciesProps) {
                         </div>
                      )}
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
+                  <h4 className="font-bold text-gray-900 mb-1">{template.name}</h4>
                   <p className="text-xs text-gray-500 line-clamp-2">
                      {template.description}
                   </p>

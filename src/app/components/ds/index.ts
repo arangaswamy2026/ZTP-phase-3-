@@ -19,3 +19,5 @@ export {
   TD,
   TableFoot,
 } from "./DataTable";
+export { DashboardWidget } from "./DashboardWidget";
+export type { DashboardWidgetProps, WidgetPeriod } from "./DashboardWidget";

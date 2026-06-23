@@ -437,7 +437,7 @@ function DrilldownView({
             <ChevronLeft className="w-3.5 h-3.5" />
             Blocked Threats
           </button>
-          <h1 className="text-2xl font-semibold text-foreground">{tenant.name} — Blocked Threats</h1>
+          <h1 className="text-2xl font-bold text-foreground">{tenant.name} — Blocked Threats</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filterSev ? `${filterSev} severity threats for this tenant` : 'Blocked threats filtered by tenant'}
           </p>
