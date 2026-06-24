@@ -22,7 +22,6 @@ export const allTenantsNavItems: { id: string; icon: any; label: string }[] = [
   { id: 'msp-dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
   { id: 'tenant-management', icon: Building2, label: 'Tenant Management' },
   { id: 'inventory',         icon: Box,       label: 'Inventory' },
-  { id: 'blocked-threats',             icon: Shield,    label: 'Reports' },
   { id: 'all-tenants-system-status',   icon: Monitor,   label: 'System Status' },
 ];
 

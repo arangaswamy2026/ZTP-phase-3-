@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import { Search, Download, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { SeverityChip, DataTable, THead, TH, TR, TD } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
@@ -188,6 +189,7 @@ function AllTenantsView({
   onRangeChange: (r: string) => void;
   onDrilldown: (id: string, severity?: string) => void;
 }) {
+  const navigate = useNavigate();
   // Aggregate stats
   const total    = TENANTS.reduce((s, t) => s + tenantTotal(t, range), 0);
   const critical = TENANTS.reduce((s, t) => s + tenantCritical(t, range), 0);
@@ -224,6 +226,15 @@ function AllTenantsView({
 
   return (
     <div className="space-y-5 pb-10">
+      {/* Back link */}
+      <button
+        onClick={() => navigate('/msp-dashboard')}
+        className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ChevronLeft className="w-3.5 h-3.5" />
+        Dashboard
+      </button>
+
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <PageHeader title="Blocked Threats" />
