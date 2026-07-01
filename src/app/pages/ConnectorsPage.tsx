@@ -5,7 +5,7 @@ export function ConnectorsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Connectors"
+        title="System Status"
         subtitle="Monitor the health and connectivity of your ZTP infrastructure"
       />
       <ConnectorsView />

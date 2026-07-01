@@ -3,7 +3,6 @@ import {
   Shield,
   FileText,
   Activity,
-  BarChart3,
   Settings,
   Server,
   Database,
@@ -22,7 +21,6 @@ export const allTenantsNavItems: { id: string; icon: any; label: string }[] = [
   { id: 'msp-dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
   { id: 'tenant-management', icon: Building2, label: 'Tenant Management' },
   { id: 'inventory',         icon: Box,       label: 'Inventory' },
-  { id: 'blocked-threats',             icon: Shield,    label: 'Reports' },
   { id: 'all-tenants-system-status',   icon: Monitor,   label: 'System Status' },
 ];
 
@@ -47,8 +45,7 @@ export const appNavItems: Record<string, { id: string; icon: any; label: string 
     { id: 'profiles', icon: Layers, label: 'Profiles' },
     { id: 'connectors', icon: Server, label: 'System Status' },
     { id: 'apps', icon: Database, label: 'Private Apps' },
-    { id: 'activity', icon: Activity, label: 'Activity' },
-    { id: 'reports', icon: BarChart3, label: 'Reports' },
+    { id: 'activity', icon: Activity, label: 'Audit Log' },
     { id: 'network', icon: Network, label: 'Network' },
     { id: 'tenant-management', icon: Building2, label: 'Tenant Management' },
     { id: 'settings', icon: Settings, label: 'Settings' },

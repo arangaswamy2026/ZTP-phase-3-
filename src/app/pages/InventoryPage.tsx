@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Copy, ArrowLeft, MoreVertical, RefreshCw, AlertTriangle, Info, Package } from 'lucide-react';
+import { Search, Copy, ArrowLeft, MoreVertical, RefreshCw, AlertTriangle, Info, Package, ToggleRight, ToggleLeft } from 'lucide-react';
 import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
 
@@ -20,23 +20,24 @@ interface TenantRecord {
   expDays?: number;
   firmware?: string;
   firmwareSeen?: string;
+  autoUpdate?: boolean;
   stale?: boolean;
 }
 
 const INVENTORY: TenantRecord[] = [
   { id: 'acme', name: 'Acme Corporation', friendly: 'ZTP — Acme Corporation',
     hasZTP: true, key: 'A1B2-C3D4-E5F6-7H8J', count: 50, tier: 'Premier',
-    reg: '14 Oct 2024', expiry: '09 Jul 2026', expDays: 41, firmware: '7.1.2', stale: false },
+    reg: '14 Oct 2024', expiry: '09 Jul 2026', expDays: 41, firmware: '7.1.2', autoUpdate: true, stale: false },
   { id: 'enterprise', name: 'Enterprise Solutions', friendly: 'ZTP — Enterprise Solutions',
     hasZTP: true, key: 'K9L8-M7N6-P5Q4-R3S2', count: 120, tier: 'Advanced',
-    reg: '10 Sep 2024', expiry: '18 Jun 2026', expDays: 20, firmware: '7.1.2', stale: false },
+    reg: '10 Sep 2024', expiry: '18 Jun 2026', expDays: 20, firmware: '7.1.2', autoUpdate: true, stale: false },
   { id: 'global', name: 'Global Services LLC', friendly: 'ZTP — Global Services LLC',
     hasZTP: true, key: 'T1U2-V3W4-X5Y6-Z7A8', count: 80, tier: 'Advanced',
     reg: '02 Nov 2025', expiry: '12 Aug 2026', expDays: 75,
-    firmware: 'Unknown', firmwareSeen: 'last seen 21 May 2026', stale: false },
+    firmware: 'Unknown', firmwareSeen: 'last seen 21 May 2026', autoUpdate: false, stale: false },
   { id: 'cloud', name: 'Cloud Innovations', friendly: 'ZTP — Cloud Innovations',
     hasZTP: true, key: 'B2C3-D4E5-F6G7-H8J9', count: 0, tier: 'Essential',
-    reg: '27 Oct 2025', expiry: '02 May 2026', expDays: -27, firmware: '7.0.9', stale: true },
+    reg: '27 Oct 2025', expiry: '02 May 2026', expDays: -27, firmware: '7.0.9', autoUpdate: false, stale: true },
   { id: 'riverside', name: 'Riverside Dental', friendly: '—', hasZTP: false },
 ];
 
@@ -110,6 +111,20 @@ function FirmwareCell({ t }: { t: TenantRecord }) {
     );
   }
   return <span className="font-mono text-[13px] text-foreground">{t.firmware}</span>;
+}
+
+function AutoUpdateCell({ enabled }: { enabled: boolean }) {
+  return enabled ? (
+    <span className="inline-flex items-center gap-1.5 text-success">
+      <ToggleRight className="w-5 h-5" />
+      <span className="text-[12px] font-medium">Enabled</span>
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+      <ToggleLeft className="w-5 h-5" />
+      <span className="text-[12px] font-medium">Disabled</span>
+    </span>
+  );
 }
 
 function CopyButton({ value }: { value: string }) {
@@ -362,35 +377,41 @@ export function InventoryPage() {
           </div>
           <div className="flex items-center gap-2.5">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#717182]" />
               <input
                 type="text"
                 placeholder="Search tenants..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-8 pl-8 pr-3 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card w-52"
+                className="h-[36px] pl-[30px] pr-3 w-52 text-[13px] text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[8px] bg-white focus:outline-none focus:ring-2 focus:ring-[#0066cc] placeholder:text-[#9ca3af]"
               />
             </div>
-            <select
-              value={tierFilter}
-              onChange={(e) => setTierFilter(e.target.value as any)}
-              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
-            >
-              <option value="all">All Tiers</option>
-              <option value="Essential">Essential</option>
-              <option value="Advanced">Advanced</option>
-              <option value="Premier">Premier</option>
-            </select>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
-            >
-              <option value="all">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="expiring">Expiring soon</option>
-              <option value="expired">Expired</option>
-            </select>
+            <div className="relative">
+              <select
+                value={tierFilter}
+                onChange={(e) => setTierFilter(e.target.value as any)}
+                className="h-[36px] pl-3 pr-8 text-[13px] text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[8px] bg-white cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-[#0066cc]"
+              >
+                <option value="all">All Tiers</option>
+                <option value="Essential">Essential</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Premier">Premier</option>
+              </select>
+              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#717182]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="h-[36px] pl-3 pr-8 text-[13px] text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[8px] bg-white cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-[#0066cc]"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="expiring">Expiring soon</option>
+                <option value="expired">Expired</option>
+              </select>
+              <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#717182]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
           </div>
         </div>
 
@@ -398,15 +419,15 @@ export function InventoryPage() {
           <DataTable>
             <THead>
               <tr>
-                {['Tenant / Friendly Name', 'Product', 'Activation Key', 'Licenses', 'Tier', 'Support Expiry', 'Firmware', 'Actions'].map((col, i) => (
-                  <TH key={col} className={i === 7 ? 'text-right' : ''}>{col}</TH>
+                {['Tenant / Friendly Name', 'Product', 'Activation Key', 'Licenses', 'Tier', 'Support Expiry', 'Firmware', 'Auto Update', 'Actions'].map((col, i) => (
+                  <TH key={col} className={i === 8 ? 'text-right' : ''}>{col}</TH>
                 ))}
               </tr>
             </THead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={9}>
                     <div className="text-center py-12 text-sm text-muted-foreground">
                       No matching records — adjust your search or filters.
                     </div>
@@ -458,6 +479,11 @@ export function InventoryPage() {
                   {/* Firmware */}
                   <TD>
                     <FirmwareCell t={t} />
+                  </TD>
+
+                  {/* Auto Update */}
+                  <TD>
+                    <AutoUpdateCell enabled={t.autoUpdate ?? false} />
                   </TD>
 
                   {/* Actions */}

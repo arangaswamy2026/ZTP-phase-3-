@@ -22,7 +22,11 @@ import {
   Plus,
   Minus,
   ChevronDown,
+  Search,
+  LayoutGrid,
+  ExternalLink,
 } from 'lucide-react';
+import { SaasApp, SAAS_APPLICATIONS, AppDetailModal } from '../components/SaasAppPicker';
 import { PageHeader } from '../components/PageHeader';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
 import { toast } from 'sonner@2.0.3';
@@ -44,7 +48,6 @@ const THREAT_CATEGORIES = [
 
 const USERS_LIST = ['Alice', 'John', 'Sarah', 'Michael', 'Emily', 'David'];
 const GROUPS_LIST = ['Design', 'Engineering', 'Sales', 'Marketing', 'HR', 'Finance'];
-const APPLICATIONS_LIST = ['Expiry', 'San', 'Envoy', 'Box', 'Dropbox', 'Slack', 'Teams'];
 const CATEGORY_LIST = [
   'Adult Issues',
   'Gambling',
@@ -89,6 +92,8 @@ export function CreateInternetPolicyPage() {
 
   // Dropdowns state
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+  const [appSearchTerms, setAppSearchTerms] = useState<Record<string, string>>({});
+  const [detailApp, setDetailApp] = useState<SaasApp | null>(null);
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -276,10 +281,12 @@ export function CreateInternetPolicyPage() {
   };
 
   const getOptionsForDestinationType = (type: 'Applications' | 'Internet') => {
-    return type === 'Applications' ? APPLICATIONS_LIST : [];
+    return type === 'Applications' ? SAAS_APPLICATIONS.map((a) => a.name) : [];
   };
 
   return (
+    <>
+    {detailApp && <AppDetailModal app={detailApp} onClose={() => setDetailApp(null)} />}
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
       <PageHeader
         title="Create Internet Policy"
@@ -464,114 +471,178 @@ export function CreateInternetPolicyPage() {
             </button>
           </div>
 
-          {destinationRows.map((row, index) => (
-            <div key={row.id} className="flex gap-[6px] items-center">
-              {/* Type Dropdown */}
-              <div className="relative">
-                <button
-                  data-dropdown-trigger
-                  onClick={() => toggleDropdown(`destination-type-${row.id}`)}
-                  className="bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between w-[148px]"
-                >
-                  <span className="text-[14px] text-[#0a0a0a]">{row.type}</span>
-                  <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50" />
-                </button>
-                {openDropdowns[`destination-type-${row.id}`] && (
-                  <div 
-                    data-dropdown-menu
-                    className="absolute top-full mt-1 left-0 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50"
+          {destinationRows.map((row) => {
+            const searchTerm = appSearchTerms[row.id] ?? '';
+            const filtered = SAAS_APPLICATIONS.filter((a) =>
+              a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              a.category.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            // Group filtered results by category
+            const grouped = filtered.reduce<Record<string, string[]>>((acc, a) => {
+              if (!acc[a.category]) acc[a.category] = [];
+              acc[a.category].push(a.name);
+              return acc;
+            }, {});
+
+            return (
+              <div key={row.id} className="flex flex-col gap-[6px]">
+                <div className="flex gap-[6px] items-center">
+                  {/* Type Dropdown */}
+                  <div className="relative">
+                    <button
+                      data-dropdown-trigger
+                      onClick={() => toggleDropdown(`destination-type-${row.id}`)}
+                      className="bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between w-[148px]"
+                    >
+                      <span className="text-[14px] text-[#0a0a0a]">{row.type}</span>
+                      <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50" />
+                    </button>
+                    {openDropdowns[`destination-type-${row.id}`] && (
+                      <div
+                        data-dropdown-menu
+                        className="absolute top-full mt-1 left-0 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50"
+                      >
+                        <div
+                          onClick={() => {
+                            setDestinationRows(
+                              destinationRows.map((r) =>
+                                r.id === row.id ? { ...r, type: 'Applications', selectedItems: [] } : r
+                              )
+                            );
+                            toggleDropdown(`destination-type-${row.id}`);
+                          }}
+                          className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
+                        >
+                          Applications
+                        </div>
+                        <div
+                          onClick={() => {
+                            setDestinationRows(
+                              destinationRows.map((r) =>
+                                r.id === row.id ? { ...r, type: 'Internet', selectedItems: [] } : r
+                              )
+                            );
+                            toggleDropdown(`destination-type-${row.id}`);
+                          }}
+                          className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
+                        >
+                          Internet
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Application picker or spacer */}
+                  {row.type === 'Applications' ? (
+                    <div className="flex-1 relative">
+                      {/* Trigger button */}
+                      <button
+                        data-dropdown-trigger
+                        onClick={() => toggleDropdown(`destination-items-${row.id}`)}
+                        className="w-full bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between text-left"
+                      >
+                        <span className="text-[13px] text-[#9ca3af]">Search</span>
+                        <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50 shrink-0" />
+                      </button>
+
+                      {/* Dropdown panel */}
+                      {openDropdowns[`destination-items-${row.id}`] && (
+                        <div
+                          data-dropdown-menu
+                          className="absolute top-full mt-1 left-0 right-0 bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50 flex flex-col"
+                        >
+                          {/* Search input */}
+                          <div className="p-[8px] border-b border-[#e5e7eb]">
+                            <div className="relative">
+                              <Search className="w-[13px] h-[13px] absolute left-[9px] top-1/2 -translate-y-1/2 text-[#9ca3af] pointer-events-none" />
+                              <input
+                                data-dropdown-menu
+                                autoFocus
+                                type="text"
+                                placeholder="Search applications…"
+                                value={searchTerm}
+                                onChange={(e) =>
+                                  setAppSearchTerms((prev) => ({ ...prev, [row.id]: e.target.value }))
+                                }
+                                className="w-full h-[32px] pl-[28px] pr-[8px] text-[13px] text-[#1a1a1a] border border-[#e5e7eb] rounded-[6px] bg-[#f9fafb] focus:outline-none focus:border-[#0066cc] placeholder:text-[#9ca3af]"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Grouped results */}
+                          <div className="max-h-[260px] overflow-y-auto py-[4px]">
+                            {Object.keys(grouped).length === 0 ? (
+                              <div className="px-[13px] py-[10px] text-[13px] text-[#9ca3af]">No applications match</div>
+                            ) : (
+                              Object.entries(grouped).map(([category, apps]) => (
+                                <div key={category}>
+                                  <div className="px-[13px] pt-[8px] pb-[4px] flex items-center gap-[6px]">
+                                    <LayoutGrid className="w-[11px] h-[11px] text-[#9ca3af]" />
+                                    <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-[#9ca3af]">{category}</span>
+                                  </div>
+                                  {apps.map((app) => (
+                                    <div
+                                      key={app}
+                                      onClick={() => toggleDestinationItem(row.id, app)}
+                                      className="px-[13px] py-[7px] hover:bg-[#f9fafb] cursor-pointer flex items-center gap-[8px] group"
+                                    >
+                                      <Checkbox checked={row.selectedItems.includes(app)} />
+                                      <span className="text-[13px] text-[#364153] flex-1">{app}</span>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const meta = SAAS_APPLICATIONS.find((a) => a.name === app);
+                                          if (meta) setDetailApp(meta);
+                                        }}
+                                        className="opacity-0 group-hover:opacity-100 flex items-center gap-[3px] text-[11px] text-[#0066cc] hover:underline transition-opacity shrink-0"
+                                      >
+                                        <ExternalLink className="w-[10px] h-[10px]" />
+                                        View details
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex-1" />
+                  )}
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => removeDestinationRow(row.id)}
+                    className="w-[24px] h-[24px] border border-[#0b8aeb] rounded-[3px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity shrink-0"
                   >
-                    <div
-                      onClick={() => {
-                        setDestinationRows(
-                          destinationRows.map((r) =>
-                            r.id === row.id ? { ...r, type: 'Applications', selectedItems: [] } : r
-                          )
-                        );
-                        toggleDropdown(`destination-type-${row.id}`);
-                      }}
-                      className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                    >
-                      Applications
-                    </div>
-                    <div
-                      onClick={() => {
-                        setDestinationRows(
-                          destinationRows.map((r) =>
-                            r.id === row.id ? { ...r, type: 'Internet', selectedItems: [] } : r
-                          )
-                        );
-                        toggleDropdown(`destination-type-${row.id}`);
-                      }}
-                      className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                    >
-                      Internet
-                    </div>
+                    <Minus className="w-[12px] h-[12px] text-[#0b8aeb]" />
+                  </button>
+                </div>
+
+                {/* Selected application pills — below the row, matching threat protection style */}
+                {row.type === 'Applications' && row.selectedItems.length > 0 && (
+                  <div className="flex flex-wrap gap-[8px] pl-[154px]">
+                    {row.selectedItems.map((item) => (
+                      <div
+                        key={item}
+                        className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[8px] px-[8px] pr-[24px] py-[5px] h-[30px] flex items-center relative"
+                      >
+                        <span className="font-['Inter',sans-serif] font-medium text-[12px] text-[#364153]">{item}</span>
+                        <button
+                          onClick={() => removeDestinationItem(row.id, item)}
+                          className="absolute right-[7px] top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#6a7282]"
+                        >
+                          <X className="w-[10px] h-[10px]" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-
-              {/* Selected Items Container - Only show for Applications */}
-              {row.type === 'Applications' ? (
-                <div className="flex-1 relative">
-                  <div className="bg-white border border-[#e5e7eb] rounded-[8px] min-h-[43px] px-[13px] py-[8px] flex items-center justify-between">
-                    <div className="flex flex-wrap gap-[5px]">
-                      {row.selectedItems.map((item) => (
-                        <div
-                          key={item}
-                          className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[6px] px-[8px] py-[4px] flex items-center gap-2 h-[26px]"
-                        >
-                          <span className="text-[12px] text-[#364153]">{item}</span>
-                          <button
-                            onClick={() => removeDestinationItem(row.id, item)}
-                            className="text-[#9ca3af] hover:text-[#6a7282]"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      data-dropdown-trigger
-                      onClick={() => toggleDropdown(`destination-items-${row.id}`)}
-                      className="text-[#717182] opacity-50"
-                    >
-                      <ChevronDown className="w-[16px] h-[16px]" />
-                    </button>
-                  </div>
-                  {openDropdowns[`destination-items-${row.id}`] && (
-                    <div 
-                      data-dropdown-menu
-                      className="absolute top-full mt-1 left-0 right-0 bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50 max-h-[200px] overflow-y-auto"
-                    >
-                      {getOptionsForDestinationType(row.type).map((item) => (
-                        <div
-                          key={item}
-                          onClick={() => {
-                            toggleDestinationItem(row.id, item);
-                          }}
-                          className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer flex items-center gap-2"
-                        >
-                          <Checkbox checked={row.selectedItems.includes(item)} />
-                          <span className="text-[14px] text-[#364153]">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex-1" />
-              )}
-
-              {/* Remove Button */}
-              <button
-                onClick={() => removeDestinationRow(row.id)}
-                className="w-[24px] h-[24px] border border-[#0b8aeb] rounded-[3px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity shrink-0"
-              >
-                <Minus className="w-[12px] h-[12px] text-[#0b8aeb]" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -1035,5 +1106,6 @@ export function CreateInternetPolicyPage() {
         </Button>
       </div>
     </div>
+    </>
   );
 }

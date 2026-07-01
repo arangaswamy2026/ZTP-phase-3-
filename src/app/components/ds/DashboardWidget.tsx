@@ -2,10 +2,10 @@ import * as React from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "../ui/utils";
 
-export type WidgetPeriod = "30d" | "7d" | "yesterday";
+export type WidgetPeriod = "15d" | "7d" | "yesterday";
 
 const PERIOD_LABELS: Record<WidgetPeriod, string> = {
-  "30d": "Last 30 days",
+  "15d": "Last 15 days",
   "7d": "Last 7 days",
   yesterday: "Yesterday",
 };
@@ -13,6 +13,8 @@ const PERIOD_LABELS: Record<WidgetPeriod, string> = {
 export interface DashboardWidgetProps extends React.ComponentProps<"div"> {
   /** Widget title displayed top-left. */
   title: string;
+  /** Optional icon tile rendered before the title (pass a pre-styled element). */
+  icon?: React.ReactNode;
   /** When provided, renders a period dropdown top-right. */
   period?: WidgetPeriod;
   onPeriodChange?: (period: WidgetPeriod) => void;
@@ -38,6 +40,7 @@ export interface DashboardWidgetProps extends React.ComponentProps<"div"> {
  */
 export function DashboardWidget({
   title,
+  icon,
   period,
   onPeriodChange,
   viewAllLabel = "View all",
@@ -59,10 +62,13 @@ export function DashboardWidget({
       {...props}
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 px-5 pt-4 pb-3 shrink-0">
-        <h3 className="text-sm font-bold text-foreground m-0">
-          {title}
-        </h3>
+      <div className="flex items-center justify-between gap-2 px-5 pt-4 pb-3 border-b border-border shrink-0">
+        <div className="flex items-center gap-2.5">
+          {icon && icon}
+          <h3 className="text-sm font-bold text-foreground m-0">
+            {title}
+          </h3>
+        </div>
 
         {/* Period dropdown — only when period prop is supplied */}
         {period != null && (
