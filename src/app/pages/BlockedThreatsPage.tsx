@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import { Search, Download, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { SeverityChip, DataTable, THead, TH, TR, TD } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
@@ -179,6 +180,14 @@ const PAGE_SIZE = 10;
 
 // ── All-Tenants view ──────────────────────────────────────────────────────────
 
+// All events across all tenants, each tagged with tenant info
+const ALL_EVENTS = Object.entries(EVENTS_BY_TENANT).flatMap(([id, evts]) => {
+  const tenant = TENANTS.find((t) => t.id === id)!;
+  return evts.map((e) => ({ ...e, tenantId: id, tenantName: tenant?.name ?? id, tenantColor: tenant?.color ?? '#9ca3af' }));
+}).sort((a, b) => b.ts.localeCompare(a.ts));
+
+const LOG_PAGE_SIZE = 10;
+
 function AllTenantsView({
   range,
   onRangeChange,
@@ -188,11 +197,44 @@ function AllTenantsView({
   onRangeChange: (r: string) => void;
   onDrilldown: (id: string, severity?: string) => void;
 }) {
+  const navigate = useNavigate();
   // Aggregate stats
   const total    = TENANTS.reduce((s, t) => s + tenantTotal(t, range), 0);
   const critical = TENANTS.reduce((s, t) => s + tenantCritical(t, range), 0);
   const affected = TENANTS.filter((t) => tenantTotal(t, range) > 0).length;
   const mfa      = TENANTS.reduce((s, t) => s + scaled(t.counts.mfa, range), 0);
+
+  // Event log state
+  const [logSearch,       setLogSearch]       = useState('');
+  const [logFilterTenant, setLogFilterTenant] = useState('');
+  const [logFilterThreat, setLogFilterThreat] = useState('');
+  const [logFilterSev,    setLogFilterSev]    = useState('');
+  const [logPage,         setLogPage]         = useState(1);
+
+  const activeTenants = TENANTS.filter((t) => (EVENTS_BY_TENANT[t.id]?.length ?? 0) > 0);
+
+  const logFiltered = useMemo(() => {
+    const q = logSearch.toLowerCase();
+    return ALL_EVENTS.filter((e) => {
+      if (q && !e.user.toLowerCase().includes(q) && !e.ip.includes(q) && !e.tenantName.toLowerCase().includes(q)) return false;
+      if (logFilterTenant && e.tenantId !== logFilterTenant) return false;
+      if (logFilterThreat && e.type     !== logFilterThreat) return false;
+      if (logFilterSev    && e.severity !== logFilterSev)    return false;
+      return true;
+    });
+  }, [logSearch, logFilterTenant, logFilterThreat, logFilterSev]);
+
+  const logTotalPages = Math.max(1, Math.ceil(logFiltered.length / LOG_PAGE_SIZE));
+  const logSafePage   = Math.min(logPage, logTotalPages);
+  const logPageEvents = logFiltered.slice((logSafePage - 1) * LOG_PAGE_SIZE, logSafePage * LOG_PAGE_SIZE);
+
+  function handleLogExport() {
+    exportCSV(
+      ['Timestamp', 'Tenant', 'Threat Type', 'User', 'Source IP', 'Destination App', 'Policy Matched', 'Severity', 'Action'],
+      logFiltered.map((e) => [e.ts, e.tenantName, e.type, e.user, e.ip, e.app, e.policy, e.severity, e.action]),
+      'blocked-threats-event-log.csv',
+    );
+  }
 
   // Threat breakdown
   const aggCounts = THREAT_TYPES.map((tt) => ({
@@ -224,6 +266,15 @@ function AllTenantsView({
 
   return (
     <div className="space-y-5 pb-10">
+      {/* Back link */}
+      <button
+        onClick={() => navigate('/msp-dashboard')}
+        className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ChevronLeft className="w-3.5 h-3.5" />
+        Dashboard
+      </button>
+
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <PageHeader title="Blocked Threats" />
@@ -255,8 +306,11 @@ function AllTenantsView({
       {/* Two-column grid */}
       <div className="flex gap-4 flex-wrap items-start">
 
+        {/* Left column: threat breakdown + event log stacked */}
+        <div className="flex-1 min-w-[300px] flex flex-col gap-4">
+
         {/* Threat type breakdown */}
-        <div className="flex-1 min-w-[300px] bg-card border rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
             <span className="text-sm font-medium text-foreground">Threat Type Breakdown</span>
             <span className="text-xs text-muted-foreground">{rangeLabel[range] ?? ''}</span>
@@ -277,6 +331,151 @@ function AllTenantsView({
             ))}
           </div>
         </div>
+
+        {/* ── Aggregate event log ──────────────────────────────────────────── */}
+        <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+            <span className="text-sm font-medium text-foreground">Event Log — All Tenants</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">{logFiltered.length} event{logFiltered.length !== 1 ? 's' : ''}</span>
+              <button
+                onClick={handleLogExport}
+                className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
+              >
+                <Download className="w-3 h-3" />
+                CSV
+              </button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex items-center gap-2 flex-wrap px-5 py-3 border-b border-border">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search user, IP, or tenant…"
+                value={logSearch}
+                onChange={(e) => { setLogSearch(e.target.value); setLogPage(1); }}
+                className="h-8 pl-8 pr-3 w-56 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card"
+              />
+            </div>
+            <select
+              value={logFilterTenant}
+              onChange={(e) => { setLogFilterTenant(e.target.value); setLogPage(1); }}
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+            >
+              <option value="">All Tenants</option>
+              {activeTenants.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+            <select
+              value={logFilterThreat}
+              onChange={(e) => { setLogFilterThreat(e.target.value); setLogPage(1); }}
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+            >
+              <option value="">All Threat Types</option>
+              {THREAT_TYPES.map((t) => <option key={t.key} value={t.label}>{t.label}</option>)}
+            </select>
+            <select
+              value={logFilterSev}
+              onChange={(e) => { setLogFilterSev(e.target.value); setLogPage(1); }}
+              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+            >
+              <option value="">All Severities</option>
+              {['Critical', 'High', 'Medium'].map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            {(logSearch || logFilterTenant || logFilterThreat || logFilterSev) && (
+              <button
+                onClick={() => { setLogSearch(''); setLogFilterTenant(''); setLogFilterThreat(''); setLogFilterSev(''); setLogPage(1); }}
+                className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-muted-foreground transition-colors ml-auto"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            {logFiltered.length === 0 ? (
+              <div className="text-center py-10 text-sm text-muted-foreground">No events match the current filters.</div>
+            ) : (
+              <DataTable>
+                <THead>
+                  <tr>
+                    {['Timestamp', 'Tenant', 'Threat Type', 'User', 'Destination App', 'Severity', 'Action'].map((h) => (
+                      <TH key={h}>{h}</TH>
+                    ))}
+                  </tr>
+                </THead>
+                <tbody>
+                  {logPageEvents.map((e, i) => (
+                    <TR key={i}>
+                      <TD className="text-xs text-muted-foreground whitespace-nowrap font-mono">{e.ts}</TD>
+                      <TD>
+                        <button
+                          onClick={() => onDrilldown(e.tenantId)}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-action hover:underline"
+                        >
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.tenantColor }} />
+                          {e.tenantName}
+                        </button>
+                      </TD>
+                      <TD className="text-foreground">{e.type}</TD>
+                      <TD className="text-foreground">{e.user}</TD>
+                      <TD className="text-foreground">{e.app}</TD>
+                      <TD><SeverityChip level={SEV[e.severity]?.level ?? 'med'}>{e.severity}</SeverityChip></TD>
+                      <TD className="text-xs font-semibold text-destructive">{e.action}</TD>
+                    </TR>
+                  ))}
+                </tbody>
+              </DataTable>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {logFiltered.length > 0 && (
+            <div className="flex items-center justify-between px-5 py-3 border-t border-border text-xs text-muted-foreground">
+              <span>
+                Showing {(logSafePage - 1) * LOG_PAGE_SIZE + 1}–{Math.min(logSafePage * LOG_PAGE_SIZE, logFiltered.length)} of {logFiltered.length} events
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setLogPage((p) => Math.max(1, p - 1))}
+                  disabled={logSafePage <= 1}
+                  className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                {Array.from({ length: logTotalPages }, (_, i) => i + 1)
+                  .filter((p) => logTotalPages <= 7 || p <= 2 || p >= logTotalPages - 1 || Math.abs(p - logSafePage) <= 1)
+                  .map((p, idx, arr) => (
+                    <span key={p}>
+                      {idx > 0 && arr[idx - 1] !== p - 1 && <span className="px-1 text-muted-foreground">…</span>}
+                      <button
+                        onClick={() => setLogPage(p)}
+                        className={`w-7 h-7 flex items-center justify-center rounded-md border text-xs font-medium transition-colors ${
+                          p === logSafePage
+                            ? 'bg-action text-action-foreground border-action'
+                            : 'border-border hover:bg-muted text-foreground'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </span>
+                  ))}
+                <button
+                  onClick={() => setLogPage((p) => Math.min(logTotalPages, p + 1))}
+                  disabled={logSafePage >= logTotalPages}
+                  className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        </div>{/* end left column */}
 
         {/* Top tenants by volume */}
         <div className="w-[340px] min-w-[280px] bg-card border rounded-2xl shadow-sm overflow-hidden">
@@ -367,6 +566,7 @@ function AllTenantsView({
           </div>
         </div>
       </div>
+
     </div>
   );
 }

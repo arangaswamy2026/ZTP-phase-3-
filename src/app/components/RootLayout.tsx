@@ -39,13 +39,22 @@ function RootLayoutContent() {
   };
 
   const handleAppChange = (appId: string) => {
+    if (appId === 'inventory') {
+      window.open('/ZTP-phase-3-/product-inventory.html', '_blank');
+      return;
+    }
+    if (appId === 'dashboard') {
+      window.open('/ZTP-phase-3-/dashboard.html', '_blank');
+      return;
+    }
+
     setActiveApp(appId);
-    
+
     const items = appNavItems[appId] || [];
     // Prefer dashboard if available (e.g. for ZTC), otherwise use first item
     const dashboardItem = items.find(i => i.id === 'dashboard');
     const targetItem = dashboardItem || items[0];
-    
+
     if (targetItem) {
       navigate(`/${targetItem.id}`);
     }

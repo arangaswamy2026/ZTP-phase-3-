@@ -24,7 +24,7 @@ export function ClientDownloadModal({ isOpen, onClose }: ClientDownloadModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
+        <DialogHeader className="text-left">
           <DialogTitle>Download Unified Client</DialogTitle>
           <DialogDescription>
             Share these details with your users to get them started.
@@ -43,14 +43,14 @@ export function ClientDownloadModal({ isOpen, onClose }: ClientDownloadModalProp
             </div>
             <div className="flex-1">
               <h4 className="text-sm font-bold text-blue-900 mb-1">Invite Users to Download Client App</h4>
-              <p className="text-xs text-blue-700 mb-4">
+              <p className="text-xs text-blue-700 mb-4 text-left">
                 Share these following details with the users via email
               </p>
               
               <div className="space-y-4">
                 {/* Invite Code Field */}
                 <div>
-                    <div className="text-[10px] font-bold text-blue-800 uppercase mb-1.5 tracking-wide">Invite Code</div>
+                    <div className="text-[10px] font-bold text-blue-800 uppercase mb-1.5 tracking-wide text-left">Invite Code</div>
                     <div className="flex items-center gap-2">
                         <code className="flex-1 bg-white border border-blue-200 rounded px-3 py-2 text-sm font-mono text-gray-800 tracking-wider">
                         INV-8829-XJ44
@@ -63,7 +63,7 @@ export function ClientDownloadModal({ isOpen, onClose }: ClientDownloadModalProp
 
                 {/* Download URL Field */}
                 <div>
-                    <div className="text-[10px] font-bold text-blue-800 uppercase mb-1.5 tracking-wide">Client Download URL</div>
+                    <div className="text-[10px] font-bold text-blue-800 uppercase mb-1.5 tracking-wide text-left">Client Download URL</div>
                     <div className="flex items-center gap-2">
                         <div className="flex-1 bg-white border border-blue-200 rounded px-3 py-2 text-sm text-gray-600 truncate select-all">
                             https://getcseapp.sonicwall.com/download_app/

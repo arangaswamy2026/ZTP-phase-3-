@@ -15,7 +15,6 @@ import {
 import {
   Save,
   Shield,
-  AlertTriangle,
   CheckCircle2,
   X,
   Info,
@@ -23,6 +22,7 @@ import {
   Minus,
   ChevronDown,
 } from 'lucide-react';
+import { SaasApp, SaasAppPicker, AppDetailModal } from '../components/SaasAppPicker';
 import { PageHeader } from '../components/PageHeader';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
 import { toast } from 'sonner@2.0.3';
@@ -44,7 +44,6 @@ const THREAT_CATEGORIES = [
 
 const USERS_LIST = ['Alice', 'John', 'Sarah', 'Michael', 'Emily', 'David'];
 const GROUPS_LIST = ['Design', 'Engineering', 'Sales', 'Marketing', 'HR', 'Finance'];
-const APPLICATIONS_LIST = ['Expiry', 'San', 'Envoy', 'Box', 'Dropbox', 'Slack', 'Teams'];
 const CATEGORY_LIST = [
   'Adult Issues',
   'Gambling',
@@ -55,7 +54,6 @@ const CATEGORY_LIST = [
   'News',
   'Sports',
 ];
-const APP_LIST = ['BitTorrent', 'NordVPN', 'Tor Browser', 'uTorrent', 'ExpressVPN'];
 const GEO_LIST = ['Russia', 'China', 'Iran', 'North Korea', 'Syria', 'Cuba'];
 
 type SourceRow = {
@@ -66,8 +64,7 @@ type SourceRow = {
 
 type DestinationRow = {
   id: string;
-  type: 'Applications' | 'Internet';
-  selectedItems: string[];
+  type: 'Internet';
 };
 
 export function CreateInternetPolicyPage() {
@@ -84,11 +81,12 @@ export function CreateInternetPolicyPage() {
     { id: '1', type: 'Groups', selectedItems: [] },
   ]);
   const [destinationRows, setDestinationRows] = useState<DestinationRow[]>([
-    { id: '1', type: 'Internet', selectedItems: [] },
+    { id: '1', type: 'Internet' },
   ]);
 
   // Dropdowns state
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+  const [detailApp, setDetailApp] = useState<SaasApp | null>(null);
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -117,7 +115,6 @@ export function CreateInternetPolicyPage() {
 
   const [appBlockingEnabled, setAppBlockingEnabled] = useState(true);
   const [blockedApps, setBlockedApps] = useState<string[]>([]);
-  const [appBlockingDropdownOpen, setAppBlockingDropdownOpen] = useState(false);
 
   const [appBypassEnabled, setAppBypassEnabled] = useState(false);
   const [domainBlockingEnabled, setDomainBlockingEnabled] = useState(true);
@@ -131,9 +128,6 @@ export function CreateInternetPolicyPage() {
 
   const [riskBlockingEnabled, setRiskBlockingEnabled] = useState(true);
   const [urlAllowlistEnabled, setUrlAllowlistEnabled] = useState(false);
-  const [floodProtectionEnabled, setFloodProtectionEnabled] = useState(true);
-  const [ipsEnabled, setIpsEnabled] = useState(true);
-
   // Pre-populate for edit mode
   useEffect(() => {
     if (isEdit && id) {
@@ -198,44 +192,14 @@ export function CreateInternetPolicyPage() {
   };
 
   // Destination row functions
-  const addDestinationRow = (type: 'Applications' | 'Internet') => {
-    const newRow: DestinationRow = {
-      id: Date.now().toString(),
-      type,
-      selectedItems: [],
-    };
-    setDestinationRows([...destinationRows, newRow]);
+  const addDestinationRow = () => {
+    setDestinationRows([...destinationRows, { id: Date.now().toString(), type: 'Internet' }]);
   };
 
   const removeDestinationRow = (rowId: string) => {
     if (destinationRows.length > 1) {
       setDestinationRows(destinationRows.filter((row) => row.id !== rowId));
     }
-  };
-
-  const toggleDestinationItem = (rowId: string, item: string) => {
-    setDestinationRows(
-      destinationRows.map((row) =>
-        row.id === rowId
-          ? {
-              ...row,
-              selectedItems: row.selectedItems.includes(item)
-                ? row.selectedItems.filter((i) => i !== item)
-                : [...row.selectedItems, item],
-            }
-          : row
-      )
-    );
-  };
-
-  const removeDestinationItem = (rowId: string, item: string) => {
-    setDestinationRows(
-      destinationRows.map((row) =>
-        row.id === rowId
-          ? { ...row, selectedItems: row.selectedItems.filter((i) => i !== item) }
-          : row
-      )
-    );
   };
 
   const toggleDropdown = (key: string) => {
@@ -245,12 +209,6 @@ export function CreateInternetPolicyPage() {
   const toggleCategory = (cat: string) => {
     setBlockedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
-
-  const toggleBlockedApp = (app: string) => {
-    setBlockedApps((prev) =>
-      prev.includes(app) ? prev.filter((a) => a !== app) : [...prev, app]
     );
   };
 
@@ -275,11 +233,9 @@ export function CreateInternetPolicyPage() {
     return type === 'Users' ? USERS_LIST : GROUPS_LIST;
   };
 
-  const getOptionsForDestinationType = (type: 'Applications' | 'Internet') => {
-    return type === 'Applications' ? APPLICATIONS_LIST : [];
-  };
-
   return (
+    <>
+    {detailApp && <AppDetailModal app={detailApp} onClose={() => setDetailApp(null)} />}
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
       <PageHeader
         title="Create Internet Policy"
@@ -457,113 +413,19 @@ export function CreateInternetPolicyPage() {
               Destination
             </h3>
             <button
-              onClick={() => addDestinationRow('Internet')}
+              onClick={addDestinationRow}
               className="w-[24px] h-[24px] border border-[#0b8aeb] rounded-[3px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity"
             >
               <Plus className="w-[12px] h-[12px] text-[#0b8aeb]" />
             </button>
           </div>
 
-          {destinationRows.map((row, index) => (
+          {destinationRows.map((row) => (
             <div key={row.id} className="flex gap-[6px] items-center">
-              {/* Type Dropdown */}
-              <div className="relative">
-                <button
-                  data-dropdown-trigger
-                  onClick={() => toggleDropdown(`destination-type-${row.id}`)}
-                  className="bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between w-[148px]"
-                >
-                  <span className="text-[14px] text-[#0a0a0a]">{row.type}</span>
-                  <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50" />
-                </button>
-                {openDropdowns[`destination-type-${row.id}`] && (
-                  <div 
-                    data-dropdown-menu
-                    className="absolute top-full mt-1 left-0 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50"
-                  >
-                    <div
-                      onClick={() => {
-                        setDestinationRows(
-                          destinationRows.map((r) =>
-                            r.id === row.id ? { ...r, type: 'Applications', selectedItems: [] } : r
-                          )
-                        );
-                        toggleDropdown(`destination-type-${row.id}`);
-                      }}
-                      className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                    >
-                      Applications
-                    </div>
-                    <div
-                      onClick={() => {
-                        setDestinationRows(
-                          destinationRows.map((r) =>
-                            r.id === row.id ? { ...r, type: 'Internet', selectedItems: [] } : r
-                          )
-                        );
-                        toggleDropdown(`destination-type-${row.id}`);
-                      }}
-                      className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                    >
-                      Internet
-                    </div>
-                  </div>
-                )}
+              <div className="bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center w-[148px]">
+                <span className="text-[14px] text-[#0a0a0a]">Internet</span>
               </div>
-
-              {/* Selected Items Container - Only show for Applications */}
-              {row.type === 'Applications' ? (
-                <div className="flex-1 relative">
-                  <div className="bg-white border border-[#e5e7eb] rounded-[8px] min-h-[43px] px-[13px] py-[8px] flex items-center justify-between">
-                    <div className="flex flex-wrap gap-[5px]">
-                      {row.selectedItems.map((item) => (
-                        <div
-                          key={item}
-                          className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[6px] px-[8px] py-[4px] flex items-center gap-2 h-[26px]"
-                        >
-                          <span className="text-[12px] text-[#364153]">{item}</span>
-                          <button
-                            onClick={() => removeDestinationItem(row.id, item)}
-                            className="text-[#9ca3af] hover:text-[#6a7282]"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      data-dropdown-trigger
-                      onClick={() => toggleDropdown(`destination-items-${row.id}`)}
-                      className="text-[#717182] opacity-50"
-                    >
-                      <ChevronDown className="w-[16px] h-[16px]" />
-                    </button>
-                  </div>
-                  {openDropdowns[`destination-items-${row.id}`] && (
-                    <div 
-                      data-dropdown-menu
-                      className="absolute top-full mt-1 left-0 right-0 bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50 max-h-[200px] overflow-y-auto"
-                    >
-                      {getOptionsForDestinationType(row.type).map((item) => (
-                        <div
-                          key={item}
-                          onClick={() => {
-                            toggleDestinationItem(row.id, item);
-                          }}
-                          className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer flex items-center gap-2"
-                        >
-                          <Checkbox checked={row.selectedItems.includes(item)} />
-                          <span className="text-[14px] text-[#364153]">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex-1" />
-              )}
-
-              {/* Remove Button */}
+              <div className="flex-1" />
               <button
                 onClick={() => removeDestinationRow(row.id)}
                 className="w-[24px] h-[24px] border border-[#0b8aeb] rounded-[3px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity shrink-0"
@@ -701,41 +563,14 @@ export function CreateInternetPolicyPage() {
                 <p className="font-['Inter',sans-serif] font-medium text-[13px] leading-[18px] text-[#364153]">
                   Which applications would you like to block access to?
                 </p>
-                <div className="relative">
-                  <button
-                    onClick={() => setAppBlockingDropdownOpen(!appBlockingDropdownOpen)}
-                    className="w-full bg-white border border-[#e5e7eb] rounded-[8px] h-[36px] px-[13px] flex items-center justify-between"
-                  >
-                    <span className="text-[13px] text-[#9ca3af]">Select Apps</span>
-                    <Plus className="w-[16px] h-[16px] text-[#6a7282]" />
-                  </button>
-                  {appBlockingDropdownOpen && (
-                    <div className="absolute top-full mt-1 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50 max-h-[200px] overflow-y-auto">
-                      {APP_LIST.map((app) => (
-                        <div
-                          key={app}
-                          onClick={() => toggleBlockedApp(app)}
-                          className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer flex items-center gap-2"
-                        >
-                          <Checkbox checked={blockedApps.includes(app)} />
-                          <span className="text-[14px] text-[#364153]">{app}</span>
-                        </div>
-                      ))}
-                    </div>
+                <SaasAppPicker
+                  selectedItems={blockedApps}
+                  onToggle={(app) => setBlockedApps((prev) =>
+                    prev.includes(app) ? prev.filter((a) => a !== app) : [...prev, app]
                   )}
-                </div>
-                {blockedApps.length > 0 && (
-                  <div className="flex flex-wrap gap-[6px] mt-2">
-                    {blockedApps.map((app) => (
-                      <div key={app} className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[6px] px-[8px] py-[4px] flex items-center gap-2">
-                        <span className="text-[12px] text-[#364153]">{app}</span>
-                        <button onClick={() => toggleBlockedApp(app)} className="text-[#9ca3af] hover:text-[#6a7282]">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  onRemove={(app) => setBlockedApps((prev) => prev.filter((a) => a !== app))}
+                  onViewDetails={(app) => setDetailApp(app)}
+                />
               </>
             )}
           </div>
@@ -933,11 +768,6 @@ export function CreateInternetPolicyPage() {
                     <span className="font-['Inter',sans-serif] font-medium text-[13px] text-[#101828]">Block</span>
                     <span className="text-[11px] text-[#6a7282] border-l border-[#e5e7eb] pl-[6px] ml-[2px]">High-Risk</span>
                   </div>
-                  <div className="flex items-center gap-[6px] px-[10px] py-[5px] border border-amber-200 bg-amber-50 rounded-[8px]">
-                    <AlertTriangle className="w-[14px] h-[14px] text-amber-500" />
-                    <span className="font-['Inter',sans-serif] font-medium text-[13px] text-[#101828]">Warn</span>
-                    <span className="text-[11px] text-[#6a7282] border-l border-[#e5e7eb] pl-[6px] ml-[2px]">Medium-Risk</span>
-                  </div>
                   <div className="flex items-center gap-[6px] px-[10px] py-[5px] border border-green-200 bg-green-50 rounded-[8px]">
                     <CheckCircle2 className="w-[14px] h-[14px] text-green-600" />
                     <span className="font-['Inter',sans-serif] font-medium text-[13px] text-[#101828]">Allow</span>
@@ -949,7 +779,7 @@ export function CreateInternetPolicyPage() {
           </div>
 
           {/* URL Allowlist */}
-          <div className="flex flex-col gap-[8px] pb-[16px] border-b border-[#e5e7eb]">
+          <div className="flex flex-col gap-[8px]">
             <div className="flex items-center justify-between">
               <h4 className="font-['Inter',sans-serif] font-bold text-[14px] leading-[20px] text-[#101828]">
                 URL Allowlist
@@ -969,47 +799,6 @@ export function CreateInternetPolicyPage() {
             </div>
           </div>
 
-          {/* Flood Protection */}
-          <div className="flex flex-col gap-[8px] pb-[16px] border-b border-[#e5e7eb]">
-            <div className="flex items-center justify-between">
-              <h4 className="font-['Inter',sans-serif] font-bold text-[14px] leading-[20px] text-[#101828]">
-                Flood Protection
-              </h4>
-              <button
-                onClick={() => setFloodProtectionEnabled(!floodProtectionEnabled)}
-                className={`w-[44px] h-[24px] rounded-full relative transition-colors ${
-                  floodProtectionEnabled ? 'bg-[#1447e6]' : 'bg-[#e5e7eb]'
-                }`}
-              >
-                <div
-                  className={`absolute top-[2px] w-[20px] h-[20px] rounded-full bg-white transition-transform ${
-                    floodProtectionEnabled ? 'translate-x-[22px]' : 'translate-x-[2px]'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* IPS */}
-          <div className="flex flex-col gap-[8px]">
-            <div className="flex items-center justify-between">
-              <h4 className="font-['Inter',sans-serif] font-bold text-[14px] leading-[20px] text-[#101828]">
-                IPS
-              </h4>
-              <button
-                onClick={() => setIpsEnabled(!ipsEnabled)}
-                className={`w-[44px] h-[24px] rounded-full relative transition-colors ${
-                  ipsEnabled ? 'bg-[#1447e6]' : 'bg-[#e5e7eb]'
-                }`}
-              >
-                <div
-                  className={`absolute top-[2px] w-[20px] h-[20px] rounded-full bg-white transition-transform ${
-                    ipsEnabled ? 'translate-x-[22px]' : 'translate-x-[2px]'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1035,5 +824,6 @@ export function CreateInternetPolicyPage() {
         </Button>
       </div>
     </div>
+    </>
   );
 }

@@ -12,7 +12,7 @@ import { PageHeader } from './PageHeader';
 
 // ── Activity data ────────────────────────────────────────────────────
 
-interface Activity {
+export interface Activity {
   id: string;
   source: string;
   policyName: string;
@@ -23,7 +23,7 @@ interface Activity {
   timeAgo: string;
 }
 
-const MOCK_ACTIVITIES: Activity[] = [
+export const MOCK_ACTIVITIES: Activity[] = [
   { id: 'act-1', source: 'sarah.johnson@acme.com', policyName: 'Initial Default SIA Configuration', policyType: 'Internet', destination: 'malicious-site.example', actionReason: 'Category: Malware', action: 'Blocked', timeAgo: '2 minutes ago' },
   { id: 'act-2', source: 'mike.chen@acme.com', policyName: 'Allow Employee Zone to Internet', policyType: 'Zone', destination: 'salesforce.com', actionReason: 'Business Applications', action: 'Allowed', timeAgo: '5 minutes ago' },
   { id: 'act-3', source: 'emma.williams@acme.com', policyName: 'Block High Risk Sites', policyType: 'Internet', destination: 'suspicious-domain.xyz', actionReason: 'Reputation: High Risk', action: 'Blocked', timeAgo: '12 minutes ago' },
@@ -58,7 +58,7 @@ const MOCK_ACTIVITIES: Activity[] = [
 
 // ── Action badge ─────────────────────────────────────────────────────
 
-function ActionBadge({ action }: { action: 'Allowed' | 'Blocked' }) {
+export function ActionBadge({ action }: { action: 'Allowed' | 'Blocked' }) {
   if (action === 'Allowed') {
     return (
       <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[12px] text-[#16a34a]">

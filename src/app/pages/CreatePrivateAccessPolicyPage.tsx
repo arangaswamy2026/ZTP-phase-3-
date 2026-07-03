@@ -11,6 +11,7 @@ import {
   ChevronDown,
   X,
 } from 'lucide-react';
+import { SaasApp, SaasAppPicker, AppDetailModal } from '../components/SaasAppPicker';
 import { PageHeader } from '../components/PageHeader';
 import { toast } from 'sonner@2.0.3';
 
@@ -25,7 +26,7 @@ type SourceRow = {
 
 type DestinationRow = {
   id: string;
-  type: 'FQDN' | 'IP Ranges';
+  type: 'FQDN' | 'IP Ranges' | 'Applications';
   fqdn?: string;
   ipRange?: string;
   protocols: string;
@@ -33,6 +34,7 @@ type DestinationRow = {
   anyProtocol: boolean;
   anyPort: boolean;
   anyIP: boolean;
+  selectedItems?: string[];
 };
 
 export function CreatePrivateAccessPolicyPage() {
@@ -57,6 +59,9 @@ export function CreatePrivateAccessPolicyPage() {
 
   // Dropdowns state
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+
+  // Applications detail modal
+  const [detailApp, setDetailApp] = useState<SaasApp | null>(null);
 
   // Device Trust
   const [deviceTrust, setDeviceTrust] = useState<'high' | 'medium' | 'low' | 'ignore'>('ignore');
@@ -129,7 +134,7 @@ export function CreatePrivateAccessPolicyPage() {
   };
 
   // Destination row functions
-  const addDestinationRow = (type: 'FQDN' | 'IP Ranges') => {
+  const addDestinationRow = (type: 'FQDN' | 'IP Ranges' | 'Applications') => {
     const newRow: DestinationRow = {
       id: Date.now().toString(),
       type,
@@ -140,8 +145,30 @@ export function CreatePrivateAccessPolicyPage() {
       anyProtocol: false,
       anyPort: false,
       anyIP: false,
+      selectedItems: type === 'Applications' ? [] : undefined,
     };
     setDestinationRows([...destinationRows, newRow]);
+  };
+
+  const toggleDestinationApp = (rowId: string, app: string) => {
+    setDestinationRows(destinationRows.map(row =>
+      row.id === rowId
+        ? {
+            ...row,
+            selectedItems: (row.selectedItems || []).includes(app)
+              ? (row.selectedItems || []).filter(i => i !== app)
+              : [...(row.selectedItems || []), app],
+          }
+        : row
+    ));
+  };
+
+  const removeDestinationApp = (rowId: string, app: string) => {
+    setDestinationRows(destinationRows.map(row =>
+      row.id === rowId
+        ? { ...row, selectedItems: (row.selectedItems || []).filter(i => i !== app) }
+        : row
+    ));
   };
 
   const removeDestinationRow = (rowId: string) => {
@@ -167,6 +194,8 @@ export function CreatePrivateAccessPolicyPage() {
   };
 
   return (
+    <>
+    {detailApp && <AppDetailModal app={detailApp} onClose={() => setDetailApp(null)} />}
     <div className="flex flex-col gap-[24px] w-full max-w-[900px]">
       <PageHeader
         title="Create Private Access Policy"
@@ -378,7 +407,7 @@ export function CreatePrivateAccessPolicyPage() {
             </button>
           </div>
 
-          {destinationRows.map((row, index) => (
+          {destinationRows.map((row) => (
             <div key={row.id} className="flex flex-col gap-[8px]">
               <div className="flex gap-[6px] items-center">
                 {/* Type Dropdown */}
@@ -398,11 +427,7 @@ export function CreatePrivateAccessPolicyPage() {
                     >
                       <div
                         onClick={() => {
-                          updateDestinationRow(row.id, {
-                            type: 'FQDN',
-                            fqdn: '',
-                            ipRange: '',
-                          });
+                          updateDestinationRow(row.id, { type: 'FQDN', fqdn: '', ipRange: '', selectedItems: undefined });
                           toggleDropdown(`destination-type-${row.id}`);
                         }}
                         className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
@@ -411,92 +436,90 @@ export function CreatePrivateAccessPolicyPage() {
                       </div>
                       <div
                         onClick={() => {
-                          updateDestinationRow(row.id, {
-                            type: 'IP Ranges',
-                            fqdn: '',
-                            ipRange: '',
-                          });
+                          updateDestinationRow(row.id, { type: 'IP Ranges', fqdn: '', ipRange: '', selectedItems: undefined });
                           toggleDropdown(`destination-type-${row.id}`);
                         }}
                         className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
                       >
                         IP Ranges
                       </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* FQDN/IP Input */}
-                <Input
-                  placeholder={
-                    row.type === 'FQDN'
-                      ? 'internal.myapp.com'
-                      : '192.168.1.0/24'
-                  }
-                  value={row.type === 'FQDN' ? row.fqdn : row.ipRange}
-                  onChange={(e) =>
-                    updateDestinationRow(row.id, {
-                      [row.type === 'FQDN' ? 'fqdn' : 'ipRange']: e.target.value,
-                    })
-                  }
-                  disabled={row.type === 'IP Ranges' && row.anyIP}
-                  className="flex-1 bg-white border-[#e5e7eb] rounded-[8px] h-[43px] font-['Inter',sans-serif] text-[14px] disabled:bg-[#f9fafb] disabled:text-[#9ca3af]"
-                />
-
-                {/* Protocols Dropdown */}
-                <div className="relative w-[148px]">
-                  <button
-                    data-dropdown-trigger
-                    onClick={() => toggleDropdown(`destination-protocol-${row.id}`)}
-                    className="w-full bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between"
-                  >
-                    <span className="text-[14px] text-[#9ca3af]">{row.protocols}</span>
-                    <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50" />
-                  </button>
-                  {openDropdowns[`destination-protocol-${row.id}`] && (
-                    <div
-                      data-dropdown-menu
-                      className="absolute top-full mt-1 left-0 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50"
-                    >
                       <div
                         onClick={() => {
-                          updateDestinationRow(row.id, { protocols: 'TCP' });
-                          toggleDropdown(`destination-protocol-${row.id}`);
+                          updateDestinationRow(row.id, { type: 'Applications', fqdn: undefined, ipRange: undefined, selectedItems: [] });
+                          toggleDropdown(`destination-type-${row.id}`);
                         }}
                         className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
                       >
-                        TCP
-                      </div>
-                      <div
-                        onClick={() => {
-                          updateDestinationRow(row.id, { protocols: 'UDP' });
-                          toggleDropdown(`destination-protocol-${row.id}`);
-                        }}
-                        className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                      >
-                        UDP
-                      </div>
-                      <div
-                        onClick={() => {
-                          updateDestinationRow(row.id, { protocols: 'All Protocols' });
-                          toggleDropdown(`destination-protocol-${row.id}`);
-                        }}
-                        className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
-                      >
-                        All Protocols
+                        Applications
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Ports Input */}
-                <Input
-                  placeholder="Ports: ex 22, 50-250"
-                  value={row.ports}
-                  onChange={(e) => updateDestinationRow(row.id, { ports: e.target.value })}
-                  disabled={row.anyPort}
-                  className="w-[200px] bg-white border-[#e5e7eb] rounded-[8px] h-[43px] font-['Inter',sans-serif] text-[14px] disabled:bg-[#f9fafb] disabled:text-[#9ca3af]"
-                />
+                {/* Applications picker */}
+                {row.type === 'Applications' ? (
+                  <SaasAppPicker
+                    selectedItems={row.selectedItems || []}
+                    onToggle={(app) => toggleDestinationApp(row.id, app)}
+                    onRemove={(app) => removeDestinationApp(row.id, app)}
+                    onViewDetails={(app) => setDetailApp(app)}
+                  />
+                ) : (
+                  <>
+                    {/* FQDN/IP Input */}
+                    <Input
+                      placeholder={row.type === 'FQDN' ? 'internal.myapp.com' : '192.168.1.0/24'}
+                      value={row.type === 'FQDN' ? row.fqdn : row.ipRange}
+                      onChange={(e) =>
+                        updateDestinationRow(row.id, {
+                          [row.type === 'FQDN' ? 'fqdn' : 'ipRange']: e.target.value,
+                        })
+                      }
+                      disabled={row.type === 'IP Ranges' && row.anyIP}
+                      className="flex-1 bg-white border-[#e5e7eb] rounded-[8px] h-[43px] font-['Inter',sans-serif] text-[14px] disabled:bg-[#f9fafb] disabled:text-[#9ca3af]"
+                    />
+
+                    {/* Protocols Dropdown */}
+                    <div className="relative w-[148px]">
+                      <button
+                        data-dropdown-trigger
+                        onClick={() => toggleDropdown(`destination-protocol-${row.id}`)}
+                        className="w-full bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between"
+                      >
+                        <span className="text-[14px] text-[#9ca3af]">{row.protocols}</span>
+                        <ChevronDown className="w-[16px] h-[16px] text-[#717182] opacity-50" />
+                      </button>
+                      {openDropdowns[`destination-protocol-${row.id}`] && (
+                        <div
+                          data-dropdown-menu
+                          className="absolute top-full mt-1 left-0 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-lg z-50"
+                        >
+                          {['TCP', 'UDP', 'All Protocols'].map((p) => (
+                            <div
+                              key={p}
+                              onClick={() => {
+                                updateDestinationRow(row.id, { protocols: p });
+                                toggleDropdown(`destination-protocol-${row.id}`);
+                              }}
+                              className="px-[13px] py-[8px] hover:bg-[#f9fafb] cursor-pointer text-[14px] text-[#364153]"
+                            >
+                              {p}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Ports Input */}
+                    <Input
+                      placeholder="Ports: ex 22, 50-250"
+                      value={row.ports}
+                      onChange={(e) => updateDestinationRow(row.id, { ports: e.target.value })}
+                      disabled={row.anyPort}
+                      className="w-[200px] bg-white border-[#e5e7eb] rounded-[8px] h-[43px] font-['Inter',sans-serif] text-[14px] disabled:bg-[#f9fafb] disabled:text-[#9ca3af]"
+                    />
+                  </>
+                )}
 
                 {/* Remove Button */}
                 <button
@@ -507,51 +530,38 @@ export function CreatePrivateAccessPolicyPage() {
                 </button>
               </div>
 
-              {/* Checkboxes Row */}
-              {row.type === 'FQDN' ? (
-                // FQDN: Only show "Any" under Ports
+              {/* Checkboxes Row — only for FQDN / IP Ranges */}
+              {row.type === 'FQDN' && (
                 <div className="flex items-center gap-[24px] ml-[154px]">
-                  {/* Empty space under IP/FQDN field */}
                   <div style={{ width: 'calc(100% - 148px - 200px - 48px)' }} />
-                  {/* Empty space under Protocols */}
                   <div style={{ width: '148px' }} />
-                  {/* "Any" checkbox under Ports */}
                   <div className="flex items-center gap-[8px]" style={{ width: '200px' }}>
                     <Checkbox
                       checked={row.anyPort}
-                      onCheckedChange={(checked) =>
-                        updateDestinationRow(row.id, { anyPort: checked as boolean })
-                      }
+                      onCheckedChange={(checked) => updateDestinationRow(row.id, { anyPort: checked as boolean })}
                     />
                     <Label className="font-['Inter',sans-serif] font-medium text-[13px] text-[#364153] cursor-pointer">
                       Any
                     </Label>
                   </div>
                 </div>
-              ) : (
-                // IP Ranges: Show "Any" under IP field and under Ports
+              )}
+              {row.type === 'IP Ranges' && (
                 <div className="flex items-center gap-[6px] ml-[154px]">
-                  {/* "Any" checkbox under IP field */}
                   <div className="flex items-center gap-[8px]" style={{ width: 'calc(100% - 148px - 200px - 48px)' }}>
                     <Checkbox
                       checked={row.anyIP}
-                      onCheckedChange={(checked) =>
-                        updateDestinationRow(row.id, { anyIP: checked as boolean })
-                      }
+                      onCheckedChange={(checked) => updateDestinationRow(row.id, { anyIP: checked as boolean })}
                     />
                     <Label className="font-['Inter',sans-serif] font-medium text-[13px] text-[#364153] cursor-pointer">
                       Any
                     </Label>
                   </div>
-                  {/* Empty space under Protocols */}
                   <div style={{ width: '148px' }} />
-                  {/* "Any" checkbox under Ports */}
                   <div className="flex items-center gap-[8px]" style={{ width: '200px' }}>
                     <Checkbox
                       checked={row.anyPort}
-                      onCheckedChange={(checked) =>
-                        updateDestinationRow(row.id, { anyPort: checked as boolean })
-                      }
+                      onCheckedChange={(checked) => updateDestinationRow(row.id, { anyPort: checked as boolean })}
                     />
                     <Label className="font-['Inter',sans-serif] font-medium text-[13px] text-[#364153] cursor-pointer">
                       Any
@@ -698,5 +708,6 @@ export function CreatePrivateAccessPolicyPage() {
         </Button>
       </div>
     </div>
+    </>
   );
 }

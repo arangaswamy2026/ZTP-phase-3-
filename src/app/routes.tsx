@@ -25,9 +25,17 @@ import { PrivateAccessPolicyDetailPage } from "./pages/PrivateAccessPolicyDetail
 import { TenantManagementPage } from "./pages/TenantManagementPage";
 import { InventoryPage } from "./pages/InventoryPage";
 import { BlockedThreatsPage } from "./pages/BlockedThreatsPage";
+import { EndpointsPage } from "./pages/EndpointsPage";
+import { EndpointThreatsPage } from "./pages/EndpointThreatsPage";
+import { TenantBlockedThreatsPage } from "./pages/TenantBlockedThreatsPage";
+import { TenantTopDomainsPage } from "./pages/TenantTopDomainsPage";
+import { TenantActivityLogPage } from "./pages/TenantActivityLogPage";
 import { AllTenantsSystemStatusPage } from "./pages/AllTenantsSystemStatusPage";
+import { ConnectorDetailPage } from "./pages/ConnectorDetailPage";
 import { NetworkPage } from "./pages/NetworkPage";
 import { MspDashboardPage } from "./pages/MspDashboardPage";
+import { MspTopDomainsPage } from "./pages/MspTopDomainsPage";
+import { MspTrafficPage } from "./pages/MspTrafficPage";
 
 export const router = createBrowserRouter([
   {
@@ -55,10 +63,18 @@ export const router = createBrowserRouter([
       { path: "users", Component: UsersPage },
       { path: "tenants", Component: TenantsPage },
       { path: "msp-dashboard", Component: MspDashboardPage },
+      { path: "msp-top-domains", Component: MspTopDomainsPage },
+      { path: "msp-traffic", Component: MspTrafficPage },
       { path: "tenant-management", Component: TenantManagementPage },
       { path: "inventory", Component: InventoryPage },
       { path: "blocked-threats", Component: BlockedThreatsPage },
+      { path: "endpoints", Component: EndpointsPage },
+      { path: "endpoint-threats", Component: EndpointThreatsPage },
+      { path: "tenant-blocked-threats", Component: TenantBlockedThreatsPage },
+      { path: "tenant-top-domains", Component: TenantTopDomainsPage },
+      { path: "tenant-activity-log", Component: TenantActivityLogPage },
       { path: "all-tenants-system-status", Component: AllTenantsSystemStatusPage },
+      { path: "all-tenants-system-status/:id", Component: ConnectorDetailPage },
       { path: "network", Component: NetworkPage },
       { path: "activation", Component: ActivationPage },
       { path: "advanced-settings", Component: AdvancedSettingsPage },

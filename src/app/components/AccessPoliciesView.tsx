@@ -45,7 +45,7 @@ import spaSvgPaths from '../imports/Container-3/svg-xwxx0ijhn6';
 
 function ZoneIcon() {
   return (
-    <div className="flex items-center justify-center rounded-[11px] bg-[#ffedd4] size-[40px] shrink-0">
+    <div className="flex items-center justify-center rounded-[16px] bg-[#ffedd4] size-[40px] shrink-0">
       <Network className="w-[20px] h-[20px] text-[#CA3500]" />
     </div>
   );
@@ -53,7 +53,7 @@ function ZoneIcon() {
 
 function SIAIcon() {
   return (
-    <div className="flex items-center justify-center rounded-[11px] bg-[#f3e8ff] size-[40px] shrink-0">
+    <div className="flex items-center justify-center rounded-[16px] bg-[#f3e8ff] size-[40px] shrink-0">
       <Globe className="w-[20px] h-[20px] text-[#8200DB]" />
     </div>
   );
@@ -61,7 +61,7 @@ function SIAIcon() {
 
 function SPAIcon() {
   return (
-    <div className="flex items-center justify-center rounded-[11px] bg-[#dbeafe] size-[40px] shrink-0">
+    <div className="flex items-center justify-center rounded-[16px] bg-[#dbeafe] size-[40px] shrink-0">
       <Lock className="w-[20px] h-[20px] text-[#1447E6]" />
     </div>
   );
@@ -72,13 +72,13 @@ function SPAIcon() {
 function TypeBadge({ type }: { type: 'Default' | 'User' }) {
   if (type === 'Default') {
     return (
-      <span className="inline-flex items-center rounded-[8px] border border-[#e5e7eb] bg-[#f9fafb] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+      <span className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] bg-[#ececf0] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
         Default
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-[8px] border border-[#d1d5db] bg-white px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#364153]">
+    <span className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] bg-[#ececf0] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#717182]">
         Custom
       </span>
     );
@@ -89,13 +89,13 @@ function TypeBadge({ type }: { type: 'Default' | 'User' }) {
 function ActionBadge({ action }: { action: 'Allow' | 'Deny' }) {
   if (action === 'Allow') {
     return (
-      <span className="inline-flex items-center rounded-[8px] border border-[#b9f8cf] bg-[#f0fdf4] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#008236]">
+      <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#16a34a]">
         Allow
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-[8px] bg-[#d4183d] px-[8px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-white">
+    <span className="inline-flex items-center rounded-[8px] bg-[#d4183d1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#d4183d]">
         Deny
       </span>
     );
@@ -111,7 +111,7 @@ function RowActions({ policy }: { policy: Policy }) {
         size="sm"
         className="h-[32px] w-[32px] p-0 rounded-[8px] border border-black/10"
       >
-        <Edit className="w-[14px] h-[14px] text-[#0a0a0a]" />
+        <Edit className="w-[14px] h-[14px] text-[#717182]" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -120,7 +120,7 @@ function RowActions({ policy }: { policy: Policy }) {
             size="sm"
             className="h-[32px] w-[32px] p-0 rounded-[8px] border border-black/10"
           >
-            <MoreVertical className="w-[18px] h-[18px] text-[#0a0a0a]" />
+            <MoreVertical className="w-[18px] h-[18px] text-[#717182]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -148,7 +148,7 @@ function RowActions({ policy }: { policy: Policy }) {
 function HeaderCell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <th
-      className={`px-[16px] py-[12px] text-left font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap ${className}`}
+      className={`px-[16px] py-[12px] text-left font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap ${className}`}
     >{children}</th>
   );
 }
@@ -208,14 +208,14 @@ function DragHandleIcon() {
 // Zone badge component for Source/Destination columns
 function ZoneBadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="inline-flex items-center rounded-[8px] border border-[#e5e7eb] overflow-hidden">
-      <div className="bg-[#f9fafb] border-r border-[#e5e7eb] pl-[9px] pr-[4px] py-[2px]">
-        <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+    <div className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] overflow-hidden">
+      <div className="bg-[#ececf0] border-r border-[rgba(0,0,0,0.1)] pl-[9px] pr-[4px] py-[2px]">
+        <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
           {label}:
         </span>
       </div>
-      <div className="bg-[#f9fafb] pl-[4px] pr-[9px] py-[2px]">
-        <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+      <div className="bg-[#ececf0] pl-[4px] pr-[9px] py-[2px]">
+        <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
           {value}
         </span>
       </div>
@@ -223,10 +223,103 @@ function ZoneBadge({ label, value }: { label: string; value: string }) {
   );
 }
 
+const ZONE_ORDER_KEY = 'ztp_zone_policy_order';
+
+function loadSavedOrder(): string[] | null {
+  try { return JSON.parse(localStorage.getItem(ZONE_ORDER_KEY) || 'null'); } catch { return null; }
+}
+
+function saveOrder(ids: string[]) {
+  try { localStorage.setItem(ZONE_ORDER_KEY, JSON.stringify(ids)); } catch {}
+}
+
+function applyOrder(policies: Policy[], savedIds: string[] | null): Policy[] {
+  if (!savedIds) return policies;
+  const map = new Map(policies.map(p => [p.id, p]));
+  const ordered = savedIds.flatMap(id => map.has(id) ? [map.get(id)!] : []);
+  const remaining = policies.filter(p => !savedIds.includes(p.id));
+  return [...ordered, ...remaining];
+}
+
+// Detect conflicts: an Allow rule above a Deny rule for the same source+destination means the
+// Deny is unreachable — the higher-priority Allow will always match first, making the Deny dead.
+// A Deny above an Allow is intentional ordering and is NOT a conflict.
+// Returns a map from policy id to the id of the policy it conflicts with.
+function detectConflicts(policies: Policy[]): Map<string, string> {
+  const conflictMap = new Map<string, string>();
+  for (let i = 0; i < policies.length; i++) {
+    for (let j = i + 1; j < policies.length; j++) {
+      const a = policies[i]; // higher priority (lower index)
+      const b = policies[j]; // lower priority (higher index)
+      const srcA = a.sourceBadges?.[0]?.value?.toLowerCase() ?? '';
+      const dstA = a.destinationBadges?.[0]?.value?.toLowerCase() ?? '';
+      const srcB = b.sourceBadges?.[0]?.value?.toLowerCase() ?? '';
+      const dstB = b.destinationBadges?.[0]?.value?.toLowerCase() ?? '';
+      // Only a conflict when Allow sits above Deny for the same traffic — Deny is shadowed
+      if (srcA && dstA && srcA === srcB && dstA === dstB && a.action === 'Allow' && b.action === 'Deny') {
+        conflictMap.set(a.id, b.id);
+        conflictMap.set(b.id, a.id);
+      }
+    }
+  }
+  return conflictMap;
+}
+
 function ZonePoliciesTable({ onNewPolicy, onPolicyClick }: { onNewPolicy: () => void, onPolicyClick?: (policy: Policy) => void }) {
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [policyToDelete, setPolicyToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const base = MOCK_POLICIES.filter((p) => p.type === 'Zone');
+  const [savedPolicies, setSavedPolicies] = useState<Policy[]>(() => applyOrder(base, loadSavedOrder()));
+  const [policies, setPolicies] = useState<Policy[]>(savedPolicies);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // Drag state
+  const dragIndex = React.useRef<number | null>(null);
+  const dragOverIndex = React.useRef<number | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    dragIndex.current = index;
+    dragOverIndex.current = index;
+    e.dataTransfer.effectAllowed = 'move';
+    setDragActive(true);
+    setTimeout(() => { (e.currentTarget as HTMLElement).style.opacity = '0.45'; }, 0);
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    (e.currentTarget as HTMLElement).style.opacity = '1';
+    setDragActive(false);
+    if (dragIndex.current !== null && dragOverIndex.current !== null && dragIndex.current !== dragOverIndex.current) {
+      const updated = [...policies];
+      const [moved] = updated.splice(dragIndex.current, 1);
+      updated.splice(dragOverIndex.current, 0, moved);
+      setPolicies(updated);
+      setIsDirty(true);
+    }
+    dragIndex.current = null;
+    dragOverIndex.current = null;
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    dragOverIndex.current = index;
+  };
+
+  const handleApply = () => {
+    saveOrder(policies.map(p => p.id));
+    setSavedPolicies(policies);
+    setIsDirty(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleDiscard = () => {
+    setPolicies(savedPolicies);
+    setIsDirty(false);
+  };
 
   const handleDeleteClick = (e: React.MouseEvent, id: string, name: string) => {
     e.stopPropagation();
@@ -236,15 +329,24 @@ function ZonePoliciesTable({ onNewPolicy, onPolicyClick }: { onNewPolicy: () => 
 
   const handleConfirmDelete = () => {
     if (policyToDelete) {
-      console.log('Deleting policy:', policyToDelete.id);
-      // TODO: Implement actual delete logic
+      const updated = policies.filter(p => p.id !== policyToDelete.id);
+      setPolicies(updated);
+      setSavedPolicies(updated);
+      saveOrder(updated.map(p => p.id));
     }
     setDeleteDialogOpen(false);
     setPolicyToDelete(null);
   };
 
-  // Use actual MOCK_POLICIES data filtered for Zone type
-  const zonePolicies = MOCK_POLICIES.filter((p) => p.type === 'Zone');
+  const conflictMap = detectConflicts(policies);
+  const conflictCount = conflictMap.size / 2;
+
+  // Number styles matching the HTML reference
+  const numStyle = (index: number, hasConflict: boolean): string => {
+    if (hasConflict) return 'bg-[#fff3ee] text-[#f05a23] border-[#f05a23]/30';
+    if (index === 0) return 'bg-[#dcfce7] text-[#15803d] border-transparent';
+    return 'bg-[#f3f4f6] text-[#374151] border-transparent hover:bg-[#fff3ee] hover:border-[#ff5d00]/40';
+  };
 
   return (
     <div className="flex flex-col gap-[16px] w-full">
@@ -253,125 +355,215 @@ function ZonePoliciesTable({ onNewPolicy, onPolicyClick }: { onNewPolicy: () => 
         <div className="flex items-center gap-[8px]">
           <ZoneIcon />
           <div className="flex flex-col justify-center pb-[3px]">
-            <span className="font-['Inter',sans-serif] font-bold text-[16px] leading-[28px] tracking-[-0.44px] text-[#101828]">
+            <span className="font-['Inter',sans-serif] font-bold text-[18px] leading-[28px] tracking-[-0.44px] text-[#1a1a1a]">
               Zone Policies
             </span>
-            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
+            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#717182]">
               Controls traffic between network zones on the Zero Trust Connector.
             </span>
           </div>
         </div>
-        <Button variant="outline" size="sm" className="shrink-0 gap-[8px] rounded-[8px] border-black/10 px-[11px] py-[6px]" onClick={onNewPolicy}>
-          <Plus className="w-[16px] h-[16px]" />
-          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#0a0a0a]">New Policy</span>
-        </Button>
+        <div className="flex items-center gap-[8px]">
+          {saved && (
+            <span className="flex items-center gap-[6px] text-[12px] font-medium text-[#15803d] bg-[#dcfce7] rounded-[6px] px-[10px] py-[5px]">
+              <svg className="w-[13px] h-[13px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Order saved
+            </span>
+          )}
+          <Button size="sm" className="shrink-0 gap-[8px] rounded-[8px] bg-[#0066cc] hover:bg-[#0052a6] text-white px-[11px] py-[6px]" onClick={onNewPolicy}>
+            <Plus className="w-[16px] h-[16px]" />
+            <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">New Policy</span>
+          </Button>
+        </div>
       </div>
 
+      {/* Pending changes action bar */}
+      {isDirty && (
+        <div className="flex items-center justify-between gap-[12px] rounded-[16px] border border-[#bfdbfe] bg-[#eff6ff] px-[16px] py-[12px]">
+          <div className="flex items-center gap-[10px]">
+            <svg className="w-[16px] h-[16px] text-[#0066cc] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span className="font-['Inter',sans-serif] font-medium text-[13px] text-[#1e40af]">
+              You have unsaved changes to the policy order.
+            </span>
+          </div>
+          <div className="flex items-center gap-[8px] shrink-0">
+            <button
+              onClick={handleDiscard}
+              className="h-[34px] px-[14px] rounded-[8px] border border-[rgba(0,0,0,0.1)] bg-white hover:bg-[#ececf0] font-['Inter',sans-serif] font-medium text-[13px] text-[#1a1a1a] transition-colors"
+            >
+              Discard changes
+            </button>
+            <button
+              onClick={handleApply}
+              className="h-[34px] px-[14px] rounded-[8px] bg-[#0066cc] hover:bg-[#0052a6] font-['Inter',sans-serif] font-bold text-[13px] text-white transition-colors"
+            >
+              Apply changes
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Conflict banner */}
+      {conflictMap.size > 0 && (
+        <div className="flex items-start gap-[10px] rounded-[16px] border-2 border-[#fed7aa] bg-gradient-to-r from-[#fff7ed] to-[#fffbeb] px-[16px] py-[12px]">
+          <svg className="w-[18px] h-[18px] text-[#c2410c] shrink-0 mt-[1px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <div className="flex flex-col gap-[2px]">
+            <span className="font-['Inter',sans-serif] font-semibold text-[13px] leading-[18px] text-[#7c2d12]">
+              {conflictCount} policy conflict{conflictCount > 1 ? 's' : ''} detected
+            </span>
+            <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#9a3412]">
+              An Allow rule is shadowing a Deny rule with the same source and destination — the Deny will never be reached. Drag the Deny above the Allow to resolve.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
-      <div className="bg-white rounded-[10px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] overflow-hidden w-full">
-        <div className="w-full">
-          {/* Header */}
-          <div className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-            <div className="flex items-center px-[36px] py-[12px]">
-              <div className="flex-1">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
-                  Policy Name
-                </p>
-              </div>
-              <div className="w-[240px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
-                  Source
-                </p>
-              </div>
-              <div className="w-[280px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
-                  Destination
-                </p>
-              </div>
-              <div className="w-[200px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
-                  Action
-                </p>
-              </div>
+      <div className="bg-white rounded-[16px] border border-[rgba(0,0,0,0.1)] shadow-[0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden w-full">
+        {/* Header */}
+        <div className="bg-[#ececf0] border-b border-[rgba(0,0,0,0.1)]">
+          <div className="flex items-center pl-[16px] pr-[16px] py-[12px] gap-[12px]">
+            <div className="w-[32px] shrink-0" />
+            <div className="w-[40px] shrink-0">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182]">#</p>
+            </div>
+            <div className="flex-1">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Policy Name</p>
+            </div>
+            <div className="w-[200px]">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Source</p>
+            </div>
+            <div className="w-[220px]">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Destination</p>
+            </div>
+            <div className="w-[160px]">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Action</p>
             </div>
           </div>
+        </div>
 
-          {/* Body */}
-          <div>
-            {zonePolicies.map((policy) => (
-              <div 
+        {/* Body */}
+        <div>
+          {policies.map((policy, index) => {
+            const hasConflict = conflictMap.has(policy.id);
+            return (
+              <div
                 key={policy.id}
-                className="relative border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa] cursor-pointer min-h-[100px]"
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnd={handleDragEnd}
+                onDragOver={(e) => handleDragOver(e, index)}
+                className={`relative border-b border-[rgba(0,0,0,0.06)] last:border-b-0 cursor-pointer transition-colors ${
+                  hasConflict ? 'bg-[#fffbeb] hover:bg-[#fff7ed]' : 'hover:bg-[#f8f9fa]'
+                }`}
+                style={hasConflict ? { boxShadow: 'inset 3px 0 0 #f59e0b' } : undefined}
                 onClick={() => onPolicyClick?.(policy)}
               >
-                <div className="flex items-start px-[36px] py-[16px]">
+                <div className="flex items-center pl-[16px] pr-[16px] py-[16px] gap-[12px] min-h-[80px]">
                   {/* Drag handle */}
-                  <div className="absolute left-0 top-[39px] pl-[8px] pr-[12px] w-[40px]">
+                  <div
+                    className="w-[32px] shrink-0 flex items-center justify-center cursor-grab active:cursor-grabbing text-[#9ca3af] hover:text-[#6b7280]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <DragHandleIcon />
                   </div>
 
+                  {/* Row number */}
+                  <div className="w-[40px] shrink-0 flex items-center" onClick={(e) => e.stopPropagation()}>
+                    <div className={`w-[32px] h-[32px] rounded-[6px] border-[1.5px] flex items-center justify-center font-['Inter',sans-serif] font-bold text-[13px] transition-colors ${numStyle(index, hasConflict)}`}>
+                      {index + 1}
+                    </div>
+                  </div>
+
                   {/* Policy Name */}
-                  <div className="flex-1 flex flex-col gap-[2px] pr-[40px]">
-                    <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#101828]">
-                      {policy.name}
-                    </p>
-                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+                  <div className="flex-1 flex flex-col gap-[4px] min-w-0">
+                    <div className="flex items-center gap-[8px] flex-wrap">
+                      <p className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] text-[#1a1a1a]">
+                        {policy.name}
+                      </p>
+                      {hasConflict && (
+                        <span className="inline-flex items-center gap-[4px] rounded-[6px] border border-[#fed7aa] bg-[#fff7ed] px-[6px] py-[2px] shrink-0">
+                          <svg className="w-[11px] h-[11px] text-[#c2410c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                          </svg>
+                          <span className="font-['Inter',sans-serif] font-semibold text-[11px] leading-[14px] text-[#c2410c]">Conflict</span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
                       {policy.description}
                     </p>
+                    {hasConflict && (() => {
+                      const conflictIdx = policies.findIndex(p => p.id === conflictMap.get(policy.id));
+                      const isShadowing = policy.action === 'Allow'; // this Allow is hiding the Deny below
+                      return (
+                        <div className="mt-[4px] rounded-[6px] border border-[#fecaca] bg-[#fef2f2] px-[10px] py-[7px]">
+                          <span className="font-['Inter',sans-serif] font-medium text-[11px] leading-[16px] text-[#b91c1c]">
+                            {isShadowing
+                              ? `This Allow rule shadows rule #${conflictIdx + 1} — the Deny below will never be reached. Move the Deny above this rule to resolve.`
+                              : `Shadowed by rule #${conflictIdx + 1} — this Deny is unreachable because an Allow for the same traffic has higher priority.`}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Source */}
-                  <div className="w-[240px]">
+                  <div className="w-[200px] shrink-0">
                     {policy.sourceBadges && policy.sourceBadges.length > 0 && (
                       <ZoneBadge label={policy.sourceBadges[0].type} value={policy.sourceBadges[0].value} />
                     )}
                   </div>
 
                   {/* Destination */}
-                  <div className="w-[280px]">
+                  <div className="w-[220px] shrink-0">
                     {policy.destinationBadges && policy.destinationBadges.length > 0 && (
                       <ZoneBadge label={policy.destinationBadges[0].type} value={policy.destinationBadges[0].value} />
                     )}
                   </div>
 
-                  {/* Action */}
-                  <div className="w-[200px] flex items-center gap-[16px]">
+                  {/* Action + buttons */}
+                  <div className="w-[160px] shrink-0 flex items-center gap-[10px]">
                     {policy.action === 'Allow' ? (
-                      <span className="inline-flex items-center rounded-[10px] border border-[#b9f8cf] bg-[#f0fdf4] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#008236]">
+                      <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#16a34a] whitespace-nowrap">
                         Allow
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-[10px] bg-[#d4183d] px-[8px] py-[3px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-white">
-                        Block
+                      <span className="inline-flex items-center rounded-[8px] bg-[#d4183d1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#d4183d] whitespace-nowrap">
+                        Deny
                       </span>
                     )}
-                    
-                    {/* Action buttons */}
                     <div className="flex items-center gap-[4px]" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="rounded-[8px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/zone-policy/${policy.id}/edit`)}
                       >
-                        <Pencil className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Pencil className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="rounded-[8px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/zone-policy/${policy.id}`)}
                       >
-                        <Eye className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Eye className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="rounded-[8px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={(e) => handleDeleteClick(e, policy.id, policy.name)}
                       >
-                        <Trash2 className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Trash2 className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -413,14 +605,14 @@ function SIASourceBadge({ badges }: { badges: Array<{ type: 'Group' | 'User'; va
   return (
     <div className="inline-flex flex-row gap-[8px]">
       {badges.map((badge, idx) => (
-        <div key={idx} className="inline-flex items-center rounded-[8px] border border-[#e5e7eb] overflow-hidden">
-          <div className="bg-[#f9fafb] border-r border-[#e5e7eb] pl-[9px] pr-[4px] py-[2px]">
-            <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+        <div key={idx} className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] overflow-hidden">
+          <div className="bg-[#ececf0] border-r border-[rgba(0,0,0,0.1)] pl-[9px] pr-[4px] py-[2px]">
+            <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
               {badge.type}:
             </span>
           </div>
-          <div className="bg-[#f9fafb] pl-[4px] pr-[9px] py-[2px]">
-            <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+          <div className="bg-[#ececf0] pl-[4px] pr-[9px] py-[2px]">
+            <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
               {badge.value}
             </span>
           </div>
@@ -433,8 +625,8 @@ function SIASourceBadge({ badges }: { badges: Array<{ type: 'Group' | 'User'; va
 // Simple destination badge for Internet
 function SIADestinationBadge({ value }: { value: string }) {
   return (
-    <div className="inline-flex items-center rounded-[8px] border border-[#e5e7eb] bg-[#f9fafb] px-[9px] py-[2px]">
-      <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+    <div className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] bg-[#ececf0] px-[9px] py-[2px]">
+      <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
         {value}
       </span>
     </div>
@@ -505,48 +697,48 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
         <div className="flex items-center gap-[8px]">
           <SIAIcon />
           <div className="flex flex-col justify-center pb-[3px]">
-            <span className="font-['Inter',sans-serif] font-bold text-[16px] leading-[28px] tracking-[-0.44px] text-[#101828]">
+            <span className="font-['Inter',sans-serif] font-bold text-[18px] leading-[28px] tracking-[-0.44px] text-[#1a1a1a]">
               Internet Access Policies
             </span>
-            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
+            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#717182]">
               Controls user traffic destined for the public internet, including category filtering and threat protection.
             </span>
           </div>
         </div>
-        <Button variant="outline" size="sm" className="shrink-0 gap-[8px] rounded-[8px] border-black/10 px-[11px] py-[6px]" onClick={onNewPolicy}>
+        <Button size="sm" className="shrink-0 gap-[8px] rounded-[8px] bg-[#0066cc] hover:bg-[#0052a6] text-white px-[11px] py-[6px]" onClick={onNewPolicy}>
           <Plus className="w-[16px] h-[16px]" />
-          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#0a0a0a]">New Policy</span>
+          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">New Policy</span>
         </Button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-[10px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] overflow-hidden w-full">
+      <div className="bg-white rounded-[16px] border border-[rgba(0,0,0,0.1)] shadow-[0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden w-full">
         <div className="w-full">
           {/* Header */}
-          <div className="bg-[#f9fafb] border-b border-[#e5e7eb]">
+          <div className="bg-[#ececf0] border-b border-[rgba(0,0,0,0.1)]">
             <div className="flex items-center px-[16px] py-[12px]">
               <div className="flex-1">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Policy Name
                 </p>
               </div>
               <div className="w-[280px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Source
                 </p>
               </div>
               <div className="w-[180px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Destination
                 </p>
               </div>
               <div className="w-[160px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Security Controls
                 </p>
               </div>
               <div className="w-[200px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Action
                 </p>
               </div>
@@ -558,16 +750,16 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
             {mockSIAPolicies.map((policy) => (
               <div 
                 key={policy.id}
-                className="relative border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa] cursor-pointer min-h-[100px]"
+                className="relative border-b border-[rgba(0,0,0,0.06)] last:border-b-0 hover:bg-[#f8f9fa] cursor-pointer min-h-[100px]"
                 onClick={() => onPolicyClick?.(filtered[0])}
               >
                 <div className="flex items-start px-[16px] py-[16px]">
                   {/* Policy Name */}
                   <div className="flex-1 flex flex-col gap-[2px] pr-[40px]">
-                    <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#101828]">
+                    <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#1a1a1a]">
                       {policy.name}
                     </p>
-                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
                       {policy.description}
                     </p>
                   </div>
@@ -586,8 +778,8 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
 
                   {/* Security Controls */}
                   <div className="w-[160px]">
-                    <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[8px] size-[24px] flex items-center justify-center">
-                      <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+                    <div className="bg-[#ececf0] border border-[rgba(0,0,0,0.1)] rounded-[8px] size-[24px] flex items-center justify-center">
+                      <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
                         {policy.securityControls}
                       </span>
                     </div>
@@ -595,29 +787,29 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
 
                   {/* Action */}
                   <div className="w-[200px] flex items-center gap-[16px]">
-                    <span className="inline-flex items-center rounded-[10px] border border-[#b9f8cf] bg-[#f0fdf4] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#008236]">
+                    <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#16a34a]">
                       Allow
                     </span>
                     
                     {/* Action buttons */}
                     <div className="flex items-center gap-[4px]" onClick={(e) => e.stopPropagation()}>
                       <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/internet-policy/${policy.id}/edit`)}
                       >
-                        <Pencil className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Pencil className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/internet-policy/${policy.id}`)}
                       >
-                        <Eye className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Eye className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={(e) => handleDeleteClick(e, policy.id, policy.name)}
                       >
-                        <Trash2 className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Trash2 className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
                     </div>
                   </div>
@@ -662,14 +854,14 @@ function SIAPoliciesTable({ policies, searchQuery, onPolicyClick, onNewPolicy }:
 // SPA Badge component - can be used for Source and Destination
 function SPABadge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="inline-flex items-center rounded-[8px] border border-[#e5e7eb] overflow-hidden">
-      <div className="bg-[#f9fafb] border-r border-[#e5e7eb] pl-[9px] pr-[4px] py-[2px]">
-        <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+    <div className="inline-flex items-center rounded-[8px] border border-[rgba(0,0,0,0.1)] overflow-hidden">
+      <div className="bg-[#ececf0] border-r border-[rgba(0,0,0,0.1)] pl-[9px] pr-[4px] py-[2px]">
+        <span className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
           {label}:
         </span>
       </div>
-      <div className="bg-[#f9fafb] pl-[4px] pr-[9px] py-[2px]">
-        <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#6a7282] whitespace-nowrap">
+      <div className="bg-[#ececf0] pl-[4px] pr-[9px] py-[2px]">
+        <span className="font-['Inter',sans-serif] font-normal text-[12px] leading-[1.2] text-[#717182] whitespace-nowrap">
           {value}
         </span>
       </div>
@@ -728,53 +920,52 @@ function SPAPoliciesTable({
         <div className="flex items-center gap-[8px]">
           <SPAIcon />
           <div className="flex flex-col justify-center pb-[3px]">
-            <span className="font-['Inter',sans-serif] font-bold text-[16px] leading-[28px] tracking-[-0.44px] text-[#101828]">
+            <span className="font-['Inter',sans-serif] font-bold text-[18px] leading-[28px] tracking-[-0.44px] text-[#1a1a1a]">
               Private Access Policies
             </span>
-            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#6a7282]">
+            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#717182]">
               Controls user access to internal applications and resources using Zero Trust principles.
             </span>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="shrink-0 gap-[8px] rounded-[8px] border-black/10 px-[11px] py-[6px]"
+        <Button
+          size="sm"
+          className="shrink-0 gap-[8px] rounded-[8px] bg-[#0066cc] hover:bg-[#0052a6] text-white px-[11px] py-[6px]"
           onClick={onNewPolicy}
         >
           <Plus className="w-[16px] h-[16px]" />
-          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#0a0a0a]">New Policy</span>
+          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px]">New Policy</span>
         </Button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-[10px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] overflow-hidden w-full">
+      <div className="bg-white rounded-[16px] border border-[rgba(0,0,0,0.1)] shadow-[0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden w-full">
         <div className="w-full">
           {/* Header */}
-          <div className="bg-[#f9fafb] border-b border-[#e5e7eb]">
+          <div className="bg-[#ececf0] border-b border-[rgba(0,0,0,0.1)]">
             <div className="flex items-center px-[16px] py-[12px]">
               <div className="flex-1">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Policy Name
                 </p>
               </div>
               <div className="w-[180px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Source
                 </p>
               </div>
               <div className="w-[160px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Destination
                 </p>
               </div>
               <div className="w-[180px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Trust Level
                 </p>
               </div>
               <div className="w-[200px]">
-                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#6a7282] whitespace-nowrap">
+                <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">
                   Action
                 </p>
               </div>
@@ -786,29 +977,29 @@ function SPAPoliciesTable({
             {mockSPAPolicies.map((policy) => (
               <div 
                 key={policy.id}
-                className="relative border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa] cursor-pointer min-h-[91px]"
+                className="relative border-b border-[rgba(0,0,0,0.06)] last:border-b-0 hover:bg-[#f8f9fa] cursor-pointer min-h-[91px]"
                 onClick={() => onPolicyClick?.(policies[0])}
               >
                 <div className="flex items-start px-[16px] py-[16px]">
                   {/* Policy Name */}
                   <div className="flex-1 flex flex-col gap-[2px] pr-[40px]">
-                    <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#101828]">
+                    <p className="font-['Inter',sans-serif] font-medium text-[16px] leading-[24px] tracking-[-0.6225px] text-[#1a1a1a]">
                       {policy.name}
                     </p>
-                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#6a7282]">
+                    <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
                       {policy.description}
                     </p>
                   </div>
 
                   {/* Source - Multiple badges stacked */}
-                  <div className="w-[180px] flex flex-col gap-[11px]">
+                  <div className="w-[180px] flex flex-col items-start gap-[11px]">
                     {policy.sourceBadges.map((badge, idx) => (
                       <SPABadge key={idx} label={badge.label} value={badge.value} />
                     ))}
                   </div>
 
                   {/* Destination - Multiple badges stacked */}
-                  <div className="w-[160px] flex flex-col gap-[11px]">
+                  <div className="w-[160px] flex flex-col items-start gap-[11px]">
                     {policy.destBadges.map((badge, idx) => (
                       <SPABadge key={idx} label={badge.label} value={badge.value} />
                     ))}
@@ -817,7 +1008,7 @@ function SPAPoliciesTable({
                   {/* Trust Level */}
                   <div className="w-[180px]">
                     {policy.trustLevel ? (
-                      <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] tracking-[-0.3004px] text-[#364153]">
+                      <p className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] tracking-[-0.3004px] text-[#1a1a1a]">
                         {policy.trustLevel}
                       </p>
                     ) : (
@@ -827,29 +1018,29 @@ function SPAPoliciesTable({
 
                   {/* Action */}
                   <div className="w-[200px] flex items-center gap-[16px]">
-                    <span className="inline-flex items-center rounded-[10px] border border-[#b9f8cf] bg-[#f0fdf4] px-[8px] py-[3px] font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#008236]">
+                    <span className="inline-flex items-center rounded-[8px] bg-[#16a34a1a] px-[8px] py-[3px] font-['Inter',sans-serif] font-semibold text-[11px] leading-[16px] text-[#16a34a]">
                       Allow
                     </span>
                     
                     {/* Action buttons */}
                     <div className="flex items-center gap-[4px]" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/private-access-policy/${policy.id}/edit`)}
                       >
-                        <Pencil className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Pencil className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={() => navigate(`/private-access-policy/${policy.id}`)}
                       >
-                        <Eye className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Eye className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
-                      <button 
-                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-gray-50"
+                      <button
+                        className="relative rounded-[10px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
                         onClick={(e) => handleDeleteClick(e, policy.id, policy.name)}
                       >
-                        <Trash2 className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                        <Trash2 className="w-[14px] h-[14px] text-[#717182]" />
                       </button>
                     </div>
                   </div>
@@ -941,18 +1132,18 @@ export function AccessPoliciesView({ onCreatePolicy, onEditPolicy }: AccessPolic
               placeholder="Search policies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[#f3f3f5] pl-[36px] pr-[12px] py-[4px] h-[36px] rounded-[10px] border-0 font-['Inter',sans-serif] font-normal text-[14px] tracking-[-0.15px] text-[#717182] placeholder:text-[#717182]"
+              className="bg-white pl-[36px] pr-[12px] py-[4px] h-[36px] rounded-[8px] border border-[rgba(0,0,0,0.1)] font-['Inter',sans-serif] font-normal text-[13px] text-[#1a1a1a] placeholder:text-[#717182] focus-visible:ring-0 focus-visible:border-[#0066cc] focus-visible:shadow-[0_0_0_3px_rgba(0,102,204,0.2)]"
             />
           </div>
 
           {/* Filter Button */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center justify-center gap-[8px] bg-white h-[36px] px-[13px] py-[1px] rounded-[10px] border border-[rgba(0,0,0,0.1)] shrink-0">
-                <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.3px] text-[#0a0a0a] whitespace-nowrap">
+              <button className="flex items-center justify-center gap-[8px] bg-white h-[36px] px-[13px] py-[1px] rounded-[8px] border border-[rgba(0,0,0,0.1)] shrink-0 hover:bg-[#ececf0]">
+                <span className="font-['Inter',sans-serif] font-medium text-[13px] leading-[20px] text-[#1a1a1a] whitespace-nowrap">
                   Filter
                 </span>
-                <ChevronDown className="w-[16px] h-[16px] text-[#0a0a0a]" />
+                <ChevronDown className="w-[14px] h-[14px] text-[#717182]" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { TrendingUp, Shield, Globe, BarChart2 } from 'lucide-react@0.487.0';
 import { TenantAvatar } from '../components/TenantAvatar';
 import { StatusBadge, DataTable, THead, TH, TR, TD, DashboardWidget } from '../components/ds';
 import type { WidgetPeriod } from '../components/ds';
@@ -102,7 +103,7 @@ function TrafficLineChart() {
   const xLabels = [0, 4, 9, 14, 19, 24, 29];
 
   return (
-    <div className="flex flex-col h-full px-5 pb-4">
+    <div className="flex flex-col h-full px-5 pt-5 pb-4">
       <div className="flex flex-wrap gap-x-3 gap-y-1 mb-2 shrink-0">
         {TRAFFIC_SERIES.map((s) => (
           <span key={s.name} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -192,11 +193,11 @@ function TrafficLineChart() {
 export function MspDashboardPage() {
   const navigate = useNavigate();
   const maxThreat = Math.max(...THREAT_BREAKDOWN.map((t) => t.count));
-  const [trafficPeriod, setTrafficPeriod] = useState<WidgetPeriod>('30d');
-  const [threatPeriod, setThreatPeriod] = useState<WidgetPeriod>('30d');
-  const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('30d');
-  const [actionsPeriod, setActionsPeriod] = useState<WidgetPeriod>('30d');
-  const [tenantPeriod, setTenantPeriod] = useState<WidgetPeriod>('30d');
+  const [trafficPeriod, setTrafficPeriod] = useState<WidgetPeriod>('15d');
+  const [threatPeriod, setThreatPeriod] = useState<WidgetPeriod>('15d');
+  const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('15d');
+  const [actionsPeriod, setActionsPeriod] = useState<WidgetPeriod>('15d');
+  const [tenantPeriod, setTenantPeriod] = useState<WidgetPeriod>('15d');
 
   return (
     <div className="space-y-6 pb-10">
@@ -207,9 +208,12 @@ export function MspDashboardPage() {
         {/* Web Traffic Trend */}
         <DashboardWidget
           title="Web Traffic Trend"
+          icon={<div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0"><TrendingUp className="w-4 h-4 text-green-600" /></div>}
           sub="· requests / day"
           period={trafficPeriod}
           onPeriodChange={setTrafficPeriod}
+          onViewAll={() => navigate('/msp-traffic')}
+          viewAllLabel="View all traffic"
           className="h-[400px]"
         >
           <TrafficLineChart />
@@ -218,12 +222,13 @@ export function MspDashboardPage() {
         {/* Blocked Threats */}
         <DashboardWidget
           title="Blocked Threats"
+          icon={<div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0"><Shield className="w-4 h-4 text-[#d4183d]" /></div>}
           period={threatPeriod}
           onPeriodChange={setThreatPeriod}
           onViewAll={() => navigate('/blocked-threats')}
           className="h-[400px]"
         >
-          <div className="h-full overflow-auto px-5 pb-5">
+          <div className="h-full overflow-auto px-5 pt-5 pb-5">
             <div className="space-y-3">
               {THREAT_BREAKDOWN.map((t) => (
                 <div key={t.label} className="flex items-center gap-3">
@@ -241,9 +246,10 @@ export function MspDashboardPage() {
         {/* Top Domains & Traffic */}
         <DashboardWidget
           title="Top Domains & Traffic"
+          icon={<div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0"><Globe className="w-4 h-4 text-[#0066cc]" /></div>}
           period={domainsPeriod}
           onPeriodChange={setDomainsPeriod}
-          onViewAll={() => {}}
+          onViewAll={() => navigate('/msp-top-domains')}
           viewAllLabel="View all domains"
           bodyClass="overflow-auto"
           className="h-[400px]"
@@ -285,11 +291,12 @@ export function MspDashboardPage() {
         {/* Actions Breakdown */}
         <DashboardWidget
           title="Actions Breakdown"
+          icon={<div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center shrink-0"><BarChart2 className="w-4 h-4 text-purple-600" /></div>}
           period={actionsPeriod}
           onPeriodChange={setActionsPeriod}
           className="h-[400px]"
         >
-          <div className="h-full flex flex-col justify-start gap-4 px-5 pb-5">
+          <div className="h-full flex flex-col justify-start gap-4 px-5 pt-5 pb-5">
             {/* Legend */}
             <div className="flex items-center gap-4 shrink-0">
               <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

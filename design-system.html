@@ -1116,11 +1116,113 @@
 
     </div>
 
+    <!-- Variant C + D: with icon tile -->
+    <div style="margin-top:var(--space-lg);">
+      <p style="font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-muted);margin:0 0 var(--space-sm)">With icon tile — header variant</p>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-lg)">
+
+        <!-- Web Traffic Trend — green icon -->
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;height:220px;padding:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--color-border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg>
+              </div>
+              <h3 style="font-size:var(--text-small);font-weight:700;color:var(--color-text);margin:0;">Web Traffic Trend</h3>
+            </div>
+            <select style="font-size:11px;font-weight:500;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:4px 24px 4px 10px;cursor:pointer;outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 6px center;background-size:12px;">
+              <option>Last 15 days</option>
+              <option>Last 7 days</option>
+              <option>Yesterday</option>
+            </select>
+          </div>
+          <div style="flex:1;min-height:0;padding:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:var(--text-small);color:var(--color-text-muted)">Chart body slot</span>
+          </div>
+          <div style="flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding:10px 20px;border-top:1px solid var(--color-border);">
+            <a class="demo-link" href="#" style="font-size:var(--text-small);display:inline-flex;align-items:center;gap:4px;">
+              View all traffic
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Blocked Threats — red icon -->
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;height:220px;padding:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--color-border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:#fff1f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#d4183d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>
+              </div>
+              <h3 style="font-size:var(--text-small);font-weight:700;color:var(--color-text);margin:0;">Blocked Threats</h3>
+            </div>
+            <select style="font-size:11px;font-weight:500;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:4px 24px 4px 10px;cursor:pointer;outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 6px center;background-size:12px;">
+              <option>Last 15 days</option>
+              <option>Last 7 days</option>
+              <option>Yesterday</option>
+            </select>
+          </div>
+          <div style="flex:1;min-height:0;padding:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:var(--text-small);color:var(--color-text-muted)">Chart body slot</span>
+          </div>
+          <!-- No footer for this variant -->
+        </div>
+
+        <!-- Top Domains — blue icon -->
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;height:220px;padding:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--color-border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+              </div>
+              <h3 style="font-size:var(--text-small);font-weight:700;color:var(--color-text);margin:0;">Top Domains &amp; Traffic</h3>
+            </div>
+            <select style="font-size:11px;font-weight:500;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:4px 24px 4px 10px;cursor:pointer;outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 6px center;background-size:12px;">
+              <option>Last 15 days</option>
+              <option>Last 7 days</option>
+              <option>Yesterday</option>
+            </select>
+          </div>
+          <div style="flex:1;min-height:0;padding:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:var(--text-small);color:var(--color-text-muted)">Table body slot</span>
+          </div>
+          <div style="flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding:10px 20px;border-top:1px solid var(--color-border);">
+            <a class="demo-link" href="#" style="font-size:var(--text-small);display:inline-flex;align-items:center;gap:4px;">
+              View all domains
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Actions Breakdown — purple icon -->
+        <div class="card" style="display:flex;flex-direction:column;overflow:hidden;height:220px;padding:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--color-border);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:#faf5ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="18" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="2" y="13" width="4" height="8" rx="1"/></svg>
+              </div>
+              <h3 style="font-size:var(--text-small);font-weight:700;color:var(--color-text);margin:0;">Actions Breakdown</h3>
+            </div>
+            <select style="font-size:11px;font-weight:500;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:4px 24px 4px 10px;cursor:pointer;outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22%3E%3Cpath d=%22M6 9l6 6 6-6%22/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 6px center;background-size:12px;">
+              <option>Last 15 days</option>
+              <option>Last 7 days</option>
+              <option>Yesterday</option>
+            </select>
+          </div>
+          <div style="flex:1;min-height:0;padding:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:var(--text-small);color:var(--color-text-muted)">Chart body slot</span>
+          </div>
+          <!-- No footer for this variant -->
+        </div>
+
+      </div>
+    </div>
+
     <!-- Anatomy callouts -->
     <div style="margin-top:var(--space-lg);padding:var(--space-md) var(--space-lg);background:var(--neutral-50);border:1px solid var(--color-border);border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);">
       <div>
         <p style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-muted);margin:0 0 4px">Header</p>
-        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin:0">Title (14px/500) left · Period dropdown right · optional static <code>sub</code> label in muted text</p>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin:0">Optional 32px icon tile (tinted bg + 16px icon) · Title (14px/700) · Period dropdown right · optional static <code>sub</code> label in muted text</p>
       </div>
       <div>
         <p style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-muted);margin:0 0 4px">Body</p>

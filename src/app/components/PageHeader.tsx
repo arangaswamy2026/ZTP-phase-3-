@@ -33,7 +33,7 @@ export function PageHeader({ title, subtitle, actions, back }: PageHeaderProps) 
           {title}
         </h1>
         {subtitle && (
-          <p className="text-[0.8125rem] text-[#717182] mt-1 leading-normal max-w-[56ch] m-0">
+          <p className="text-[0.8125rem] text-[#717182] mt-1 leading-normal m-0">
             {subtitle}
           </p>
         )}

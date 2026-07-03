@@ -13,6 +13,8 @@ import {
   RefreshCw,
   SlidersHorizontal,
   Users,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { TenantAvatar } from '../components/TenantAvatar';
@@ -187,8 +189,8 @@ function DownloadUnifiedClientModal({ tenant, onClose }: { tenant: Tenant; onClo
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-6 pb-4">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Download Unified Client</h2>
-            <p className="text-sm text-muted-foreground mt-1">Share these details with your users to get them started.</p>
+            <h2 className="text-lg font-semibold text-foreground text-left">Download Unified Client</h2>
+            <p className="text-sm text-muted-foreground mt-1 text-left">Share these details with your users to get them started.</p>
           </div>
           <button
             onClick={onClose}
@@ -202,35 +204,29 @@ function DownloadUnifiedClientModal({ tenant, onClose }: { tenant: Tenant; onClo
         <div className="px-6 pb-6 space-y-5">
           {/* Invite section */}
           <div className="bg-muted/50 border border-border rounded-xl p-5">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="mt-0.5 text-action">
-                <Users className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-action">Invite Users to Download Client App</div>
-                <div className="text-xs text-muted-foreground mt-0.5">Share these following details with the users via email</div>
-              </div>
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="w-4 h-4 text-action shrink-0" />
+              <span className="text-sm font-semibold text-action">Invite Users to Download Client App</span>
             </div>
-            <div className="space-y-3">
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1.5">Invite Code</div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-9 bg-background border border-input rounded-lg px-3 flex items-center text-sm font-mono text-foreground">
-                    INV-8829-XJ4
-                  </div>
-                  <button
-                    onClick={copy}
-                    className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-input bg-background text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                  >
-                    {copied ? <CircleCheck className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
+            <p className="text-xs text-muted-foreground mb-4">Share these following details with the users via email</p>
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1.5">Invite Code</div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-9 bg-background border border-input rounded-lg px-3 flex items-center text-sm font-mono text-foreground">
+                  INV-8829-XJ4
                 </div>
+                <button
+                  onClick={copy}
+                  className="h-9 px-3 flex items-center gap-1.5 rounded-lg border border-input bg-background text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  {copied ? <CircleCheck className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
               </div>
             </div>
           </div>
           {/* Download button */}
-          <Button className="w-full gap-2">
+          <Button className="w-full gap-2 bg-[#0066cc] hover:bg-[#0052a6] text-white">
             <Download className="w-4 h-4" />
             Download Client Installer
           </Button>
@@ -309,59 +305,60 @@ function TenantDetailModal({ tenant, onClose }: { tenant: Tenant; onClose: () =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div
-        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-[1000px] mx-4 overflow-hidden"
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-[560px] mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-border">
-          <div className="flex items-center gap-4">
-            <TenantAvatar size={40} />
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <TenantAvatar size={36} />
             <div>
-              <div className="text-lg font-semibold text-foreground">{tenant.name}</div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="text-[15px] font-semibold text-foreground leading-tight">{tenant.name}</div>
+              <div className="flex items-center gap-2 mt-0.5">
                 <StatusBadge status={tenant.status} />
                 <TierBadge tier={tenant.tier} />
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
-        {/* Body — sections stacked vertically */}
-        <div className="divide-y divide-border border-t border-border">
+
+        {/* Body */}
+        <div className="divide-y divide-border">
           {/* Licensing & Usage */}
-          <div className="px-8 py-6">
-            <h3 className="text-sm font-bold text-foreground mb-4">Licensing &amp; Usage</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-              <Detail label="License Breakdown" value={tenant.status === 'Pending Setup' ? 'Not provisioned' : `${tenant.licensesUsed} of ${tenant.licensesTotal} assigned`} />
+          <div className="px-5 py-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground mb-3">Licensing &amp; Usage</h3>
+            <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+              <Detail label="Licenses" value={tenant.status === 'Pending Setup' ? 'Not provisioned' : `${tenant.licensesUsed} / ${tenant.licensesTotal}`} />
               <Detail label="Policies" value={tenant.policies != null ? String(tenant.policies) : '—'} />
               <Detail label="Users" value={tenant.users != null ? String(tenant.users) : '—'} />
             </div>
           </div>
 
           {/* Health & Compliance */}
-          <div className="px-8 py-6">
-            <h3 className="text-sm font-bold text-foreground mb-4">Health &amp; Compliance</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+          <div className="px-5 py-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground mb-3">Health &amp; Compliance</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               <Detail label="Firmware" value={tenant.firmware ?? 'Unknown'} flag={tenant.firmwareOutdated ? 'Update available' : undefined} />
               <Detail label="Support Expiry" value={tenant.supportExpiry ?? '—'} flag={tenant.expired ? 'Expired' : undefined} flagTone="red" />
             </div>
           </div>
 
           {/* Account */}
-          <div className="px-8 py-6">
-            <h3 className="text-sm font-bold text-foreground mb-4">Account</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+          <div className="px-5 py-4">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground mb-3">Account</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               <Detail label="Activation Date" value={tenant.activationDate} />
               <Detail label="Last Activity" value={tenant.lastActivity ?? '—'} />
-              <ActivationKey value={tenant.activationKey} />
+              <div className="col-span-2">
+                <ActivationKey value={tenant.activationKey} />
+              </div>
             </div>
           </div>
         </div>
@@ -453,6 +450,7 @@ function OptionB({ search }: { search: string }) {
 
 function ActivationKey({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
+  const [showKey, setShowKey] = useState(false);
   const last4 = value.replace(/[^A-Za-z0-9]/g, '').slice(-4);
   const masked = `••••–••••–••••–${last4}`;
   const copy = () => {
@@ -464,7 +462,15 @@ function ActivationKey({ value }: { value: string }) {
     <div>
       <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Activation Key</div>
       <div className="mt-1 flex items-center gap-2">
-        <span className="font-mono text-sm text-foreground tracking-wide select-none">{masked}</span>
+        <span className="font-mono text-sm text-foreground tracking-wide select-none">{showKey ? value : masked}</span>
+        <button
+          onClick={() => setShowKey(s => !s)}
+          title={showKey ? 'Hide activation key' : 'Show activation key'}
+          aria-label={showKey ? 'Hide activation key' : 'Show activation key'}
+          className="flex items-center justify-center w-7 h-7 rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          {showKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+        </button>
         <button
           onClick={copy}
           title="Copy activation key"
