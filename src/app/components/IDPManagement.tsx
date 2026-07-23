@@ -1,32 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Search, MoreVertical, ExternalLink, Trash2, AlertTriangle, X, Monitor, Layers, Laptop } from 'lucide-react';
+import { Search, MoreVertical, ExternalLink, Trash2, AlertTriangle, X, Monitor, Layers, Laptop, ChevronDown, CheckCircle2, Info } from 'lucide-react';
 import { useTenant } from '../contexts/TenantContext';
 
 interface MockUser {
   id: string | number;
   name: string;
   email: string;
-  roles?: string;
-  role?: string;
-  deviceName: string;
+  groups?: string[];
+  endpointName: string | string[];
   lastLogin: string;
   ucApps?: string[];
 }
 
 const mockUsers: MockUser[] = [
-  { id: 'usr_001', name: 'James Whitfield',   email: 'james.whitfield@acmecorp.com',    roles: 'Chromebook-ITP, role-device-ownership, auth-r...', deviceName: 'James-MacBook-Pro',  lastLogin: '8/12/2025, 4:09:42 PM',     ucApps: ['THERON', 'CSE'] },
-  { id: 'usr_002', name: "Sarah O'Brien",      email: 'sarah.obrien@acmecorp.com',        roles: 'auth-role-standard, role-device-ownership',        deviceName: 'Sarah-Windows-PC',   lastLogin: '6/16/2025, 8:03:04 AM',     ucApps: ['THERON'] },
-  { id: 'usr_003', name: 'Lucas Fernandez',    email: 'lucas.fernandez@acmecorp.com',     roles: 'role-device-ownership, auth-role-august-reset',    deviceName: 'Lucas-Laptop',       lastLogin: '7/22/2025, 7:14:27 AM',     ucApps: ['CSE'] },
-  { id: 'usr_004', name: 'Emily Carter',       email: 'emily.carter@acmecorp.com',        roles: 'role-device-ownership, auth-role-august-reset',    deviceName: '—',                  lastLogin: '—',                         ucApps: [] },
-  { id: 'usr_005', name: 'Tom Bergmann',       email: 'tom.bergmann@acmecorp.com',        roles: 'role-device-ownership, auth-role-august-reset',    deviceName: 'Tom-Desktop',        lastLogin: '—',                         ucApps: ['THERON'] },
-  { id: 'usr_006', name: 'Rachel Kim',         email: 'rachel.kim@acmecorp.com',          roles: 'Chromebook-ITP, role-device-ownership, auth-r...', deviceName: 'Rachel-Surface',     lastLogin: '—',                         ucApps: ['THERON', 'CSE'] },
-  { id: 'usr_007', name: 'Daniel Müller',      email: 'daniel.muller@acmecorp.com',       roles: 'auth-role-standard, role-device-ownership',        deviceName: 'Daniel-MacBook-Air', lastLogin: '1/14/2025, 12:15:52 AM',    ucApps: ['CSE'] },
-  { id: 'usr_008', name: 'Olivia Thompson',    email: 'olivia.thompson@acmecorp.com',     roles: 'auth-role-standard, UnAuth-Temp, role-device-o...', deviceName: 'Olivia-Dell-XPS',  lastLogin: '10/26/2025, 11:47:31 PM',   ucApps: [] },
-  { id: 'usr_009', name: 'Marcus Webb',        email: 'marcus.webb@acmecorp.com',         roles: 'auth-role-standard, Chromebook-ITP, role-devic...', deviceName: 'Marcus-Mobile',    lastLogin: '12/1/2025, 4:04:06 AM',     ucApps: ['THERON'] },
-  { id: 'usr_010', name: 'Claire Dupont',      email: 'claire.dupont@acmecorp.com',       roles: 'Chromebook-ITP, role-device-ownership, auth-r...', deviceName: 'Claire-ThinkPad',  lastLogin: '7/6/2025, 10:49:23 PM',     ucApps: ['CSE'] },
-  { id: 'usr_011', name: 'Nathan Kowalski',    email: 'nathan.kowalski@acmecorp.com',     roles: 'Chromebook-ITP, role-device-ownership, auth-r...', deviceName: '—',                  lastLogin: '—',                         ucApps: ['THERON', 'CSE'] },
-  { id: 'usr_012', name: 'Priya Venkatesh',    email: 'priya.venkatesh@acmecorp.com',     roles: 'auth-role-standard, role-device-ownership',        deviceName: 'Priya-MacBook-Pro',  lastLogin: '5/9/2025, 2:33:17 PM',      ucApps: ['CSE'] },
+  { id: 'usr_001', name: 'James Whitfield',   email: 'james.whitfield@acmecorp.com',    groups: ['Engineering', 'Testing'],  endpointName: ['James-MacBook-Pro', 'James-iPhone-15'],           lastLogin: '8/12/2025, 4:09:42 PM',     ucApps: ['UC', 'THERON', 'CSE'] },
+  { id: 'usr_002', name: "Sarah O'Brien",      email: 'sarah.obrien@acmecorp.com',        groups: ['HR'],                      endpointName: 'Sarah-Windows-PC',                                 lastLogin: '6/16/2025, 8:03:04 AM',     ucApps: ['UC', 'THERON'] },
+  { id: 'usr_003', name: 'Lucas Fernandez',    email: 'lucas.fernandez@acmecorp.com',     groups: ['Engineering'],             endpointName: ['Lucas-Laptop', 'Lucas-MacBook-Air', 'Lucas-iPad'], lastLogin: '7/22/2025, 7:14:27 AM',     ucApps: ['UC', 'CSE'] },
+  { id: 'usr_004', name: 'Emily Carter',       email: 'emily.carter@acmecorp.com',        groups: ['Design'],                  endpointName: '—',                                                lastLogin: '—',                         ucApps: [] },
+  { id: 'usr_005', name: 'Tom Bergmann',       email: 'tom.bergmann@acmecorp.com',        groups: ['Testing'],                 endpointName: ['Tom-Desktop', 'Tom-Laptop'],                       lastLogin: '—',                         ucApps: ['UC', 'THERON'] },
+  { id: 'usr_006', name: 'Rachel Kim',         email: 'rachel.kim@acmecorp.com',          groups: ['Design', 'HR'],            endpointName: 'Rachel-Surface',                                   lastLogin: '—',                         ucApps: ['UC', 'THERON', 'CSE'] },
+  { id: 'usr_007', name: 'Daniel Müller',      email: 'daniel.muller@acmecorp.com',       groups: ['Engineering'],             endpointName: ['Daniel-MacBook-Air', 'Daniel-Windows-PC'],        lastLogin: '1/14/2025, 12:15:52 AM',    ucApps: ['UC', 'CSE'] },
+  { id: 'usr_008', name: 'Olivia Thompson',    email: 'olivia.thompson@acmecorp.com',     groups: ['HR', 'Testing'],           endpointName: 'Olivia-Dell-XPS',                                  lastLogin: '10/26/2025, 11:47:31 PM',   ucApps: [] },
+  { id: 'usr_009', name: 'Marcus Webb',        email: 'marcus.webb@acmecorp.com',         groups: ['Engineering', 'Testing'],  endpointName: ['Marcus-Mobile', 'Marcus-Desktop'],                lastLogin: '12/1/2025, 4:04:06 AM',     ucApps: ['UC', 'THERON'] },
+  { id: 'usr_010', name: 'Claire Dupont',      email: 'claire.dupont@acmecorp.com',       groups: ['Design'],                  endpointName: 'Claire-ThinkPad',                                  lastLogin: '7/6/2025, 10:49:23 PM',     ucApps: ['UC', 'CSE'] },
+  { id: 'usr_011', name: 'Nathan Kowalski',    email: 'nathan.kowalski@acmecorp.com',     groups: ['HR'],                      endpointName: '—',                                                lastLogin: '—',                         ucApps: ['UC', 'THERON', 'CSE'] },
+  { id: 'usr_012', name: 'Priya Venkatesh',    email: 'priya.venkatesh@acmecorp.com',     groups: ['Engineering', 'Design'],   endpointName: ['Priya-MacBook-Pro', 'Priya-Android'],             lastLogin: '5/9/2025, 2:33:17 PM',      ucApps: ['UC', 'CSE'] },
 ];
 
 const AVATAR_COLOR = 'bg-[#6b7fa8]';
@@ -47,6 +46,42 @@ function deviceTypeFromName(name: string): string {
   return 'Laptop';
 }
 
+// Infer the endpoint operating system from its name. Apple devices → macOS, everything else → Windows.
+function osFromName(name: string): 'macos' | 'windows' {
+  const n = (name || '').toLowerCase();
+  if (n.includes('mac') || n.includes('imac') || n.includes('iphone') || n.includes('ipad')) return 'macos';
+  return 'windows';
+}
+
+function OSIcon({ os }: { os: 'macos' | 'windows' }) {
+  const common = { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'currentColor', 'aria-hidden': true } as const;
+  if (os === 'macos') {
+    return (
+      <svg {...common}>
+        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.51 4.09l-.02-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <path d="M3 5.1 10.4 4v7.3H3V5.1zm0 13.8 7.4 1v-7.2H3v6.2zM11.2 3.9 21 2.5v8.8h-9.8V3.9zm0 8.2H21v8.8l-9.8-1.4v-7.4z" />
+    </svg>
+  );
+}
+
+// Endpoint name preceded by its OS icon; renders a plain dash when there is no endpoint.
+function EndpointLabel({ name }: { name: string }) {
+  if (!name || name === '—') return <>{name || '—'}</>;
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span style={{ color: '#717182', display: 'inline-flex', flexShrink: 0 }}>
+        <OSIcon os={osFromName(name)} />
+      </span>
+      {name}
+    </span>
+  );
+}
+
 // ── Uninstall modal ──────────────────────────────────────────────────────────
 interface UninstallModalProps {
   user: MockUser;
@@ -54,26 +89,141 @@ interface UninstallModalProps {
   onClose: () => void;
 }
 
+// App hierarchy: Unified Client (UC) is the wrapper; Theron and CSE are sub-apps.
+// Removing UC removes everything. Theron can be removed alone; CSE cannot (admin-managed).
+const APP_META: Record<string, { title: string; desc: string }> = {
+  UC:     { title: 'Unified Client', desc: 'Wrapper client for Theron and CSE' },
+  THERON: { title: 'Theron',         desc: 'SonicWall Theron security agent' },
+  CSE:    { title: 'CSE',            desc: 'SonicWall CSE agent' },
+};
+
+function joinAnd(items: string[]): string {
+  if (items.length <= 1) return items[0] || '';
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+}
+
 function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
   const apps = user.ucApps || [];
-  const [selected, setSelected] = useState<string[]>([...apps]);
+  const hasUC = apps.includes('UC');
+  const hasTheron = apps.includes('THERON');
+  const hasCSE = apps.includes('CSE');
+  const canUninstall = hasUC || hasTheron;
 
-  const toggle = (app: string) =>
-    setSelected(prev => prev.includes(app) ? prev.filter(a => a !== app) : [...prev, app]);
+  // 'uc' removes the wrapper and every sub-app; 'theron' removes Theron only.
+  // Default to the least destructive available option.
+  const [scope, setScope] = useState<'uc' | 'theron'>(hasTheron ? 'theron' : 'uc');
+  const [step, setStep] = useState<'select' | 'done'>('select');
 
-  const appLabel: Record<string, { title: string; desc: string }> = {
-    THERON: { title: 'Theron', desc: 'SonicWall Theron security agent' },
-    CSE:    { title: 'CSE',    desc: 'Cloud Security Edge connector' },
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const primaryEndpoint = Array.isArray(user.endpointName) ? user.endpointName[0] : user.endpointName;
+  const deviceLabel = primaryEndpoint === '—' ? `${user.name}'s device` : primaryEndpoint;
+  const deviceType = deviceTypeFromName(primaryEndpoint);
+  const os = osFromName(primaryEndpoint);
+
+  // Everything the wrapper takes with it, filtered to what is actually installed.
+  const ucRemovalLabels = [
+    APP_META.UC.title,
+    ...(hasTheron ? [APP_META.THERON.title] : []),
+    ...(hasCSE ? [APP_META.CSE.title] : []),
+  ];
+  const removedLabels = scope === 'uc' ? ucRemovalLabels : [APP_META.THERON.title];
+  const confirmLabel = scope === 'uc' ? 'Uninstall Unified Client' : 'Uninstall Theron';
+
+  const RadioDot = ({ active }: { active: boolean }) => (
+    <span
+      className="flex items-center justify-center flex-shrink-0 mt-[1px]"
+      style={{ width: 16, height: 16, borderRadius: '50%', border: active ? '1.5px solid #0066cc' : '1.5px solid rgba(0,0,0,0.3)' }}
+    >
+      {active && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0066cc' }} />}
+    </span>
+  );
+
+  const RadioCard = ({ value, title, desc }: { value: 'uc' | 'theron'; title: string; desc: string }) => {
+    const active = scope === value;
+    return (
+      <button
+        onClick={() => setScope(value)}
+        className="flex items-start gap-3 text-left rounded-[8px] px-4 py-3 transition-colors w-full"
+        style={{ border: active ? '2px solid #0066cc' : '2px solid rgba(0,0,0,0.1)', background: active ? '#eff6ff' : '#fff', cursor: 'pointer' }}
+      >
+        <RadioDot active={active} />
+        <div>
+          <div className="text-[13px] font-semibold text-[#1a1a1a]">{title}</div>
+          <div className="text-[11px] mt-0.5" style={{ color: '#717182' }}>{desc}</div>
+        </div>
+      </button>
+    );
   };
 
-  const selectedLabels = selected.map(a => appLabel[a]?.title || a);
-  const btnLabel =
-    selected.length === 0 ? 'Uninstall'
-    : selected.length === 1 ? `Uninstall ${selectedLabels[0]}`
-    : `Uninstall Both`;
+  // ── Done / confirmation screen ──
+  if (step === 'done') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-[60]" style={{ background: 'rgba(0,0,0,0.45)' }}>
+        <div
+          className="bg-white rounded-[12px] w-full max-w-[460px] mx-4 flex flex-col"
+          style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)' }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+            <span className="font-semibold text-[15px] text-[#1a1a1a]">Uninstall complete</span>
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center rounded-[6px] transition-colors"
+              style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <X style={{ width: 16, height: 16 }} />
+            </button>
+          </div>
 
-  const deviceType = deviceTypeFromName(user.deviceName);
+          {/* Success body */}
+          <div className="px-6 pt-6 pb-5 flex flex-col items-center gap-4 text-center">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full" style={{ background: '#f0fdf4' }}>
+              <CheckCircle2 style={{ width: 32, height: 32, color: '#16a34a' }} />
+            </div>
+            <div>
+              <p className="font-semibold text-[15px] text-[#1a1a1a] leading-snug">
+                {joinAnd(removedLabels)} {removedLabels.length === 1 ? 'has' : 'have'} been uninstalled
+              </p>
+              <p className="text-[13px] mt-1" style={{ color: '#717182' }}>
+                Removed from <strong style={{ color: '#1a1a1a' }}>{deviceLabel}</strong>
+              </p>
+            </div>
 
+            {/* Irreversibility callout */}
+            <div className="w-full flex gap-3 rounded-[8px] px-4 py-3 text-left" style={{ background: '#fff5f5', border: '1px solid #fecaca' }}>
+              <AlertTriangle style={{ width: 16, height: 16, color: '#d4183d', flexShrink: 0, marginTop: 1 }} />
+              <p className="text-[13px] text-[#1a1a1a] leading-snug">
+                This action cannot be undone remotely — the app cannot be reinstalled without physical access to the device or a new deployment.
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end px-6 pb-5">
+            <button
+              onClick={onClose}
+              className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
+              style={{ height: 36, border: 'none', background: '#1a1a1a', color: '#fff', cursor: 'pointer' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#333')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#1a1a1a')}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Select screen — styled to match UserDetailsModal ──
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-[60]"
@@ -82,19 +232,19 @@ function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
     >
       <div
         className="bg-white rounded-[12px] w-full max-w-[540px] mx-4 flex flex-col"
-        style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)' }}
+        style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)', maxHeight: '85vh' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-[8px]" style={{ background: '#fee2e2' }}>
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center justify-center w-10 h-10 rounded-[8px] flex-shrink-0" style={{ background: '#fee2e2' }}>
               <Trash2 style={{ width: 18, height: 18, color: '#d4183d' }} />
             </div>
-            <span className="font-semibold text-[15px] text-[#1a1a1a]">Uninstall UC App</span>
+            <div className="font-semibold text-[16px] text-[#1a1a1a] leading-snug">Uninstall apps</div>
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-[6px] transition-colors"
+            className="flex items-center justify-center rounded-[6px] transition-colors flex-shrink-0"
             style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
             onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -103,103 +253,81 @@ function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
           </button>
         </div>
 
-        {/* User identity row */}
-        <div className="flex items-center gap-3 mx-6 mt-4 mb-4 px-4 py-3 rounded-[8px]" style={{ background: '#f8f9fa', border: '1px solid rgba(0,0,0,0.07)' }}>
-          <Avatar className="h-9 w-9 flex-shrink-0">
-            <AvatarFallback className={`text-xs font-semibold text-white ${avatarColor}`}>
-              {userInitials(user.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-semibold text-[13px] text-[#1a1a1a]">{user.name}</div>
-            <div className="text-[12px]" style={{ color: '#717182' }}>{user.email}</div>
+        {/* Scrollable body */}
+        <div className="overflow-y-auto px-6 py-5 flex flex-col gap-6">
+          {/* User identity */}
+          <div className="flex items-center gap-3 px-4 py-3 rounded-[8px]" style={{ background: '#f8f9fa', border: '1px solid rgba(0,0,0,0.07)' }}>
+            <Avatar className="h-9 w-9 flex-shrink-0">
+              <AvatarFallback className={`text-xs font-semibold text-white ${avatarColor}`}>
+                {userInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <div className="font-semibold text-[13px] text-[#1a1a1a] truncate">{user.name}</div>
+              <div className="text-[12px] truncate" style={{ color: '#717182' }}>{user.email}</div>
+            </div>
           </div>
-        </div>
 
-        {/* Body — device + app selection */}
-        <div className="flex gap-4 px-6 pb-4">
-          {/* Device panel */}
-          <div className="flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>DEVICE</p>
+          {/* DEVICE */}
+          <section>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>Device</p>
             <div className="rounded-[8px] overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.1)' }}>
-              <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-                <Monitor style={{ width: 14, height: 14, color: '#717182', flexShrink: 0 }} />
-                <span className="text-[12px]" style={{ color: '#717182', minWidth: 80 }}>Device name</span>
-                <span className="text-[13px] font-semibold text-[#1a1a1a]">{user.deviceName === '—' ? '—' : user.deviceName}</span>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-                <Layers style={{ width: 14, height: 14, color: '#717182', flexShrink: 0 }} />
-                <span className="text-[12px]" style={{ color: '#717182', minWidth: 80 }}>Mode</span>
-                <span className="text-[13px] font-semibold text-[#1a1a1a]">Managed</span>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Laptop style={{ width: 14, height: 14, color: '#717182', flexShrink: 0 }} />
-                <span className="text-[12px]" style={{ color: '#717182', minWidth: 80 }}>Type</span>
-                <span className="text-[13px] font-semibold text-[#1a1a1a]">{deviceType}</span>
-              </div>
+              <InfoRow label="Device">
+                {primaryEndpoint === '—'
+                  ? '—'
+                  : <span className="inline-flex items-center gap-2 justify-end">
+                      <span style={{ color: '#717182', display: 'inline-flex', flexShrink: 0 }}><OSIcon os={os} /></span>
+                      {primaryEndpoint}
+                    </span>}
+              </InfoRow>
+              <InfoRow label="Type">{deviceType}</InfoRow>
+              <InfoRow label="Mode" last>Managed</InfoRow>
             </div>
-          </div>
+          </section>
 
-          {/* App selection */}
-          <div className="flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>SELECT APPS TO UNINSTALL</p>
-            <div className="flex flex-col gap-2">
-              {apps.length === 0 && (
-                <p className="text-[12px]" style={{ color: '#717182' }}>No UC apps installed.</p>
-              )}
-              {apps.map(app => {
-                const info = appLabel[app] || { title: app, desc: '' };
-                const checked = selected.includes(app);
-                return (
-                  <button
-                    key={app}
-                    onClick={() => toggle(app)}
-                    className="flex items-start gap-3 text-left rounded-[8px] px-3 py-3 transition-colors w-full"
-                    style={{
-                      border: checked ? '1.5px solid #0066cc' : '1.5px solid rgba(0,0,0,0.1)',
-                      background: checked ? '#eff6ff' : '#fff',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {/* Checkbox */}
-                    <div
-                      className="flex items-center justify-center flex-shrink-0 rounded-[4px] mt-[1px]"
-                      style={{
-                        width: 16, height: 16,
-                        background: checked ? '#0066cc' : '#fff',
-                        border: checked ? '1.5px solid #0066cc' : '1.5px solid rgba(0,0,0,0.25)',
-                      }}
-                    >
-                      {checked && (
-                        <svg viewBox="0 0 12 10" fill="none" width="10" height="10">
-                          <path d="M1 5l3.5 3.5L11 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </div>
-                    <div>
-                      <div className="text-[13px] font-semibold text-[#1a1a1a]">{info.title}</div>
-                      <div className="text-[11px]" style={{ color: '#717182' }}>{info.desc}</div>
-                    </div>
-                  </button>
-                );
-              })}
+          {/* WHAT TO REMOVE */}
+          <section>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>Select what to remove</p>
+            {!canUninstall ? (
+              <div
+                className="rounded-[8px] px-4 py-6 text-center text-[13px]"
+                style={{ border: '1px dashed rgba(0,0,0,0.15)', color: '#717182' }}
+              >
+                No removable apps are installed on this device.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {hasUC && (
+                  <RadioCard
+                    value="uc"
+                    title="Uninstall Unified Client"
+                    desc={`Removes ${joinAnd(ucRemovalLabels)}.`}
+                  />
+                )}
+                {hasTheron && (
+                  <RadioCard
+                    value="theron"
+                    title="Uninstall Theron only"
+                    desc={`Removes Theron. Unified Client${hasCSE ? ' and CSE' : ''} stay${hasCSE ? '' : 's'} installed.`}
+                  />
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* Info callout */}
+          {canUninstall && (
+            <div className="flex gap-3 rounded-[8px] px-4 py-3" style={{ background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+              <Info style={{ width: 16, height: 16, color: '#0066cc', flexShrink: 0, marginTop: 1 }} />
+              <p className="text-[13px] text-[#1a1a1a] leading-snug">
+                This will remove <strong>{joinAnd(removedLabels)}</strong> from <strong>{deviceLabel}</strong>. This action cannot be undone remotely.
+              </p>
             </div>
-          </div>
+          )}
         </div>
-
-        {/* Warning banner */}
-        {selected.length > 0 && (
-          <div className="mx-6 mb-4 flex gap-3 rounded-[8px] px-4 py-3" style={{ background: '#fff5f5', border: '1px solid #fecaca' }}>
-            <AlertTriangle style={{ width: 16, height: 16, color: '#d4183d', flexShrink: 0, marginTop: 1 }} />
-            <p className="text-[13px] text-[#1a1a1a] leading-snug">
-              Uninstalling will remove {selectedLabels.join(' and ')} from{' '}
-              <strong>{user.name}</strong>'s device. This action cannot be undone remotely.
-            </p>
-          </div>
-        )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 pb-5 pt-2">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
           <button
             onClick={onClose}
             className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
@@ -210,18 +338,18 @@ function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
             Cancel
           </button>
           <button
-            disabled={selected.length === 0}
-            onClick={onClose}
+            disabled={!canUninstall}
+            onClick={() => setStep('done')}
             className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
             style={{
               height: 36,
               border: 'none',
-              background: selected.length === 0 ? '#ececf0' : '#d4183d',
-              color: selected.length === 0 ? '#717182' : '#fff',
-              cursor: selected.length === 0 ? 'not-allowed' : 'pointer',
+              background: canUninstall ? '#d4183d' : '#ececf0',
+              color: canUninstall ? '#fff' : '#717182',
+              cursor: canUninstall ? 'pointer' : 'not-allowed',
             }}
           >
-            {btnLabel}
+            {confirmLabel}
           </button>
         </div>
       </div>
@@ -230,6 +358,159 @@ function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
 }
 
 // ── Row overflow menu ────────────────────────────────────────────────────────
+// ── User details modal ────────────────────────────────────────────────────────
+interface UserDetailsModalProps {
+  user: MockUser;
+  avatarColor: string;
+  onClose: () => void;
+}
+
+const MODAL_PILL: React.CSSProperties = {
+  padding: '2px 7px',
+  borderRadius: 4,
+  fontSize: 11,
+  fontWeight: 600,
+  background: '#ececf0',
+  color: '#717182',
+  border: '1px solid rgba(0,0,0,0.1)',
+};
+
+function InfoRow({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) {
+  return (
+    <div
+      className="flex items-center justify-between gap-4 px-4 py-3"
+      style={last ? undefined : { borderBottom: '1px solid rgba(0,0,0,0.07)' }}
+    >
+      <span className="text-[12px] flex-shrink-0" style={{ color: '#717182' }}>{label}</span>
+      <div className="text-[13px] font-semibold text-[#1a1a1a] text-right">{children}</div>
+    </div>
+  );
+}
+
+function UserDetailsModal({ user, avatarColor, onClose }: UserDetailsModalProps) {
+  const { currentTenant } = useTenant();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const endpoints = Array.isArray(user.endpointName)
+    ? user.endpointName
+    : user.endpointName === '—' ? [] : [user.endpointName];
+  const groups = user.groups || [];
+  const apps = user.ucApps || [];
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center z-[60]"
+      style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        className="bg-white rounded-[12px] w-full max-w-[540px] mx-4 flex flex-col"
+        style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)', maxHeight: '85vh' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="h-10 w-10 flex-shrink-0">
+              <AvatarFallback className={`text-[13px] font-semibold text-white ${avatarColor}`}>
+                {userInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <div className="font-semibold text-[16px] text-[#1a1a1a] leading-snug truncate">{user.name}</div>
+              <div className="text-[13px] leading-snug truncate" style={{ color: '#717182' }}>{user.email}</div>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center rounded-[6px] transition-colors flex-shrink-0"
+            style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <X style={{ width: 16, height: 16 }} />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto px-6 py-5 flex flex-col gap-6">
+          {/* IDENTITY */}
+          <section>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>Identity</p>
+            <div className="rounded-[8px] overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.1)' }}>
+              <InfoRow label="Tenant">{currentTenant?.name || '—'}</InfoRow>
+              <InfoRow label="User">{user.email}</InfoRow>
+              <InfoRow label="Groups">
+                {groups.length > 0
+                  ? <div className="flex items-center gap-1 flex-wrap justify-end">
+                      {groups.map(g => <span key={g} className="inline-flex items-center leading-tight" style={MODAL_PILL}>{g}</span>)}
+                    </div>
+                  : <span style={{ color: '#717182' }}>—</span>}
+              </InfoRow>
+              <InfoRow label="Last login">{user.lastLogin || '—'}</InfoRow>
+              <InfoRow label="Installed apps" last>
+                {apps.length > 0
+                  ? <div className="flex items-center gap-1 flex-wrap justify-end">
+                      {apps.map(a => <span key={a} className="inline-flex items-center leading-tight" style={MODAL_PILL}>{a}</span>)}
+                    </div>
+                  : <span style={{ color: '#717182' }}>—</span>}
+              </InfoRow>
+            </div>
+          </section>
+
+          {/* ENDPOINTS */}
+          <section>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>
+              Endpoints · {endpoints.length}
+            </p>
+            {endpoints.length === 0 ? (
+              <div
+                className="rounded-[8px] px-4 py-6 text-center text-[13px]"
+                style={{ border: '1px dashed rgba(0,0,0,0.15)', color: '#717182' }}
+              >
+                No endpoints mapped to this user.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {endpoints.map(ep => {
+                  const os = osFromName(ep);
+                  return (
+                    <div key={ep} className="rounded-[8px] overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.1)' }}>
+                      <div className="flex items-center gap-2 px-4 py-3" style={{ background: '#f8f9fa', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+                        <span style={{ color: '#717182', display: 'inline-flex', flexShrink: 0 }}><OSIcon os={os} /></span>
+                        <span className="text-[13px] font-semibold text-[#1a1a1a]">{ep}</span>
+                      </div>
+                      <InfoRow label="Device type">{deviceTypeFromName(ep)}</InfoRow>
+                      <InfoRow label="Operating system" last>{os === 'macos' ? 'macOS' : 'Windows'}</InfoRow>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end px-6 py-4 flex-shrink-0" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+          <button
+            onClick={onClose}
+            className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
+            style={{ height: 36, border: '1px solid rgba(0,0,0,0.1)', background: '#fff', color: '#1a1a1a', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface RowMenuProps {
   user: MockUser;
   avatarColor: string;
@@ -238,6 +519,7 @@ interface RowMenuProps {
 function RowMenu({ user, avatarColor }: RowMenuProps) {
   const [open, setOpen] = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -278,7 +560,7 @@ function RowMenu({ user, avatarColor }: RowMenuProps) {
               style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
               onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              onClick={() => setOpen(false)}
+              onClick={() => { setOpen(false); setShowDetails(true); }}
             >
               <ExternalLink style={{ width: 15, height: 15, color: '#717182' }} />
               View Details
@@ -293,11 +575,19 @@ function RowMenu({ user, avatarColor }: RowMenuProps) {
               onClick={() => { setOpen(false); setShowUninstall(true); }}
             >
               <Trash2 style={{ width: 15, height: 15 }} />
-              Uninstall UC App
+              Uninstall apps
             </button>
           </div>
         )}
       </div>
+
+      {showDetails && (
+        <UserDetailsModal
+          user={user}
+          avatarColor={avatarColor}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
 
       {showUninstall && (
         <UninstallModal
@@ -310,6 +600,12 @@ function RowMenu({ user, avatarColor }: RowMenuProps) {
   );
 }
 
+// ── Flat endpoint row ────────────────────────────────────────────────────────
+interface EndpointRow {
+  endpointName: string;
+  user: MockUser;
+}
+
 // ── Main component ───────────────────────────────────────────────────────────
 interface IDPManagementProps {
   isReconfiguring?: boolean;
@@ -320,33 +616,104 @@ export function IDPManagement({ isReconfiguring = false, onReconfigureClose }: I
   const { getTenantData } = useTenant();
   const tenantData = getTenantData();
   const [search, setSearch] = useState('');
+  const [groupByUser, setGroupByUser] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!filterOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) setFilterOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [filterOpen]);
 
   const rawUsers: MockUser[] = tenantData.users.length > 0 ? tenantData.users : mockUsers;
-  const displayUsers = search
-    ? rawUsers.filter(u =>
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase())
+
+  // Build flat endpoint rows — one row per endpoint
+  const allEndpointRows: EndpointRow[] = rawUsers.flatMap(user => {
+    const endpoints = Array.isArray(user.endpointName)
+      ? user.endpointName
+      : user.endpointName === '—' ? [] : [user.endpointName];
+    if (endpoints.length === 0) return [{ endpointName: '—', user }];
+    return endpoints.map(ep => ({ endpointName: ep, user }));
+  });
+
+  const filteredRows = search
+    ? allEndpointRows.filter(r =>
+        r.endpointName.toLowerCase().includes(search.toLowerCase()) ||
+        r.user.name.toLowerCase().includes(search.toLowerCase()) ||
+        r.user.email.toLowerCase().includes(search.toLowerCase())
       )
-    : rawUsers;
+    : allEndpointRows;
+
+  // Group by user: collapse same-user rows under a single user header
+  interface UserGroup { user: MockUser; endpoints: EndpointRow[] }
+  const userGroups: UserGroup[] = groupByUser
+    ? rawUsers
+        .map(user => ({
+          user,
+          endpoints: filteredRows.filter(r => r.user.id === user.id),
+        }))
+        .filter(g => g.endpoints.length > 0)
+    : [];
+
+  const COLS = ['USER', 'ENDPOINT', 'GROUPS', 'LAST LOGIN', 'INSTALLED APPS', ''];
+
+  const AppBadges = ({ apps }: { apps: string[] }) => (
+    <div className="flex items-center gap-1 flex-wrap">
+      {apps.length > 0
+        ? apps.map(app => (
+            <span
+              key={app}
+              className="inline-flex items-center leading-tight"
+              style={{ padding: '2px 7px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#ececf0', color: '#717182', border: '1px solid rgba(0,0,0,0.1)' }}
+            >
+              {app}
+            </span>
+          ))
+        : <span style={{ color: '#717182' }}>—</span>
+      }
+    </div>
+  );
+
+  const GroupBadges = ({ groups }: { groups: string[] }) => (
+    <div className="flex items-center gap-1 flex-wrap">
+      {groups.length > 0
+        ? groups.map(g => (
+            <span
+              key={g}
+              className="inline-flex items-center leading-tight"
+              style={{ padding: '2px 7px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#ececf0', color: '#717182', border: '1px solid rgba(0,0,0,0.1)' }}
+            >
+              {g}
+            </span>
+          ))
+        : <span style={{ color: '#717182' }}>—</span>
+      }
+    </div>
+  );
 
   return (
     <div
       className="bg-white rounded-[16px] overflow-visible"
       style={{ border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 1px 2px rgba(0,0,0,0.06)' }}
     >
-      {/* Search toolbar */}
+      {/* Toolbar */}
       <div
         className="flex items-center gap-3 px-4 py-3"
         style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}
       >
-        <div className="relative flex-1">
+        {/* Search */}
+        <div className="relative flex-1 max-w-[250px]">
           <Search
             className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[#717182]"
             style={{ width: 16, height: 16 }}
           />
           <input
             type="search"
-            placeholder="Search users..."
+            placeholder="Search endpoints or users..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full bg-white text-[#1a1a1a] placeholder-[#717182] text-[13px] rounded-[8px] pl-[36px] pr-4 outline-none transition-shadow"
@@ -355,13 +722,62 @@ export function IDPManagement({ isReconfiguring = false, onReconfigureClose }: I
             onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
+
+        {/* Group-by filter dropdown */}
+        <div className="relative flex-shrink-0" ref={filterRef}>
+          <button
+            onClick={() => setFilterOpen(v => !v)}
+            className="flex items-center gap-[6px] text-[13px] font-medium rounded-[8px] px-[12px] transition-colors"
+            style={{
+              height: 36,
+              border: '1px solid rgba(0,0,0,0.1)',
+              background: groupByUser ? '#eff6ff' : '#fff',
+              color: groupByUser ? '#0066cc' : '#1a1a1a',
+              cursor: 'pointer',
+            }}
+          >
+            Group by
+            <span
+              className="font-semibold"
+              style={{ color: groupByUser ? '#0066cc' : '#717182' }}
+            >
+              {groupByUser ? 'User' : 'None'}
+            </span>
+            <ChevronDown style={{ width: 14, height: 14, color: '#717182' }} />
+          </button>
+
+          {filterOpen && (
+            <div
+              className="absolute right-0 z-[50] rounded-[8px] py-1 min-w-[160px]"
+              style={{ top: 42, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            >
+              {[{ label: 'No grouping', value: false }, { label: 'Group by user', value: true }].map(opt => (
+                <button
+                  key={String(opt.value)}
+                  onClick={() => { setGroupByUser(opt.value); setFilterOpen(false); }}
+                  className="flex items-center justify-between w-full px-4 py-2 text-[13px] text-[#1a1a1a] transition-colors"
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  {opt.label}
+                  {groupByUser === opt.value && (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 7l3.5 3.5L12 3" stroke="#0066cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Table */}
       <table className="w-full border-collapse">
         <thead>
           <tr style={{ background: '#ececf0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-            {['USER', 'ROLES', 'DEVICE NAME', 'LAST LOGIN', 'UC APP', ''].map((col, i) => (
+            {COLS.map((col, i) => (
               <th
                 key={i}
                 className="text-left text-[#717182]"
@@ -373,79 +789,148 @@ export function IDPManagement({ isReconfiguring = false, onReconfigureClose }: I
           </tr>
         </thead>
         <tbody>
-          {displayUsers.map((user, idx) => {
-            const isLast = idx === displayUsers.length - 1;
-            const avatarColor = AVATAR_COLOR;
-            return (
-              <tr
-                key={user.id}
-                className="transition-colors"
-                style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.1)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
-                onMouseLeave={e => (e.currentTarget.style.background = '')}
-              >
-                {/* USER */}
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#1a1a1a' }}>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarFallback className={`text-xs font-semibold text-white ${avatarColor}`}>
-                        {userInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium text-[13px] text-[#1a1a1a] leading-snug">{user.name}</div>
-                      <div className="text-[12px] leading-snug" style={{ color: '#717182' }}>{user.email}</div>
-                    </div>
-                  </div>
-                </td>
+          {!groupByUser && (
+            <>
+              {filteredRows.map((row, idx) => {
+                const isLast = idx === filteredRows.length - 1;
+                return (
+                  <tr
+                    key={`${row.user.id}-${row.endpointName}-${idx}`}
+                    className="transition-colors"
+                    style={{ borderBottom: isLast ? 'none' : '1px solid rgba(0,0,0,0.07)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '')}
+                  >
+                    {/* USER */}
+                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-7 w-7 flex-shrink-0">
+                          <AvatarFallback className={`text-[11px] font-semibold text-white ${AVATAR_COLOR}`}>
+                            {userInitials(row.user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium text-[13px] text-[#1a1a1a] leading-snug">{row.user.name}</div>
+                          <div className="text-[12px] leading-snug" style={{ color: '#717182' }}>{row.user.email}</div>
+                        </div>
+                      </div>
+                    </td>
 
-                {/* ROLES */}
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#1a1a1a' }}>
-                  <div className="truncate max-w-[300px]">{user.role || user.roles || '—'}</div>
-                </td>
+                    {/* ENDPOINT */}
+                    <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, color: '#1a1a1a' }}>
+                      <EndpointLabel name={row.endpointName} />
+                    </td>
 
-                {/* DEVICE NAME */}
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#1a1a1a' }}>
-                  {user.deviceName || '—'}
-                </td>
+                    {/* GROUPS */}
+                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                      <GroupBadges groups={row.user.groups || []} />
+                    </td>
 
-                {/* LAST LOGIN */}
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#1a1a1a' }}>
-                  {user.lastLogin || '—'}
-                </td>
+                    {/* LAST LOGIN */}
+                    <td style={{ padding: '12px 16px', fontSize: 13, color: '#1a1a1a', whiteSpace: 'nowrap' }}>
+                      {row.user.lastLogin || '—'}
+                    </td>
 
-                {/* UC APP */}
-                <td style={{ padding: '12px 16px', fontSize: 13 }}>
-                  <div className="flex items-center gap-1 flex-wrap">
-                    {(user.ucApps || []).length > 0
-                      ? (user.ucApps || []).map(app => (
-                          <span
-                            key={app}
-                            className="inline-flex items-center leading-tight"
-                            style={{ padding: '2px 7px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: '#ececf0', color: '#717182', border: '1px solid rgba(0,0,0,0.1)' }}
-                          >
-                            {app}
-                          </span>
-                        ))
-                      : <span style={{ color: '#717182' }}>—</span>
-                    }
-                  </div>
-                </td>
+                    {/* INSTALLED APPS */}
+                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                      <AppBadges apps={row.user.ucApps || []} />
+                    </td>
 
-                {/* Kebab with dropdown */}
-                <td style={{ padding: '12px 8px 12px 0', width: 48 }}>
-                  <RowMenu user={user} avatarColor={avatarColor} />
-                </td>
-              </tr>
-            );
-          })}
+                    {/* Actions */}
+                    <td style={{ padding: '12px 8px 12px 0', width: 48 }}>
+                      <RowMenu user={row.user} avatarColor={AVATAR_COLOR} />
+                    </td>
+                  </tr>
+                );
+              })}
 
-          {displayUsers.length === 0 && (
-            <tr>
-              <td colSpan={6} style={{ padding: '32px 16px', textAlign: 'center', fontSize: 13, color: '#717182' }}>
-                No users found
-              </td>
-            </tr>
+              {filteredRows.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ padding: '32px 16px', textAlign: 'center', fontSize: 13, color: '#717182' }}>
+                    No endpoints found
+                  </td>
+                </tr>
+              )}
+            </>
+          )}
+
+          {groupByUser && (
+            <>
+              {userGroups.map((group) => (
+                <React.Fragment key={group.user.id}>
+                  {/* User header row */}
+                  <tr style={{ background: '#f4f6f9', borderTop: '1px solid rgba(0,0,0,0.08)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                    <td colSpan={6} style={{ padding: '8px 16px' }}>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-7 w-7 flex-shrink-0">
+                          <AvatarFallback className={`text-[11px] font-semibold text-white ${AVATAR_COLOR}`}>
+                            {userInitials(group.user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <span className="text-[13px] font-semibold text-[#1a1a1a]">{group.user.name}</span>
+                          <span className="text-[12px] ml-[8px]" style={{ color: '#717182' }}>{group.user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1 ml-[4px]">
+                          <GroupBadges groups={group.user.groups || []} />
+                        </div>
+                        <span className="ml-auto text-[11px] font-medium" style={{ color: '#717182' }}>
+                          {group.endpoints.length} endpoint{group.endpoints.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* Endpoint rows under this user */}
+                  {group.endpoints.map((row, idx) => {
+                    const isLast = idx === group.endpoints.length - 1;
+                    return (
+                      <tr
+                        key={`${row.user.id}-${row.endpointName}-${idx}`}
+                        className="transition-colors"
+                        style={{ borderBottom: isLast ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(0,0,0,0.04)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
+                        onMouseLeave={e => (e.currentTarget.style.background = '')}
+                      >
+                        {/* USER — empty; user shown once in the group header */}
+                        <td style={{ padding: '11px 16px' }} />
+
+                        {/* ENDPOINT — indented to show nesting under the user group */}
+                        <td style={{ padding: '11px 16px 11px 36px', fontSize: 13, fontWeight: 500, color: '#1a1a1a' }}>
+                          <EndpointLabel name={row.endpointName} />
+                        </td>
+
+                        {/* GROUPS — empty; groups are a user attribute shown in the group header */}
+                        <td style={{ padding: '11px 16px' }} />
+
+                        {/* LAST LOGIN */}
+                        <td style={{ padding: '11px 16px', fontSize: 13, color: '#1a1a1a', whiteSpace: 'nowrap' }}>
+                          {row.user.lastLogin || '—'}
+                        </td>
+
+                        {/* INSTALLED APPS */}
+                        <td style={{ padding: '11px 16px', fontSize: 13 }}>
+                          <AppBadges apps={row.user.ucApps || []} />
+                        </td>
+
+                        {/* Actions */}
+                        <td style={{ padding: '11px 8px 11px 0', width: 48 }}>
+                          <RowMenu user={row.user} avatarColor={AVATAR_COLOR} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+
+              {userGroups.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ padding: '32px 16px', textAlign: 'center', fontSize: 13, color: '#717182' }}>
+                    No endpoints found
+                  </td>
+                </tr>
+              )}
+            </>
           )}
         </tbody>
       </table>
@@ -455,7 +940,9 @@ export function IDPManagement({ isReconfiguring = false, onReconfigureClose }: I
         className="flex items-center justify-between"
         style={{ padding: '10px 20px', borderTop: '1px solid rgba(0,0,0,0.1)', fontSize: 13, color: '#717182' }}
       >
-        <span>Showing {displayUsers.length} of {tenantData.dashboardMetrics.totalUsers || 458} users</span>
+        <span>
+          Showing {filteredRows.length} endpoint{filteredRows.length !== 1 ? 's' : ''} across {groupByUser ? userGroups.length : new Set(filteredRows.map(r => r.user.id)).size} user{(groupByUser ? userGroups.length : new Set(filteredRows.map(r => r.user.id)).size) !== 1 ? 's' : ''}
+        </span>
       </div>
     </div>
   );

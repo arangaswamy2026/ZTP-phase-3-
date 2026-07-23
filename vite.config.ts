@@ -17,8 +17,11 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: '/ZTP_Phase3_prototype_July03/',
+  base: '/ZTP-phase-3-/',
   appType: 'spa',
+  server: {
+    port: Number(process.env.PORT) || 5173,
+  },
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if

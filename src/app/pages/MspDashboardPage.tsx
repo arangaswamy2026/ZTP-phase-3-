@@ -195,7 +195,7 @@ export function MspDashboardPage() {
   const maxThreat = Math.max(...THREAT_BREAKDOWN.map((t) => t.count));
   const [trafficPeriod, setTrafficPeriod] = useState<WidgetPeriod>('15d');
   const [threatPeriod, setThreatPeriod] = useState<WidgetPeriod>('15d');
-  const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('15d');
+  const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('yesterday');
   const [actionsPeriod, setActionsPeriod] = useState<WidgetPeriod>('15d');
   const [tenantPeriod, setTenantPeriod] = useState<WidgetPeriod>('15d');
 

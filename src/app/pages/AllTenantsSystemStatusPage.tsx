@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { Search, RefreshCw, MoreVertical, X, Check, Download, Loader2 } from 'lucide-react';
 import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
+import { UploadFirmwareModal, FirmwareSettingsModal, FirmwareToast } from '../components/ConnectorsView';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -382,6 +383,10 @@ export function AllTenantsSystemStatusPage() {
   const [search,           setSearch]           = useState('');
   const [lastUpdated,      setLastUpdated]      = useState(stamp());
   const [showAutoUpdate,   setShowAutoUpdate]   = useState(false);
+  const [selected,         setSelected]         = useState<Set<string>>(new Set());
+  const [showUpload,       setShowUpload]       = useState(false);
+  const [showSettings,     setShowSettings]     = useState(false);
+  const [uploadToast,      setUploadToast]      = useState<{ fileName: string; tenants: string[] } | null>(null);
 
   function refresh() {
     setConnectors((prev) =>
@@ -424,14 +429,35 @@ export function AllTenantsSystemStatusPage() {
         />
       )}
 
+      {uploadToast && (
+        <FirmwareToast
+          fileName={uploadToast.fileName}
+          firmware="7.3.3-7015"
+          model="NSv 270"
+          tenants={uploadToast.tenants}
+          onDismiss={() => setUploadToast(null)}
+        />
+      )}
+      <UploadFirmwareModal
+        open={showUpload}
+        onClose={() => setShowUpload(false)}
+        tenants={Array.from(selected).map((id) => TENANT_NAMES[connectors.find((c) => c.id === id)?.tenant ?? ''] ?? '').filter(Boolean)}
+        onSuccess={(fileName) => {
+          const tenantNames = Array.from(selected).map((id) => TENANT_NAMES[connectors.find((c) => c.id === id)?.tenant ?? ''] ?? '').filter(Boolean);
+          setUploadToast({ fileName, tenants: tenantNames });
+        }}
+      />
+      <FirmwareSettingsModal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        tenants={Array.from(selected).map((id) => TENANT_NAMES[connectors.find((c) => c.id === id)?.tenant ?? ''] ?? '').filter(Boolean)}
+      />
+
       {/* Connectors & Active Sessions */}
       <div>
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-base font-medium text-foreground">Connectors &amp; Active Sessions</h2>
           <span className="text-xs text-muted-foreground">All managed tenants (MSP rollup)</span>
-          <div className="ml-auto">
-            <SectionOverflowMenu onAutoUpdate={() => setShowAutoUpdate(true)} />
-          </div>
         </div>
 
         {/* Summary tiles */}
@@ -475,9 +501,48 @@ export function AllTenantsSystemStatusPage() {
 
         {/* Connector table */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+
+          {/* Contextual action bar — inside table, same pattern as endpoints page */}
+          {selected.size > 0 && (
+            <div className="flex items-center gap-[8px] px-[20px] py-[10px] border-b border-[#e5e7eb] bg-[#f8f9fa]">
+              <span className="h-[32px] px-[12px] flex items-center text-[13px] font-bold text-[#1a1a1a] bg-[#ececf0] rounded-[8px] shrink-0">
+                {selected.size} selected
+              </span>
+              <div className="w-px h-[20px] bg-[rgba(0,0,0,0.1)] shrink-0" />
+              <button
+                onClick={() => setShowUpload(true)}
+                className="h-[32px] px-[12px] flex items-center text-[13px] font-medium text-[#1a1a1a] bg-white border border-[#ececf0] rounded-[8px] hover:bg-[#f8f9fa] transition-colors shrink-0"
+              >
+                Upload Firmware
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="h-[32px] px-[12px] flex items-center text-[13px] font-medium text-[#1a1a1a] bg-white border border-[#ececf0] rounded-[8px] hover:bg-[#f8f9fa] transition-colors shrink-0"
+              >
+                Auto Update Firmware Settings
+              </button>
+              <button
+                onClick={() => setSelected(new Set())}
+                className="ml-auto text-[13px] font-medium text-[#0066cc] hover:underline shrink-0"
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
           <DataTable>
             <THead>
               <tr>
+                <TH className="px-4 w-10">
+                  <input
+                    type="checkbox"
+                    className="w-[15px] h-[15px] rounded-[4px] border border-[rgba(0,0,0,0.2)] accent-[#0066cc] cursor-pointer"
+                    checked={visible.length > 0 && visible.every((c) => selected.has(c.id))}
+                    ref={(el) => { if (el) el.indeterminate = visible.some((c) => selected.has(c.id)) && !visible.every((c) => selected.has(c.id)); }}
+                    onChange={(e) => {
+                      setSelected(e.target.checked ? new Set(visible.map((c) => c.id)) : new Set());
+                    }}
+                  />
+                </TH>
                 <TH className="px-4">Connector</TH>
                 <TH className="px-4">Tenant</TH>
                 <TH className="px-4">Active Sessions</TH>
@@ -490,7 +555,7 @@ export function AllTenantsSystemStatusPage() {
             <tbody>
               {visible.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-sm text-muted-foreground text-center">
+                  <td colSpan={8} className="px-4 py-10 text-sm text-muted-foreground text-center">
                     No connectors match the current filters.
                   </td>
                 </tr>
@@ -500,6 +565,22 @@ export function AllTenantsSystemStatusPage() {
                 const count   = sessCount(c);
                 return (
                   <TR key={c.id}>
+                    {/* Checkbox */}
+                    <TD className="px-4 w-10">
+                      <input
+                        type="checkbox"
+                        className="w-[15px] h-[15px] rounded-[4px] border border-[rgba(0,0,0,0.2)] accent-[#0066cc] cursor-pointer"
+                        checked={selected.has(c.id)}
+                        onChange={(e) => {
+                          setSelected((prev) => {
+                            const next = new Set(prev);
+                            e.target.checked ? next.add(c.id) : next.delete(c.id);
+                            return next;
+                          });
+                        }}
+                      />
+                    </TD>
+
                     {/* Connector name + id */}
                     <TD className="px-4">
                       <div className="text-[13px] font-semibold text-foreground">{c.name}</div>

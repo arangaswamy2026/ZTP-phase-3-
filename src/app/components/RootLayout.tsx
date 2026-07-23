@@ -31,7 +31,7 @@ function RootLayoutContent() {
 
   const handleNavigate = (pageId: string) => {
     // Only exit All Tenants view when navigating to a tenant-specific page
-    const allTenantsPages = ['msp-dashboard', 'tenant-management', 'inventory', 'blocked-threats', 'all-tenants-system-status'];
+    const allTenantsPages = ['msp-dashboard', 'tenant-management', 'inventory', 'msp-endpoints', 'blocked-threats', 'all-tenants-system-status'];
     if (isAllTenantsView && !allTenantsPages.includes(pageId)) {
       setIsAllTenantsView(false);
     }

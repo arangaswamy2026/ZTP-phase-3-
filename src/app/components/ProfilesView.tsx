@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import {
-  Plus,
   Search,
   Edit,
   Trash2,
@@ -273,7 +272,9 @@ function ProfileSection({
                     </div>
                   </td>
                   {config.showTrustLogic && (
-                    null
+                    <td className="px-[12px] py-[10px] align-middle">
+                      <TrustBadge level={profile.trustLogic ?? 'Standard'} />
+                    </td>
                   )}
                   <td className="px-[12px] py-[10px] align-middle">
                     <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] tracking-[-0.15px] text-[#364153]">

@@ -1,27 +1,166 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { ChevronLeft, Search, Download, TrendingUp, TrendingDown, Minus, Globe } from 'lucide-react';
-import { StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { ChevronLeft, ChevronRight, ChevronDown, Search, Download, TrendingUp, TrendingDown, Minus, Globe } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type TenantRow = { name: string; requests: number; users: number; trend: number; dir: 'up' | 'down' | 'flat' };
+type DomainEntry = { domain: string; category: string; badge: string; requests: number; uniqueUsers: number; tenants: number; trend: number; dir: string; tenantRows: TenantRow[] };
+
+// ── Tenant avatar colors (keyed by name initial) ──────────────────────────────
+
+const TENANT_PALETTE: Record<string, { bg: string; fg: string }> = {
+  'Global Services LLC':    { bg: '#dbeafe', fg: '#1d4ed8' },
+  'Enterprise Solutions':   { bg: '#d1fae5', fg: '#065f46' },
+  'Acme Corporation':       { bg: '#ede9fe', fg: '#5b21b6' },
+  'Riverside Dental Office':{ bg: '#fce7f3', fg: '#9d174d' },
+  'Cloud Innovations':      { bg: '#fef3c7', fg: '#92400e' },
+};
+
+function TenantAvatar({ name }: { name: string }) {
+  const c = TENANT_PALETTE[name] ?? { bg: '#f1f5f9', fg: '#64748b' };
+  return (
+    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style={{ background: c.bg, color: c.fg }}>
+      {name.charAt(0)}
+    </span>
+  );
+}
 
 // ── Extended mock data ────────────────────────────────────────────────────────
 
-const TOP_DOMAINS_FULL = [
-  { domain: 'office365.com',      category: 'Business Productivity', badge: 'Known',     requests: 1_402_031, tenants: 4, trend: 6,    dir: 'up'   },
-  { domain: 'salesforce.com',     category: 'Business Productivity', badge: 'Known',     requests:   551_090, tenants: 2, trend: 11,   dir: 'up'   },
-  { domain: 'dentrix.com',        category: 'Healthcare Software',   badge: 'Known',     requests:   234_112, tenants: 1, trend: 3,    dir: 'down' },
-  { domain: 'quickbooks.com',     category: 'Business Productivity', badge: 'Known',     requests:   198_447, tenants: 3, trend: 0,    dir: 'flat' },
-  { domain: 'dropbox.com',        category: 'Cloud Storage',         badge: 'Shadow IT', requests:   162_120, tenants: 3, trend: 42,   dir: 'up'   },
-  { domain: 'slack.com',          category: 'Communication',         badge: 'Known',     requests:   148_300, tenants: 4, trend: 5,    dir: 'up'   },
-  { domain: 'zoom.us',            category: 'Communication',         badge: 'Known',     requests:   140_218, tenants: 4, trend: 2,    dir: 'down' },
-  { domain: 'box.com',            category: 'Cloud Storage',         badge: 'Shadow IT', requests:    94_500, tenants: 2, trend: 18,   dir: 'up'   },
-  { domain: 'google.com',         category: 'Search / Productivity', badge: 'Known',     requests:    88_741, tenants: 4, trend: 1,    dir: 'flat' },
-  { domain: 'github.com',         category: 'Development',           badge: 'Known',     requests:    72_034, tenants: 2, trend: 8,    dir: 'up'   },
-  { domain: 'amazonaws.com',      category: 'Cloud Infrastructure',  badge: 'Known',     requests:    65_299, tenants: 3, trend: 12,   dir: 'up'   },
-  { domain: 'telegram.org',       category: 'Social / Messaging',    badge: 'Shadow IT', requests:    44_100, tenants: 2, trend: 61,   dir: 'up'   },
-  { domain: 'wetransfer.com',     category: 'File Sharing',          badge: 'Shadow IT', requests:    31_452, tenants: 3, trend: 29,   dir: 'up'   },
-  { domain: 'azure.microsoft.com',category: 'Cloud Infrastructure',  badge: 'Known',     requests:    28_900, tenants: 2, trend: 4,    dir: 'up'   },
-  { domain: 'onedrive.live.com',  category: 'Cloud Storage',         badge: 'Known',     requests:    24_317, tenants: 2, trend: 7,    dir: 'up'   },
+const TOP_DOMAINS_FULL: DomainEntry[] = [
+  {
+    domain: 'office365.com', category: 'Business Productivity', badge: 'Known',
+    requests: 1_402_031, uniqueUsers: 68, tenants: 4, trend: 6, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',    requests: 451_210, users: 20, trend: 8,  dir: 'up'   },
+      { name: 'Enterprise Solutions',   requests: 382_490, users: 18, trend: 5,  dir: 'up'   },
+      { name: 'Acme Corporation',       requests: 334_011, users: 16, trend: 4,  dir: 'up'   },
+      { name: 'Riverside Dental Office',requests: 234_320, users: 14, trend: 7,  dir: 'up'   },
+    ],
+  },
+  {
+    domain: 'salesforce.com', category: 'Business Productivity', badge: 'Known',
+    requests: 551_090, uniqueUsers: 34, tenants: 2, trend: 11, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',  requests: 321_050, users: 20, trend: 13, dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 230_040, users: 14, trend: 8,  dir: 'up' },
+    ],
+  },
+  {
+    domain: 'dentrix.com', category: 'Healthcare Software', badge: 'Known',
+    requests: 234_112, uniqueUsers: 9, tenants: 1, trend: 3, dir: 'down',
+    tenantRows: [
+      { name: 'Riverside Dental Office', requests: 234_112, users: 9, trend: 3, dir: 'down' },
+    ],
+  },
+  {
+    domain: 'quickbooks.com', category: 'Business Productivity', badge: 'Known',
+    requests: 198_447, uniqueUsers: 28, tenants: 3, trend: 0, dir: 'flat',
+    tenantRows: [
+      { name: 'Acme Corporation',       requests: 92_010, users: 12, trend: 2,  dir: 'up'   },
+      { name: 'Enterprise Solutions',   requests: 68_240, users: 10, trend: 0,  dir: 'flat' },
+      { name: 'Riverside Dental Office',requests: 38_197, users: 6,  trend: 3,  dir: 'down' },
+    ],
+  },
+  {
+    domain: 'dropbox.com', category: 'Cloud Storage', badge: 'Shadow IT',
+    requests: 162_120, uniqueUsers: 31, tenants: 3, trend: 42, dir: 'up',
+    tenantRows: [
+      { name: 'Acme Corporation',     requests: 65_310, users: 14, trend: 38, dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 55_440, users: 11, trend: 45, dir: 'up' },
+      { name: 'Global Services LLC',  requests: 41_370, users: 6,  trend: 44, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'slack.com', category: 'Communication', badge: 'Known',
+    requests: 148_300, uniqueUsers: 58, tenants: 4, trend: 5, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',    requests: 51_200, users: 18, trend: 6,  dir: 'up'   },
+      { name: 'Enterprise Solutions',   requests: 44_310, users: 16, trend: 5,  dir: 'up'   },
+      { name: 'Acme Corporation',       requests: 32_490, users: 14, trend: 4,  dir: 'up'   },
+      { name: 'Riverside Dental Office',requests: 20_300, users: 10, trend: 3,  dir: 'flat' },
+    ],
+  },
+  {
+    domain: 'zoom.us', category: 'Communication', badge: 'Known',
+    requests: 140_218, uniqueUsers: 52, tenants: 4, trend: 2, dir: 'down',
+    tenantRows: [
+      { name: 'Global Services LLC',    requests: 48_100, users: 16, trend: 3,  dir: 'down' },
+      { name: 'Enterprise Solutions',   requests: 41_210, users: 14, trend: 2,  dir: 'down' },
+      { name: 'Acme Corporation',       requests: 30_408, users: 12, trend: 1,  dir: 'down' },
+      { name: 'Riverside Dental Office',requests: 20_500, users: 10, trend: 2,  dir: 'down' },
+    ],
+  },
+  {
+    domain: 'box.com', category: 'Cloud Storage', badge: 'Shadow IT',
+    requests: 94_500, uniqueUsers: 22, tenants: 2, trend: 18, dir: 'up',
+    tenantRows: [
+      { name: 'Acme Corporation',     requests: 54_300, users: 14, trend: 21, dir: 'up' },
+      { name: 'Global Services LLC',  requests: 40_200, users: 8,  trend: 14, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'google.com', category: 'Search / Productivity', badge: 'Known',
+    requests: 88_741, uniqueUsers: 64, tenants: 4, trend: 1, dir: 'flat',
+    tenantRows: [
+      { name: 'Global Services LLC',    requests: 28_400, users: 20, trend: 1,  dir: 'flat' },
+      { name: 'Enterprise Solutions',   requests: 24_311, users: 18, trend: 0,  dir: 'flat' },
+      { name: 'Acme Corporation',       requests: 21_530, users: 16, trend: 1,  dir: 'flat' },
+      { name: 'Riverside Dental Office',requests: 14_500, users: 10, trend: 2,  dir: 'up'   },
+    ],
+  },
+  {
+    domain: 'github.com', category: 'Development', badge: 'Known',
+    requests: 72_034, uniqueUsers: 18, tenants: 2, trend: 8, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',  requests: 42_310, users: 11, trend: 9,  dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 29_724, users: 7,  trend: 6,  dir: 'up' },
+    ],
+  },
+  {
+    domain: 'amazonaws.com', category: 'Cloud Infrastructure', badge: 'Known',
+    requests: 65_299, uniqueUsers: 24, tenants: 3, trend: 12, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',  requests: 30_100, users: 10, trend: 14, dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 22_400, users: 9,  trend: 11, dir: 'up' },
+      { name: 'Cloud Innovations',    requests: 12_799, users: 5,  trend: 10, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'telegram.org', category: 'Social / Messaging', badge: 'Shadow IT',
+    requests: 44_100, uniqueUsers: 14, tenants: 2, trend: 61, dir: 'up',
+    tenantRows: [
+      { name: 'Acme Corporation',     requests: 26_400, users: 9,  trend: 58, dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 17_700, users: 5,  trend: 65, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'wetransfer.com', category: 'File Sharing', badge: 'Shadow IT',
+    requests: 31_452, uniqueUsers: 19, tenants: 3, trend: 29, dir: 'up',
+    tenantRows: [
+      { name: 'Acme Corporation',       requests: 13_200, users: 8,  trend: 31, dir: 'up' },
+      { name: 'Global Services LLC',    requests: 10_802, users: 7,  trend: 27, dir: 'up' },
+      { name: 'Riverside Dental Office',requests: 7_450,  users: 4,  trend: 30, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'azure.microsoft.com', category: 'Cloud Infrastructure', badge: 'Known',
+    requests: 28_900, uniqueUsers: 12, tenants: 2, trend: 4, dir: 'up',
+    tenantRows: [
+      { name: 'Global Services LLC',  requests: 16_500, users: 7,  trend: 5, dir: 'up' },
+      { name: 'Enterprise Solutions', requests: 12_400, users: 5,  trend: 3, dir: 'up' },
+    ],
+  },
+  {
+    domain: 'onedrive.live.com', category: 'Cloud Storage', badge: 'Known',
+    requests: 24_317, uniqueUsers: 16, tenants: 2, trend: 7, dir: 'up',
+    tenantRows: [
+      { name: 'Enterprise Solutions',   requests: 14_210, users: 9,  trend: 8, dir: 'up' },
+      { name: 'Riverside Dental Office',requests: 10_107, users: 7,  trend: 6, dir: 'up' },
+    ],
+  },
 ];
 
 // MSP-level weekly traffic (aggregated across all tenants, requests in thousands, Mon–Sun)
@@ -32,6 +171,10 @@ function fmtNum(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
   if (n >= 1_000)     return `${(n / 1_000).toFixed(0)}k`;
   return String(n);
+}
+
+function fmtNumFull(n: number): string {
+  return n.toLocaleString();
 }
 
 function WeeklyChart() {
@@ -72,9 +215,15 @@ function TopDomainsBarChart() {
 }
 
 function TrendCell({ trend, dir }: { trend: number; dir: string }) {
-  if (dir === 'up')   return <span className="inline-flex items-center gap-1 text-xs font-semibold text-destructive"><TrendingUp className="w-3 h-3" />+{trend}%</span>;
-  if (dir === 'down') return <span className="inline-flex items-center gap-1 text-xs font-semibold text-success"><TrendingDown className="w-3 h-3" />-{trend}%</span>;
-  return <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Minus className="w-3 h-3" />Stable</span>;
+  if (dir === 'up')   return <span className="inline-flex items-center gap-1 text-xs font-semibold text-destructive"><TrendingUp className="w-3 h-3" />▲ {trend}%</span>;
+  if (dir === 'down') return <span className="inline-flex items-center gap-1 text-xs font-semibold text-success"><TrendingDown className="w-3 h-3" />▼ {trend}%</span>;
+  return <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Minus className="w-3 h-3" />— stable</span>;
+}
+
+function TenantTrendCell({ trend, dir }: { trend: number; dir: string }) {
+  if (dir === 'up')   return <span className="text-xs font-semibold text-destructive">▲ {trend}%</span>;
+  if (dir === 'down') return <span className="text-xs font-semibold text-success">▼ {trend}%</span>;
+  return <span className="text-xs text-muted-foreground">— stable</span>;
 }
 
 function exportCSV() {
@@ -93,6 +242,15 @@ export function MspTopDomainsPage() {
   const [search, setSearch] = useState('');
   const [badgeFilter, setBadgeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  function toggleRow(domain: string) {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(domain) ? next.delete(domain) : next.add(domain);
+      return next;
+    });
+  }
 
   const categories = useMemo(() => [...new Set(TOP_DOMAINS_FULL.map(d => d.category))].sort(), []);
 
@@ -214,41 +372,96 @@ export function MspTopDomainsPage() {
             No domains match the current filters.
           </div>
         ) : (
-          <DataTable>
-            <THead>
-              <tr>
-                {['Domain', 'Category', 'Type', 'Requests (30d)', 'Tenants', 'Trend'].map(h => (
-                  <TH key={h}>{h}</TH>
-                ))}
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border bg-muted/40">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground w-[36%]">Domain / Destination</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Total Requests</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Unique Users</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Unique Tenants</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Trend vs Prior</th>
               </tr>
-            </THead>
+            </thead>
             <tbody>
-              {filtered.map(d => (
-                <TR key={d.domain}>
-                  <TD>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-muted flex items-center justify-center shrink-0">
-                        <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                      </div>
-                      <span className="text-[13px] font-medium text-foreground whitespace-nowrap">{d.domain}</span>
-                    </div>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-muted-foreground">{d.category}</span>
-                  </TD>
-                  <TD>
-                    <StatusBadge variant={d.badge === 'Shadow IT' ? 'warning' : 'success'}>{d.badge}</StatusBadge>
-                  </TD>
-                  <TD className="tabular-nums font-medium text-[13px] text-foreground">{fmtNum(d.requests)}</TD>
-                  <TD className="tabular-nums text-[13px] text-muted-foreground">{d.tenants}</TD>
-                  <TD><TrendCell trend={d.trend} dir={d.dir} /></TD>
-                </TR>
-              ))}
+              {filtered.map(d => {
+                const isExpanded = expandedRows.has(d.domain);
+                return (
+                  <React.Fragment key={d.domain}>
+                    {/* Domain row */}
+                    <tr
+                      onClick={() => toggleRow(d.domain)}
+                      className="border-b border-border hover:bg-muted/30 cursor-pointer transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-4 h-4 flex items-center justify-center shrink-0 text-muted-foreground">
+                            {isExpanded
+                              ? <ChevronDown className="w-3.5 h-3.5" />
+                              : <ChevronRight className="w-3.5 h-3.5" />}
+                          </span>
+                          <span className="text-[13px] font-medium text-foreground whitespace-nowrap">{d.domain}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-[13px] text-foreground font-medium">{fmtNumFull(d.requests)}</td>
+                      <td className="px-4 py-3 tabular-nums text-[13px] text-foreground">{d.uniqueUsers}</td>
+                      <td className="px-4 py-3 tabular-nums text-[13px]">
+                        <button
+                          onClick={e => { e.stopPropagation(); toggleRow(d.domain); }}
+                          className="text-[13px] font-medium text-action hover:underline"
+                        >
+                          {d.tenants} {d.tenants === 1 ? 'tenant' : 'tenants'}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3"><TrendCell trend={d.trend} dir={d.dir} /></td>
+                    </tr>
+
+                    {/* Expanded tenant sub-rows */}
+                    {isExpanded && (
+                      <tr className="border-b border-border bg-muted/20">
+                        <td colSpan={5} className="px-0 py-0">
+                          <table className="w-full border-collapse">
+                            {/* Sub-header */}
+                            <thead>
+                              <tr className="border-b border-border/60">
+                                <th className="pl-10 pr-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70 w-[36%]">Tenant</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Requests</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Unique Users</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Trend</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {d.tenantRows.map((t, i) => (
+                                <tr
+                                  key={t.name}
+                                  className={`${i < d.tenantRows.length - 1 ? 'border-b border-border/40' : ''} hover:bg-muted/30 transition-colors`}
+                                >
+                                  <td className="pl-10 pr-4 py-3">
+                                    <span className="text-[13px] font-medium text-action">{t.name}</span>
+                                  </td>
+                                  <td className="px-4 py-3 tabular-nums text-[13px] text-foreground">{fmtNumFull(t.requests)}</td>
+                                  <td className="px-4 py-3 tabular-nums text-[13px] text-foreground">{t.users}</td>
+                                  <td className="px-4 py-3"><TenantTrendCell trend={t.trend} dir={t.dir} /></td>
+                                  <td className="px-4 py-3 text-right">
+                                    <button className="text-xs font-medium text-action hover:underline whitespace-nowrap">
+                                      Open tenant →
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
-          </DataTable>
+          </table>
         )}
         <div className="px-5 py-2.5 border-t border-border text-xs text-muted-foreground">
-          {filtered.length} domain{filtered.length !== 1 ? 's' : ''} shown · data reflects the last 30 days
+          Click a domain to see which tenants drive its traffic, then drill into any tenant. · {filtered.length} domain{filtered.length !== 1 ? 's' : ''} shown · data reflects the last 30 days
         </div>
       </div>
     </div>

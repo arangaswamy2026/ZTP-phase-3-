@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { Network, Users, Save, Shield, AlertTriangle, CheckCircle2, X, Info, Plus, Minus } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { SaasApp, SaasAppPicker, AppDetailModal } from '../components/SaasAppPicker';
 import { PageHeader } from '../components/PageHeader';
 import { MOCK_POLICIES } from '../components/policies/PolicyData';
@@ -32,30 +32,8 @@ const THREAT_CATEGORIES = [
   { name: 'Other Known Bad (Community Intelligence)', desc: 'Blocks community-sourced threats' },
   { name: 'New Domains', desc: 'Blocks recently registered domains' },
 ];
-const ZONES = ['Employee', 'Guest', 'IOT'];
+const ZONES = ['Employee', 'Guest', 'IOT', 'Internet'];
 
-type SourceRow = {
-  id: string;
-  type: 'Zone' | 'IP Range';
-  zones?: string[];
-  ipRange?: string;
-  anyIp?: boolean;
-  protocol: string;
-  port: string;
-  anyPort?: boolean;
-};
-
-type DestinationRow = {
-  id: string;
-  type: 'Zone' | 'IP Range';
-  zone?: string;
-  subnet?: string;
-  ipRange?: string;
-  anyIp?: boolean;
-  protocol: string;
-  port: string;
-  anyPort?: boolean;
-};
 
 export function CreateZonePolicyPage() {
   const { id } = useParams<{ id: string }>();
@@ -66,33 +44,17 @@ export function CreateZonePolicyPage() {
   const [description, setDescription] = useState('');
   const [action, setAction] = useState<'Allow' | 'Deny'>('Allow');
   
-  // Source rows - now supports multiple
-  const [sourceRows, setSourceRows] = useState<SourceRow[]>([
-    {
-      id: '1',
-      type: 'Zone',
-      zones: [],
-      protocol: 'Any',
-      port: '',
-      anyPort: true,
-    },
-  ]);
-  
-  // Destination rows - now supports multiple
-  const [destinationRows, setDestinationRows] = useState<DestinationRow[]>([
-    {
-      id: '1',
-      type: 'Zone',
-      zone: '',
-      subnet: '',
-      protocol: 'Any',
-      port: '',
-      anyPort: true,
-    },
-  ]);
+  // Source fields
+  const [sourceZone, setSourceZone] = useState('Any');
+  const [sourceIpRange, setSourceIpRange] = useState('');
+  const [sourceAnyIp, setSourceAnyIp] = useState(true);
 
-  // Zone multiselect dropdown state
-  const [zoneDropdownOpen, setZoneDropdownOpen] = useState<string | null>(null);
+  // Destination fields
+  const [destZone, setDestZone] = useState('Any');
+  const [destIpRange, setDestIpRange] = useState('');
+  const [destAnyIp, setDestAnyIp] = useState(true);
+  const [destService, setDestService] = useState('Any');
+  const [destPort, setDestPort] = useState('');
 
   // App blocking detail modal state
   const [detailApp, setDetailApp] = useState<SaasApp | null>(null);
@@ -139,7 +101,7 @@ export function CreateZonePolicyPage() {
     }
   }, [isEdit, id]);
 
-  const isFormValid = policyName.trim() && sourceRows.length > 0 && destinationRows.length > 0;
+  const isFormValid = policyName.trim();
 
   const actionColor = action === 'Allow' ? '#16a34a' : '#dc2626';
 
@@ -156,69 +118,6 @@ export function CreateZonePolicyPage() {
     }
   };
 
-  // Source row management
-  const addSourceRow = (type: 'Zone' | 'IP Range') => {
-    const newRow: SourceRow = {
-      id: Date.now().toString(),
-      type,
-      zones: type === 'Zone' ? [] : undefined,
-      ipRange: type === 'IP Range' ? '' : undefined,
-      anyIp: false,
-      protocol: 'Any',
-      port: '',
-      anyPort: true,
-    };
-    setSourceRows([...sourceRows, newRow]);
-  };
-
-  const removeSourceRow = (id: string) => {
-    if (sourceRows.length > 1) {
-      setSourceRows(sourceRows.filter(row => row.id !== id));
-    }
-  };
-
-  const updateSourceRow = (id: string, updates: Partial<SourceRow>) => {
-    setSourceRows(sourceRows.map(row => row.id === id ? { ...row, ...updates } : row));
-  };
-
-  const toggleSourceZone = (rowId: string, zone: string) => {
-    setSourceRows(sourceRows.map(row => {
-      if (row.id === rowId && row.type === 'Zone') {
-        const currentZones = row.zones || [];
-        const newZones = currentZones.includes(zone)
-          ? currentZones.filter(z => z !== zone)
-          : [...currentZones, zone];
-        return { ...row, zones: newZones };
-      }
-      return row;
-    }));
-  };
-
-  // Destination row management
-  const addDestinationRow = (type: 'Zone' | 'IP Range') => {
-    const newRow: DestinationRow = {
-      id: Date.now().toString(),
-      type,
-      zone: type === 'Zone' ? '' : undefined,
-      subnet: type === 'Zone' ? '' : undefined,
-      ipRange: type === 'IP Range' ? '' : undefined,
-      anyIp: false,
-      protocol: 'Any',
-      port: '',
-      anyPort: true,
-    };
-    setDestinationRows([...destinationRows, newRow]);
-  };
-
-  const removeDestinationRow = (id: string) => {
-    if (destinationRows.length > 1) {
-      setDestinationRows(destinationRows.filter(row => row.id !== id));
-    }
-  };
-
-  const updateDestinationRow = (id: string, updates: Partial<DestinationRow>) => {
-    setDestinationRows(destinationRows.map(row => row.id === id ? { ...row, ...updates } : row));
-  };
 
   return (
     <>
@@ -298,324 +197,131 @@ export function CreateZonePolicyPage() {
       {/* Source */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
-          <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
-              Source
-            </h3>
-            <button
-              onClick={() => addSourceRow('Zone')}
-              className="w-[24px] h-[24px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity"
-            >
-              <div className="border-[1.5px] border-[#5885cc] rounded-[3px] w-full h-full flex items-center justify-center">
-                <Plus className="w-3 h-3 text-[#5885cc]" />
-              </div>
-            </button>
-          </div>
-          
-          {sourceRows.map((row, index) => (
-            <div key={row.id} className="flex gap-[8px] items-start">
-              {/* Type Selector */}
-              <div className="w-[148px]">
-                <Select 
-                  value={row.type} 
-                  onValueChange={(v) => {
-                    const newType = v as 'Zone' | 'IP Range';
-                    updateSourceRow(row.id, {
-                      type: newType,
-                      zones: newType === 'Zone' ? [] : undefined,
-                      ipRange: newType === 'IP Range' ? '' : undefined,
-                    });
-                  }}
-                >
-                  <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Zone">Zone</SelectItem>
-                    <SelectItem value="IP Range">IP Ranges</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
+            Source
+          </h3>
 
-              {/* IP Range or Zone selector */}
-              {row.type === 'IP Range' ? (
-                <>
-                  <div className="flex-1 flex flex-col gap-[7px]">
-                    <Input
-                      placeholder="192.168.1.0/24"
-                      value={row.ipRange || ''}
-                      onChange={(e) => updateSourceRow(row.id, { ipRange: e.target.value })}
-                      disabled={row.anyIp}
-                      className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Checkbox 
-                        id={`source-any-ip-${row.id}`}
-                        checked={row.anyIp}
-                        onCheckedChange={(checked) => updateSourceRow(row.id, { anyIp: checked as boolean })}
-                      />
-                      <Label 
-                        htmlFor={`source-any-ip-${row.id}`}
-                        className="text-[13px] font-normal text-[#191c25] cursor-pointer"
-                      >
-                        Any
-                      </Label>
-                    </div>
-                  </div>
-
-                  {/* Protocol */}
-                  <div className="w-[125px]">
-                    <Select 
-                      value={row.protocol} 
-                      onValueChange={(v) => updateSourceRow(row.id, { protocol: v })}
-                    >
-                      <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Any">All Protocols</SelectItem>
-                        <SelectItem value="TCP">TCP</SelectItem>
-                        <SelectItem value="UDP">UDP</SelectItem>
-                        <SelectItem value="ICMP">ICMP</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Ports */}
-                  <div className="w-[291px] flex flex-col gap-[7px]">
-                    <Input
-                      placeholder="Ports: ex: 22, 50-250"
-                      value={row.port}
-                      onChange={(e) => updateSourceRow(row.id, { port: e.target.value })}
-                      disabled={row.anyPort}
-                      className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Checkbox 
-                        id={`source-any-port-${row.id}`}
-                        checked={row.anyPort}
-                        onCheckedChange={(checked) => updateSourceRow(row.id, { anyPort: checked as boolean })}
-                        className="data-[state=checked]:bg-[#5885cc]"
-                      />
-                      <Label 
-                        htmlFor={`source-any-port-${row.id}`}
-                        className="text-[13px] font-normal text-[#191c25] cursor-pointer"
-                      >
-                        Any
-                      </Label>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                /* Zone type - only multiselect dropdown, no protocol or ports */
-                <div className="flex-1 relative">
-                  <button
-                    onClick={() => setZoneDropdownOpen(zoneDropdownOpen === row.id ? null : row.id)}
-                    className="w-full bg-white border border-[#e5e7eb] rounded-[8px] h-[43px] px-[13px] flex items-center justify-between"
-                  >
-                    <div className="flex flex-wrap gap-1.5 flex-1">
-                      {row.zones && row.zones.length > 0 ? (
-                        row.zones.map(zone => (
-                          <div key={zone} className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[6px] px-[8px] py-[4px] flex items-center gap-2">
-                            <span className="text-[12px] text-[#364153]">{zone}</span>
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleSourceZone(row.id, zone);
-                              }}
-                              className="text-[#9ca3af] hover:text-[#6a7282] cursor-pointer"
-                            >
-                              <X className="w-3 h-3" />
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <span className="text-[14px] text-[#9ca3af]">Select zones</span>
-                      )}
-                    </div>
-                    <svg className="w-4 h-4 text-[#717182] opacity-50" fill="none" viewBox="0 0 16 16">
-                      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                  
-                  {zoneDropdownOpen === row.id && (
-                    <div className="absolute top-full mt-1 w-full bg-white border border-[#e5e7eb] rounded-[8px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.35)] z-50">
-                      {ZONES.map(zone => {
-                        const isSelected = row.zones?.includes(zone);
-                        return (
-                          <button
-                            key={zone}
-                            onClick={() => toggleSourceZone(row.id, zone)}
-                            className={`w-full px-[13px] py-[8px] text-left text-[14px] hover:bg-[#f7f2f2] ${
-                              isSelected ? 'bg-[#f7f2f2]' : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span>{zone}</span>
-                              {isSelected && (
-                                <svg className="w-3 h-3 text-[#3b82f6] ml-auto" fill="none" viewBox="0 0 17 14">
-                                  <path d="M1.5 7L6.5 12L15.5 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Remove button */}
-              <button
-                onClick={() => removeSourceRow(row.id)}
-                className="w-[24px] h-[24px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity mt-[6px]"
-              >
-                <div className="border-[1.5px] border-[#5885cc] rounded-[3px] w-full h-full flex items-center justify-center">
-                  <Minus className="w-3 h-3 text-[#5885cc]" />
-                </div>
-              </button>
+          {/* Zone row */}
+          <div className="flex items-center gap-[16px]">
+            <Label className="w-[120px] shrink-0 font-['Inter',sans-serif] font-medium text-[13px] text-[#364153]">Zone</Label>
+            <div className="flex-1">
+              <Select value={sourceZone} onValueChange={setSourceZone}>
+                <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Any">Any</SelectItem>
+                  {ZONES.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
-          ))}
+          </div>
+
+          {/* IP Range row */}
+          <div className="flex items-start gap-[16px]">
+            <Label className="w-[120px] shrink-0 font-['Inter',sans-serif] font-medium text-[13px] text-[#364153] pt-[10px]">IP Range</Label>
+            <div className="flex flex-col gap-[6px] flex-1">
+              <Input
+                placeholder="192.168.1.0/24"
+                value={sourceIpRange}
+                onChange={(e) => setSourceIpRange(e.target.value)}
+                disabled={sourceAnyIp}
+                className="bg-white border-[#e5e7eb] rounded-[8px] h-[40px] font-['Inter',sans-serif] text-[14px]"
+              />
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="source-any-ip"
+                  checked={sourceAnyIp}
+                  onCheckedChange={(checked) => setSourceAnyIp(checked as boolean)}
+                  className="data-[state=checked]:bg-[#0066cc] data-[state=checked]:border-[#0066cc]"
+                />
+                <Label htmlFor="source-any-ip" className="text-[13px] font-normal text-[#191c25] cursor-pointer">
+                  Any
+                </Label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Destination */}
       <div className="bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)]">
         <div className="px-[28px] py-[20px] flex flex-col gap-[16px]">
-          <div className="flex items-center justify-between">
-            <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
-              Destination
-            </h3>
-            <button
-              onClick={() => addDestinationRow('Zone')}
-              className="w-[24px] h-[24px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity"
-            >
-              <div className="border-[1.5px] border-[#5885cc] rounded-[3px] w-full h-full flex items-center justify-center">
-                <Plus className="w-3 h-3 text-[#5885cc]" />
-              </div>
-            </button>
+          <h3 className="font-['Inter',sans-serif] font-bold text-[16px] leading-[24px] text-[#101828]">
+            Destination
+          </h3>
+
+          {/* Zone row */}
+          <div className="flex items-center gap-[16px]">
+            <Label className="w-[120px] shrink-0 font-['Inter',sans-serif] font-medium text-[13px] text-[#364153]">Zone</Label>
+            <div className="flex-1">
+              <Select value={destZone} onValueChange={setDestZone}>
+                <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Any">Any</SelectItem>
+                  {ZONES.map(z => <SelectItem key={z} value={z}>{z}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          
-          {destinationRows.map((row) => (
-            <div key={row.id} className="flex flex-col gap-[6px]">
-              <div className="flex gap-[8px] items-start">
-                {/* Type Selector */}
-                <div className="w-[148px]">
-                  <Select
-                    value={row.type}
-                    onValueChange={(v) => {
-                      const newType = v as 'Zone' | 'IP Range';
-                      updateDestinationRow(row.id, {
-                        type: newType,
-                        zone: newType === 'Zone' ? '' : undefined,
-                        subnet: newType === 'Zone' ? '' : undefined,
-                        ipRange: newType === 'IP Range' ? '' : undefined,
-                      });
-                    }}
-                  >
-                    <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Zone">Zone</SelectItem>
-                      <SelectItem value="IP Range">IP Ranges</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
-                {/* IP Range branch */}
-                {row.type === 'IP Range' ? (
-                  <>
-                    <div className="flex-1 flex flex-col gap-[7px]">
-                      <Input
-                        placeholder="192.168.1.0/24"
-                        value={row.ipRange || ''}
-                        onChange={(e) => updateDestinationRow(row.id, { ipRange: e.target.value })}
-                        disabled={row.anyIp}
-                        className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]"
-                      />
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id={`dest-any-ip-${row.id}`}
-                          checked={row.anyIp}
-                          onCheckedChange={(checked) => updateDestinationRow(row.id, { anyIp: checked as boolean })}
-                        />
-                        <Label htmlFor={`dest-any-ip-${row.id}`} className="text-[13px] font-normal text-[#191c25] cursor-pointer">
-                          Any
-                        </Label>
-                      </div>
-                    </div>
-                    {/* Protocol */}
-                    <div className="w-[125px]">
-                      <Select value={row.protocol} onValueChange={(v) => updateDestinationRow(row.id, { protocol: v })}>
-                        <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Any">All Protocols</SelectItem>
-                          <SelectItem value="TCP">TCP</SelectItem>
-                          <SelectItem value="UDP">UDP</SelectItem>
-                          <SelectItem value="ICMP">ICMP</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {/* Ports */}
-                    <div className="w-[291px] flex flex-col gap-[7px]">
-                      <Input
-                        placeholder="Ports: ex: 22, 50-250"
-                        value={row.port}
-                        onChange={(e) => updateDestinationRow(row.id, { port: e.target.value })}
-                        disabled={row.anyPort}
-                        className="bg-white border-[#e5e7eb] rounded-[8px] h-[36px]"
-                      />
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id={`dest-any-port-${row.id}`}
-                          checked={row.anyPort}
-                          onCheckedChange={(checked) => updateDestinationRow(row.id, { anyPort: checked as boolean })}
-                          className="data-[state=checked]:bg-[#5885cc]"
-                        />
-                        <Label htmlFor={`dest-any-port-${row.id}`} className="text-[13px] font-normal text-[#191c25] cursor-pointer">
-                          Any
-                        </Label>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  /* Zone branch */
-                  <div className="flex-1 flex gap-[6px]">
-                    <Select value={row.zone || ''} onValueChange={(v) => updateDestinationRow(row.id, { zone: v })}>
-                      <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] h-[43px]">
-                        <SelectValue placeholder="Select zone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ZONES.map(zone => (
-                          <SelectItem key={zone} value={zone}>{zone}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      placeholder="Subnet: Ex:192.168.0.0"
-                      value={row.subnet || ''}
-                      onChange={(e) => updateDestinationRow(row.id, { subnet: e.target.value })}
-                      className="bg-white border-[#e5e7eb] rounded-[8px] h-[43px]"
-                    />
-                  </div>
-                )}
-
-                {/* Remove button */}
-                <button
-                  onClick={() => removeDestinationRow(row.id)}
-                  className="w-[24px] h-[24px] flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity mt-[6px]"
+          {/* IP Range row */}
+          <div className="flex items-start gap-[16px]">
+            <Label className="w-[120px] shrink-0 font-['Inter',sans-serif] font-medium text-[13px] text-[#364153] pt-[10px]">IP Range</Label>
+            <div className="flex flex-col gap-[6px] flex-1">
+              <div className="flex gap-[8px]">
+                <Input
+                  placeholder="192.168.1.0/24"
+                  value={destIpRange}
+                  onChange={(e) => setDestIpRange(e.target.value)}
+                  disabled={destAnyIp}
+                  className="bg-white border-[#e5e7eb] rounded-[8px] h-[40px] font-['Inter',sans-serif] text-[14px] flex-1"
+                />
+                <Select
+                  value={destService}
+                  onValueChange={(v) => {
+                    setDestService(v);
+                    if (v !== 'Any') setDestAnyIp(false);
+                    else setDestPort('');
+                  }}
                 >
-                  <div className="border-[1.5px] border-[#5885cc] rounded-[3px] w-full h-full flex items-center justify-center">
-                    <Minus className="w-3 h-3 text-[#5885cc]" />
-                  </div>
-                </button>
+                  <SelectTrigger className="bg-white border-[#e5e7eb] rounded-[8px] w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Any">Any Service</SelectItem>
+                    <SelectItem value="UDP">UDP</SelectItem>
+                    <SelectItem value="TCP">TCP</SelectItem>
+                    <SelectItem value="ICMP">ICMP</SelectItem>
+                  </SelectContent>
+                </Select>
+                {['UDP', 'TCP'].includes(destService) && (
+                  <Input
+                    placeholder="e.g. 443"
+                    value={destPort}
+                    onChange={(e) => setDestPort(e.target.value)}
+                    className="bg-white border-[#e5e7eb] rounded-[8px] h-[40px] font-['Inter',sans-serif] text-[14px] w-[100px]"
+                  />
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="dest-any-ip"
+                  checked={destAnyIp}
+                  onCheckedChange={(checked) => {
+                    setDestAnyIp(checked as boolean);
+                    if (checked) setDestService('Any');
+                  }}
+                  className="data-[state=checked]:bg-[#0066cc] data-[state=checked]:border-[#0066cc]"
+                />
+                <Label htmlFor="dest-any-ip" className="text-[13px] font-normal text-[#191c25] cursor-pointer">
+                  Any
+                </Label>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -803,8 +509,8 @@ export function CreateZonePolicyPage() {
                 {action.toUpperCase()}
               </span>{' '}
               traffic from{' '}
-              <span className="font-semibold text-[#101828]">{sourceRows.map(row => row.type === 'Zone' ? row.zones?.join(', ') : row.ipRange).join(', ')}</span> to{' '}
-              <span className="font-semibold text-[#101828]">{destinationRows.map(row => row.type === 'Zone' ? row.zone : row.ipRange).join(', ')}</span>
+              <span className="font-semibold text-[#101828]">{sourceZone !== 'Any' ? sourceZone : (sourceAnyIp ? 'Any' : sourceIpRange || 'Any')}</span> to{' '}
+              <span className="font-semibold text-[#101828]">{destZone !== 'Any' ? destZone : (destAnyIp ? 'Any' : destIpRange || 'Any')}</span>
               .
             </p>
           </div>
@@ -823,11 +529,9 @@ export function CreateZonePolicyPage() {
           </span>
         </Button>
         <Button
-          className="gap-[6px] rounded-[8px] bg-[#d4183d] hover:bg-[#b01430] text-white px-[20px]"
-          disabled={!isFormValid}
+          className="rounded-[8px] bg-[#0066cc] hover:bg-[#0052a6] text-white px-[20px]"
           onClick={handleSave}
         >
-          <Save className="w-[14px] h-[14px]" />
           <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] text-white">
             {isEdit ? 'Save Changes' : 'Create Policy'}
           </span>

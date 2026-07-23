@@ -33,7 +33,7 @@ const TOP_DOMAINS = [
   { domain: 'salesforce.com', badge: 'Known',     requests: '151,090', trend: 11, dir: 'up'   },
   { domain: 'dentrix.com',    badge: 'Known',     requests: '84,112',  trend: 3,  dir: 'down' },
   { domain: 'quickbooks.com', badge: 'Known',     requests: '58,447',  trend: 0,  dir: 'flat' },
-  { domain: 'dropbox.com',    badge: 'Shadow IT', requests: '42,120',  trend: 42, dir: 'up'   },
+  { domain: 'zoom.us',        badge: 'Known',     requests: '41,880',  trend: 8,  dir: 'up'   },
   { domain: 'slack.com',      badge: 'Known',     requests: '38,300',  trend: 5,  dir: 'up'   },
 ];
 
@@ -137,7 +137,7 @@ export function DashboardPage() {
                 <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                   <div
                     className="h-full rounded-full"
-                    style={{ width: `${Math.round((t.count / maxThreat) * 100)}%`, background: SEV_COLOR[t.severity] }}
+                    style={{ width: `${Math.round((t.count / maxThreat) * 100)}%`, background: '#0066cc' }}
                   />
                 </div>
                 <span className="text-xs font-semibold text-gray-900 w-7 text-right tabular-nums">{t.count}</span>
@@ -253,7 +253,7 @@ export function DashboardPage() {
             <div style={{ display: 'flex', gap: '16px', flex: 1, minHeight: 0 }}>
 
               {/* Severity — vertical bar histogram */}
-              <div style={{ flex: '0 0 auto', width: '120px' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#717182', marginBottom: '8px' }}>Severity</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', height: '80px' }}>
                   {([

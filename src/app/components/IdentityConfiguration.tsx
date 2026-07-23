@@ -8,6 +8,15 @@ import { Badge } from './ui/badge';
 import { Shield, Users, Globe, Key, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Avatar, AvatarFallback } from './ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
+
+function userInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 interface IdentityConfigurationProps {
   onContinue?: () => void;
@@ -163,7 +172,16 @@ export function IdentityConfiguration({
                                localUsers.map((user, i) => (
                                   <TableRow key={i} className="border-b border-[#e2e8f4]">
                                      <TableCell className="font-bold text-[#2f3243] text-xs pl-3 py-3">{user.email}</TableCell>
-                                     <TableCell className="font-bold text-[#2f3243] text-xs py-3">{user.name}</TableCell>
+                                     <TableCell className="font-bold text-[#2f3243] text-xs py-3">
+                                       <div className="flex items-center gap-2">
+                                         <Avatar className="h-6 w-6 flex-shrink-0">
+                                           <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                                             {userInitials(user.name)}
+                                           </AvatarFallback>
+                                         </Avatar>
+                                         {user.name}
+                                       </div>
+                                     </TableCell>
                                      <TableCell className="font-bold text-[#2f3243] text-xs py-3">{user.tempPassword}</TableCell>
                                   </TableRow>
                                ))

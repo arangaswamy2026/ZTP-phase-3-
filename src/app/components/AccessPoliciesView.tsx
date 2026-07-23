@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { 
-  Plus, 
-  Search, 
+import {
+  Plus,
+  Search,
   MoreVertical,
   Edit,
   Trash2,
@@ -17,6 +17,7 @@ import {
   GripVertical,
   Eye,
   Pencil,
+  Cpu,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -1080,6 +1081,95 @@ function SPAPoliciesTable({
   );
 }
 
+// ── Endpoint Policy Profile ──────────────────────────────────────────
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffInDays === 0) return 'Today';
+  if (diffInDays === 1) return 'Yesterday';
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function EPPTypeBadge() {
+  return (
+    <span className="inline-flex items-center rounded-[6px] border border-[#d4d4d8] bg-[#fafafa] px-[8px] py-[2px] font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] text-[#52525b]">
+      Default
+    </span>
+  );
+}
+
+function EndpointPolicyProfile() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex flex-col gap-[16px] w-full">
+      {/* Section header */}
+      <div className="flex items-center gap-[8px]">
+        <div className="flex items-center justify-center rounded-[11px] bg-[#e0f0ff] size-[40px] shrink-0">
+          <Cpu className="w-[20px] h-[20px] text-[#0066cc]" />
+        </div>
+        <div className="flex flex-col justify-center pb-[3px]">
+          <span className="font-['Inter',sans-serif] font-bold text-[18px] leading-[28px] tracking-[-0.44px] text-[#1a1a1a]">
+            Endpoint Policy Profile
+          </span>
+          <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[24px] tracking-[-0.31px] text-[#717182]">
+            Sensor settings is the only policy applied by default. Other policy types require created rules to take effect.
+          </span>
+        </div>
+      </div>
+
+      {/* Profile table row */}
+      <div className="bg-white rounded-[16px] border border-[rgba(0,0,0,0.1)] shadow-[0_1px_2px_rgba(0,0,0,0.06)] overflow-hidden w-full">
+        <div className="bg-[#ececf0] border-b border-[rgba(0,0,0,0.1)]">
+          <div className="flex items-center px-[16px] py-[12px]">
+            <div className="flex-1">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Profile Name</p>
+            </div>
+            <div className="w-[160px]">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Enabled Checks</p>
+            </div>
+            <div className="w-[180px]">
+              <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[#717182] whitespace-nowrap">Last Modified</p>
+            </div>
+            <div className="w-[80px]" />
+          </div>
+        </div>
+        <div
+          className="flex items-center px-[16px] py-[16px] hover:bg-[#f8f9fa] cursor-pointer"
+          onClick={() => navigate('/profiles/organisation-endpoint-profile')}
+        >
+          <div className="flex-1 flex flex-col gap-[2px]">
+            <p className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] tracking-[-0.15px] text-[#1a1a1a]">
+              Organisation Endpoint Profile
+            </p>
+            <p className="font-['Inter',sans-serif] font-normal text-[12px] leading-[16px] text-[#717182]">
+              Controls endpoint detection, response settings and advanced protection
+            </p>
+          </div>
+          <div className="w-[160px]">
+            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#364153]">6 checks</span>
+          </div>
+          <div className="w-[180px]">
+            <span className="font-['Inter',sans-serif] font-normal text-[14px] leading-[20px] text-[#364153]">{formatDate('2024-02-28T14:30:00Z')}</span>
+          </div>
+          <div className="w-[80px] flex justify-end" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="rounded-[8px] size-[32px] border border-[rgba(0,0,0,0.1)] flex items-center justify-center hover:bg-[#ececf0]"
+              onClick={() => navigate('/profiles/organisation-endpoint-profile')}
+            >
+              <Pencil className="w-[14px] h-[14px] text-[#717182]" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ───────────────────────────────────────────────────
 
 interface AccessPoliciesViewProps {
@@ -1174,12 +1264,15 @@ export function AccessPoliciesView({ onCreatePolicy, onEditPolicy }: AccessPolic
       />
 
       {/* Private Access (SPA) Policies */}
-      <SPAPoliciesTable 
-        policies={spaPolicies} 
+      <SPAPoliciesTable
+        policies={spaPolicies}
         searchQuery={searchQuery}
         onNewPolicy={handleNewPrivateAccessPolicy}
         onPolicyClick={(policy) => navigate(`/private-access-policy/${policy.id}`)}
       />
+
+      {/* Endpoint Policy Profile */}
+      <EndpointPolicyProfile />
     </div>
   );
 }

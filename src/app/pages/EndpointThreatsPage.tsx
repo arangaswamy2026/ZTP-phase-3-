@@ -2,6 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { Search, ChevronLeft, X } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
 
 // ── DS tokens (design-system.html) ────────────────────────────────────────────
 // text: #1a1a1a  muted: #717182  accent: #0066cc  accent-hover: #0052a6
@@ -365,9 +368,11 @@ export function EndpointThreatsPage() {
                     {/* User — avatar + name + email */}
                     <td style={{ padding: '12px 16px', verticalAlign: 'middle' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dbeafe', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0, letterSpacing: '0.02em' }}>
-                          {row.userInitials}
-                        </div>
+                        <Avatar className="h-7 w-7 flex-shrink-0">
+                          <AvatarFallback className={`text-[11px] font-semibold text-white ${AVATAR_COLOR}`}>
+                            {row.userInitials}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <div style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', whiteSpace: 'nowrap' }}>{row.userName}</div>
                           <div style={{ fontSize: '11px', color: '#717182', marginTop: '1px', whiteSpace: 'nowrap' }}>{row.userEmail}</div>

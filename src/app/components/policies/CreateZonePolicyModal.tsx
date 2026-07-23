@@ -422,10 +422,9 @@ export function CreateZonePolicyModal({ isOpen, onClose, onCreate }: CreateZoneP
           <Button onClick={handleClose} variant="outline" className="border-[rgba(0,0,0,0.1)]">
             Cancel
           </Button>
-          <Button 
-            onClick={handleCreate} 
-            disabled={!isFormValid}
-            className="bg-[#d4183d] hover:bg-[#b01430] text-white"
+          <Button
+            onClick={handleCreate}
+            className="bg-[#0066cc] hover:bg-[#0052a6] text-white"
           >
             Create Policy
           </Button>

@@ -154,7 +154,7 @@ export function TenantTopDomainsPage() {
   const [categoryFilter,  setCategoryFilter]  = useState('');
   const [riskFilter,      setRiskFilter]      = useState('');
   const [page,            setPage]            = useState(1);
-  const [sortCol,         setSortCol]         = useState<'requests' | 'bandwidth' | 'users' | 'latency' | 'trend'>('requests');
+  const [sortCol,         setSortCol]         = useState<'requests' | 'trend'>('requests');
   const [sortDir,         setSortDir]         = useState<'desc' | 'asc'>('desc');
 
   const categories = useMemo(() => [...new Set(ALL_DOMAINS.map(d => d.category))].sort(), []);
@@ -174,9 +174,6 @@ export function TenantTopDomainsPage() {
     return [...filtered].sort((a, b) => {
       let av = 0, bv = 0;
       if (sortCol === 'requests')  { av = a.requests;    bv = b.requests; }
-      if (sortCol === 'bandwidth') { av = a.bandwidth;   bv = b.bandwidth; }
-      if (sortCol === 'users')     { av = a.uniqueUsers; bv = b.uniqueUsers; }
-      if (sortCol === 'latency')   { av = a.avgLatency;  bv = b.avgLatency; }
       if (sortCol === 'trend')     { av = a.trend * (a.dir === 'down' ? -1 : 1); bv = b.trend * (b.dir === 'down' ? -1 : 1); }
       return sortDir === 'desc' ? bv - av : av - bv;
     });
@@ -308,7 +305,7 @@ export function TenantTopDomainsPage() {
           />
         </div>
         {[
-          { label: 'All Types',      value: badgeFilter,    set: setBadgeFilter,    options: ['Known', 'Shadow IT', 'Blocked'] },
+          { label: 'All Types',      value: badgeFilter,    set: setBadgeFilter,    options: ['Blocked'] },
           { label: 'All Categories', value: categoryFilter, set: setCategoryFilter, options: categories },
           { label: 'All Risk',       value: riskFilter,     set: setRiskFilter,     options: ['None', 'Low', 'Medium', 'High'] },
         ].map(({ label, value, set, options }) => (
@@ -345,11 +342,7 @@ export function TenantTopDomainsPage() {
                   <TH>Domain</TH>
                   <TH>Category</TH>
                   <SortTH col="requests">Requests</SortTH>
-                  <SortTH col="bandwidth">Bandwidth</SortTH>
-                  <SortTH col="users">Users</SortTH>
-                  <SortTH col="latency">Avg Latency</SortTH>
                   <SortTH col="trend">Trend</SortTH>
-                  <TH>Last Seen</TH>
                 </tr>
               </THead>
               <tbody>
@@ -365,15 +358,7 @@ export function TenantTopDomainsPage() {
                     </TD>
                     <TD><span style={{ fontSize: '12px', color: '#717182' }}>{d.category}</span></TD>
                     <TD><span style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a1a', fontVariantNumeric: 'tabular-nums' }}>{fmtNum(d.requests)}</span></TD>
-                    <TD><span style={{ fontSize: '13px', color: '#1a1a1a', fontVariantNumeric: 'tabular-nums' }}>{fmtBW(d.bandwidth)}</span></TD>
-                    <TD><span style={{ fontSize: '13px', color: '#717182', fontVariantNumeric: 'tabular-nums' }}>{d.uniqueUsers}</span></TD>
-                    <TD>
-                      <span style={{ fontSize: '12px', color: d.avgLatency > 100 ? '#d97706' : '#717182', fontVariantNumeric: 'tabular-nums' }}>
-                        {d.avgLatency} ms
-                      </span>
-                    </TD>
                     <TD><TrendCell trend={d.trend} dir={d.dir} /></TD>
-                    <TD><span style={{ fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{d.lastSeen}</span></TD>
                   </TR>
                 ))}
               </tbody>

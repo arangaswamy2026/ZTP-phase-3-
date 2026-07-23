@@ -6,6 +6,15 @@ import { Label } from "./ui/label";
 import { Users, Shield, Plus, Mail, Smartphone, Globe, Lock } from 'lucide-react';
 import { Card } from './ui/card';
 import { Checkbox } from './ui/checkbox';
+import { Avatar, AvatarFallback } from './ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
+
+function userInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 interface IdentityUsersModalProps {
   isOpen: boolean;
@@ -163,7 +172,16 @@ export function IdentityUsersModal({ isOpen, onClose, onSave }: IdentityUsersMod
                         users.map((user, idx) => (
                           <tr key={idx} className="bg-white">
                             <td className="px-4 py-3 text-xs text-gray-900">{user.email}</td>
-                            <td className="px-4 py-3 text-xs text-gray-600">{user.name}</td>
+                            <td className="px-4 py-3 text-xs text-gray-600">
+                              <div className="flex items-center gap-2">
+                                <Avatar className="h-6 w-6 flex-shrink-0">
+                                  <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                                    {userInitials(user.name)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                {user.name}
+                              </div>
+                            </td>
                             <td className="px-4 py-3 text-xs text-gray-500">
                               <Badge variant="outline" className="text-amber-600 bg-amber-50 border-amber-200 font-normal">Pending</Badge>
                             </td>

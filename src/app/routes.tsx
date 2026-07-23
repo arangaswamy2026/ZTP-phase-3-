@@ -16,6 +16,7 @@ import { ObjectsPage } from "./pages/ObjectsPage";
 import { AccessPoliciesPage } from "./pages/AccessPoliciesPage";
 import { SecureAccessPolicyPage } from "./pages/SecureAccessPolicyPage";
 import { DefaultTrustProfilePage } from "./pages/DefaultTrustProfilePage";
+import { EndpointProfilePage } from "./pages/EndpointProfilePage";
 import { ZonePolicyDetailPage } from "./pages/ZonePolicyDetailPage";
 import { CreateZonePolicyPage } from "./pages/CreateZonePolicyPage";
 import { InternetPolicyDetailPage } from "./pages/InternetPolicyDetailPage";
@@ -36,6 +37,7 @@ import { NetworkPage } from "./pages/NetworkPage";
 import { MspDashboardPage } from "./pages/MspDashboardPage";
 import { MspTopDomainsPage } from "./pages/MspTopDomainsPage";
 import { MspTrafficPage } from "./pages/MspTrafficPage";
+import { MspEndpointsPage } from "./pages/MspEndpointsPage";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +51,7 @@ export const router = createBrowserRouter([
       { path: "secure-access-policy", Component: SecureAccessPolicyPage },
       { path: "profiles", Component: ProfilesPage },
       { path: "profiles/default-trust-profile", Component: DefaultTrustProfilePage },
+      { path: "profiles/organisation-endpoint-profile", Component: EndpointProfilePage },
       { path: "objects", Component: ObjectsPage },
       { path: "zone-policy/create", Component: CreateZonePolicyPage },
       { path: "zone-policy/:id", Component: ZonePolicyDetailPage },
@@ -65,6 +68,7 @@ export const router = createBrowserRouter([
       { path: "msp-dashboard", Component: MspDashboardPage },
       { path: "msp-top-domains", Component: MspTopDomainsPage },
       { path: "msp-traffic", Component: MspTrafficPage },
+      { path: "msp-endpoints", Component: MspEndpointsPage },
       { path: "tenant-management", Component: TenantManagementPage },
       { path: "inventory", Component: InventoryPage },
       { path: "blocked-threats", Component: BlockedThreatsPage },

@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { 
-  Shield, 
-  AlertTriangle, 
-  FileArchive, 
+import {
+  Shield,
+  AlertTriangle,
+  FileArchive,
   Globe,
   TrendingUp,
-  User,
   Smartphone,
   Download
 } from 'lucide-react';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
+
+function userInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import {
@@ -260,7 +268,11 @@ export default function Reports() {
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <User className="w-4 h-4 text-[#6a7282] shrink-0" />
+                  <Avatar className="h-6 w-6 flex-shrink-0">
+                    <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                      {userInitials(user.name)}
+                    </AvatarFallback>
+                  </Avatar>
                   <span className="text-sm text-[#101828] truncate">{user.name}</span>
                   {user.isOutlier && (
                     <Badge variant="outline" className="bg-[#f3f4f6] text-[#4a5565] border-[#e5e7eb] text-xs px-1.5 py-0">
@@ -389,7 +401,14 @@ export default function Reports() {
                       </div>
                     </td>
                     <td className="py-3">
-                      <span className="text-sm text-[#4a5565]">{endpoint.user}</span>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6 flex-shrink-0">
+                          <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                            {userInitials(endpoint.user)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm text-[#4a5565]">{endpoint.user}</span>
+                      </div>
                     </td>
                     <td className="py-3">
                       <Badge 

@@ -2,6 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { Search, Download, ChevronRight } from 'lucide-react@0.487.0';
 import { PageHeader } from '../components/PageHeader';
 import { StatusBadge, TablePanel, DataTable, THead, TH, TR, TD, TableFoot } from '../components/ds';
+import { Avatar, AvatarFallback } from '../components/ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
+
+function userInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -499,11 +508,6 @@ export function ActivityPage() {
         </button>
       </div>
 
-      {/* Entry count line */}
-      <div className="text-[13px] text-muted-foreground">
-        Sorted by timestamp ↓ · UTC · {filtered.length} of {LOG_ENTRIES.length} entries
-      </div>
-
       {/* Table */}
       <TablePanel>
         <DataTable>
@@ -553,17 +557,23 @@ export function ActivityPage() {
                         {entry.isSystem ? (
                           <span className="text-[13px] text-muted-foreground">System</span>
                         ) : (
-                          <div className="flex flex-col leading-snug">
-                            <span className="text-[13px] text-foreground ">{entry.actorName}</span>
-                            {entry.actorEmail && (
-                              <span className="text-[11px] text-muted-foreground">{entry.actorEmail}</span>
-                            )}
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-7 w-7 flex-shrink-0">
+                              <AvatarFallback className={`text-[11px] font-semibold text-white ${AVATAR_COLOR}`}>
+                                {userInitials(entry.actorName)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col leading-snug">
+                              <span className="text-[13px] text-foreground">{entry.actorName}</span>
+                              {entry.actorEmail && (
+                                <span className="text-[11px] text-muted-foreground">{entry.actorEmail}</span>
+                              )}
+                            </div>
                           </div>
                         )}
                       </TD>
                       <TD>
                         <span className="text-[13px] text-foreground">{entry.action}</span>
-                        <RoleBadge role={entry.actorRole} />
                       </TD>
                       <TD className="text-foreground">{entry.affectedObject}</TD>
                       <TD>

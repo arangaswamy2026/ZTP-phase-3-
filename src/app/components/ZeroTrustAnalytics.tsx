@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  Shield, 
-  AlertTriangle, 
-  FileArchive, 
+import {
+  Shield,
+  AlertTriangle,
+  FileArchive,
   Globe,
   TrendingUp,
   TrendingDown,
   ChevronDown,
   Download,
-  User,
   Smartphone,
   CheckCircle2,
   XCircle,
@@ -16,6 +15,15 @@ import {
   Activity,
   ArrowRight
 } from 'lucide-react';
+import { Avatar, AvatarFallback } from './ui/avatar';
+
+const AVATAR_COLOR = 'bg-[#6b7fa8]';
+
+function userInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import {
@@ -324,7 +332,11 @@ export function ZeroTrustAnalytics() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <User className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                    <Avatar className="h-6 w-6 flex-shrink-0">
+                      <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                        {userInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
                     <span className="text-sm text-gray-900 truncate">{user.name}</span>
                     {user.isOutlier && (
                       <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300 text-xs px-1.5 py-0">
