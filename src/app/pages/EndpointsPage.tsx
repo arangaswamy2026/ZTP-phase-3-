@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import {
-  Search, MoreVertical, Monitor, Shield, Wifi, WifiOff, AlertTriangle, CheckCircle2,
+  Search, MoreVertical, Monitor, AlertTriangle, CheckCircle2,
   ChevronDown, RotateCcw, ArrowUpCircle, X, Info, UploadCloud, Calendar, Clock, Check,
   ScanLine, Trash2,
 } from 'lucide-react';
@@ -29,6 +29,7 @@ interface TenantEndpoint {
   eppOld: boolean;
   icVer: string;
   icOld: boolean;
+  trust: 'low' | 'high';
   health: 'active-threat' | 'at-risk' | 'isolated' | 'healthy' | 'disconnected';
   tunnel: 'connected' | 'degraded' | 'suspended' | 'off';
   mods: { ztn: string; sia: string; eps: string };
@@ -44,6 +45,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'DENTAL-PC-01', hw: 'Dell OptiPlex 5000', user: 'maria',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
+    trust: 'high',
     health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 10, 2026 · 2:18 PM', ip: '10.0.0.21',
     scan: { status: 'complete', timestamp: 'Jul 10, 2026 · 7:52 AM' },
@@ -52,6 +54,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'OFFICE-LAPTOP', hw: 'HP EliteBook 840', user: 'jessica',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
+    trust: 'high',
     health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 10, 2026 · 2:00 PM', ip: '10.0.0.35',
     scan: { status: 'in-progress', progress: 45 },
@@ -60,6 +63,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'MARK-LAPTOP', hw: 'Lenovo ThinkPad X1', user: 'mark',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
+    trust: 'high',
     health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 22, 2026 · 10:12 AM', ip: '10.0.0.42',
     scan: { status: 'complete', timestamp: 'Jul 22, 2026 · 6:00 AM' },
@@ -68,6 +72,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'ANGELA-SURFACE', hw: 'Microsoft Surface Pro 9', user: 'angela',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.0.8', agentOld: true, eppVer: '3.6.2', eppOld: true, icVer: '2.1.4', icOld: false,
+    trust: 'low',
     health: 'at-risk', tunnel: 'degraded', mods: { ztn: 'on', sia: 'off', eps: 'threat' },
     lastSeen: 'Jul 21, 2026 · 4:45 PM', ip: '10.0.0.58',
     scan: { status: 'aborted', timestamp: 'Jul 20, 2026 · 1:10 PM' },
@@ -76,6 +81,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'KEVIN-DESKTOP', hw: 'Dell OptiPlex 3000', user: 'kevin',
     os: 'Windows 10 Pro', osBuild: '10.0.19045',
     agent: '3.9.1', agentOld: true, eppVer: '3.5.0', eppOld: true, icVer: '2.0.9', icOld: true,
+    trust: 'low',
     health: 'disconnected', tunnel: 'off', mods: { ztn: 'off', sia: 'off', eps: 'off' },
     lastSeen: 'Jul 15, 2026 · 9:00 AM', ip: '10.0.0.63',
     scan: { status: 'aborted', timestamp: 'Jul 14, 2026 · 9:00 AM' },
@@ -84,6 +90,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'BRIAN-WINDOWS-PC', hw: 'HP Pavilion Desktop', user: 'brian',
     os: 'Windows 11 Home', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
+    trust: 'high',
     health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 22, 2026 · 8:30 PM', ip: '10.0.0.71',
     scan: { status: 'complete', timestamp: 'Jul 22, 2026 · 5:00 AM' },
@@ -92,6 +99,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'TANYA-MACBOOK-AIR', hw: 'Apple MacBook Air M2', user: 'tanya',
     os: 'macOS 14.4', osBuild: '23.4.0',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.3', icOld: true,
+    trust: 'low',
     health: 'active-threat', tunnel: 'suspended', mods: { ztn: 'on', sia: 'on', eps: 'threat' },
     lastSeen: 'Jul 23, 2026 · 7:15 AM', ip: '10.0.0.84',
     scan: { status: 'in-progress', progress: 72 },
@@ -100,6 +108,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     name: 'LUIS-THINKPAD', hw: 'Lenovo ThinkPad E15', user: 'luis',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.1', agentOld: true, eppVer: '3.7.0', eppOld: true, icVer: '2.1.4', icOld: false,
+    trust: 'low',
     health: 'isolated', tunnel: 'suspended', mods: { ztn: 'on', sia: 'off', eps: 'on' },
     lastSeen: 'Jul 19, 2026 · 11:20 AM', ip: '10.0.0.95',
     scan: { status: 'complete', timestamp: 'Jul 19, 2026 · 11:00 AM' },
@@ -179,22 +188,6 @@ function osIcon(os: string) {
   );
 }
 
-function HealthBadge({ health }: { health: TenantEndpoint['health'] }) {
-  const cfg = {
-    'active-threat': { bg: '#fee2e2', color: '#991b1b', dot: '#ef4444', label: 'Active Threats' },
-    'at-risk':       { bg: '#fef3c7', color: '#b45309', dot: '#f59e0b', label: 'At Risk' },
-    'isolated':      { bg: '#f3f4f6', color: '#374151', dot: '#6b7280', label: 'Isolated' },
-    'healthy':       { bg: '#dcfce7', color: '#15803d', dot: '#22c55e', label: 'Healthy' },
-    'disconnected':  { bg: '#f3f4f6', color: '#6b7280', dot: '#9ca3af', label: 'Disconnected' },
-  }[health];
-  return (
-    <span className="inline-flex items-center gap-[5px] text-[11px] font-semibold px-[8px] py-[2px] rounded-full" style={{ background: cfg.bg, color: cfg.color }}>
-      <span className="w-[6px] h-[6px] rounded-full flex-shrink-0" style={{ background: cfg.dot }} />
-      {cfg.label}
-    </span>
-  );
-}
-
 function TunnelBadge({ tunnel }: { tunnel: TenantEndpoint['tunnel'] }) {
   const cfg = {
     connected:  { color: '#15803d', dot: '#22c55e', label: 'Connected' },
@@ -214,20 +207,16 @@ function VersionBadge({ ver }: { ver: string; old: boolean }) {
   return <span style={{ fontSize: 13, color: '#374151' }}>{ver}</span>;
 }
 
-function ModuleIcons({ mods }: { mods: TenantEndpoint['mods'] }) {
-  const active = 'text-[#0066cc]';
-  const inactive = 'text-[#d1d5db]';
+function TrustBadge({ trust }: { trust: TenantEndpoint['trust'] }) {
+  const cfg = {
+    low:  { bg: '#fee2e2', color: '#991b1b', label: 'Low' },
+    high: { bg: '#dcfce7', color: '#15803d', label: 'High' },
+  }[trust];
   return (
-    <div className="flex items-center gap-[5px]">
-      <Shield className={`w-[13px] h-[13px] ${mods.ztn === 'on' ? active : inactive}`} />
-      <Wifi className={`w-[13px] h-[13px] ${mods.sia === 'on' ? active : inactive}`} />
-      {mods.eps === 'threat'
-        ? <AlertTriangle className="w-[13px] h-[13px] text-[#ef4444]" />
-        : mods.eps === 'on'
-        ? <CheckCircle2 className={`w-[13px] h-[13px] ${active}`} />
-        : <WifiOff className={`w-[13px] h-[13px] ${inactive}`} />
-      }
-    </div>
+    <span className="inline-flex items-center gap-[5px] text-[11px] font-semibold px-[8px] py-[2px] rounded-full whitespace-nowrap" style={{ background: cfg.bg, color: cfg.color }}>
+      {trust === 'low' && <AlertTriangle className="w-[11px] h-[11px] flex-shrink-0" />}
+      {cfg.label}
+    </span>
   );
 }
 
@@ -1030,11 +1019,11 @@ function DetailSectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+function DetailField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-[8px] border-b border-[#f3f4f6] last:border-b-0">
-      <span className="text-[13px] text-[#717182]">{label}</span>
-      <span className="text-[13px] font-medium text-[#1a1a1a] text-right">{children}</span>
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#717182] mb-1.5">{label}</p>
+      <div className="text-[13px] text-[#1a1a1a]">{children}</div>
     </div>
   );
 }
@@ -1054,7 +1043,7 @@ function EndpointDetailModal({ ep, onClose }: { ep: TenantEndpoint; onClose: () 
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40" />
       <div
-        className="relative z-10 bg-white rounded-[16px] shadow-[0_12px_32px_rgba(0,0,0,0.12)] border border-[rgba(0,0,0,0.08)] w-[720px] max-h-[90vh] flex flex-col"
+        className="relative z-10 bg-white rounded-[16px] shadow-[0_12px_32px_rgba(0,0,0,0.12)] border border-[rgba(0,0,0,0.08)] w-[720px] max-h-[90vh] flex flex-col text-left"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -1072,13 +1061,13 @@ function EndpointDetailModal({ ep, onClose }: { ep: TenantEndpoint; onClose: () 
           </button>
         </div>
 
-        {/* Scrollable body — two columns for desktop */}
-        <div className="overflow-y-auto flex-1 px-6 py-5">
-          <div className="grid grid-cols-2 gap-x-10">
-            <div>
-              <DetailSectionLabel>Identity</DetailSectionLabel>
-              <DetailRow label="Tenant">{currentTenant?.name || '—'}</DetailRow>
-              <DetailRow label="Logged-in user">
+        {/* Scrollable body — sections stacked, fields in a 2-column grid */}
+        <div className="overflow-y-auto flex-1 px-6 py-5 space-y-8">
+          <div>
+            <DetailSectionLabel>Identity</DetailSectionLabel>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <DetailField label="Tenant">{currentTenant?.name || '—'}</DetailField>
+              <DetailField label="Logged-in user">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6 flex-shrink-0">
                     <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
@@ -1087,43 +1076,42 @@ function EndpointDetailModal({ ep, onClose }: { ep: TenantEndpoint; onClose: () 
                   </Avatar>
                   <span>{ep.user}</span>
                 </div>
-              </DetailRow>
-              <DetailRow label="Domain / Auth">Active Directory</DetailRow>
-
-              <div className="mt-8">
-                <DetailSectionLabel>System</DetailSectionLabel>
-              </div>
-              <DetailRow label="Hardware">{ep.hw}</DetailRow>
-              <DetailRow label="OS">{ep.os}</DetailRow>
-              <DetailRow label="OS build">{ep.osBuild}</DetailRow>
-              <DetailRow label="Architecture">x64</DetailRow>
+              </DetailField>
+              <DetailField label="Domain / Auth">Active Directory</DetailField>
             </div>
+          </div>
 
-            <div>
-              <DetailSectionLabel>Connectivity &amp; Modules</DetailSectionLabel>
-              <DetailRow label="Tunnel"><TunnelBadge tunnel={ep.tunnel} /></DetailRow>
-              <DetailRow label="Location"><span>United States</span></DetailRow>
-              <DetailRow label="Local IP">{ep.ip}</DetailRow>
-              <DetailRow label="MAC">F0:18:98:AA:BB:CC</DetailRow>
-              <DetailRow label="Modules"><ModuleIcons mods={ep.mods} /></DetailRow>
+          <div>
+            <DetailSectionLabel>System</DetailSectionLabel>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <DetailField label="Hardware">{ep.hw}</DetailField>
+              <DetailField label="OS">{ep.os}</DetailField>
+              <DetailField label="OS build">{ep.osBuild}</DetailField>
+            </div>
+          </div>
 
-              <div className="mt-8">
-                <DetailSectionLabel>Agent</DetailSectionLabel>
-              </div>
-              <DetailRow label="Version">
-                <span>{ep.agent}{ep.agentOld && <span className="ml-[6px] text-[11px] text-[#717182]">(update available)</span>}</span>
-              </DetailRow>
-              <DetailRow label="Health"><HealthBadge health={ep.health} /></DetailRow>
-              <DetailRow label="Last check-in">{ep.lastSeen}</DetailRow>
+          <div>
+            <DetailSectionLabel>Connectivity</DetailSectionLabel>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <DetailField label="Tunnel"><TunnelBadge tunnel={ep.tunnel} /></DetailField>
+              <DetailField label="Location"><span>United States</span></DetailField>
+              <DetailField label="Local IP">{ep.ip}</DetailField>
+              <DetailField label="MAC">F0:18:98:AA:BB:CC</DetailField>
+            </div>
+          </div>
+
+          <div>
+            <DetailSectionLabel>App Versions</DetailSectionLabel>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <DetailField label="Unified Client"><VersionBadge ver={ep.agent} old={ep.agentOld} /></DetailField>
+              <DetailField label="CSE"><VersionBadge ver={ep.eppVer} old={ep.eppOld} /></DetailField>
+              <DetailField label="Theron"><VersionBadge ver={ep.icVer} old={ep.icOld} /></DetailField>
             </div>
           </div>
         </div>
 
         {/* Footer — action buttons */}
         <div className="shrink-0 px-6 py-4 border-t border-[rgba(0,0,0,0.08)] flex flex-row justify-end gap-[8px]">
-          <button className="h-[36px] px-5 rounded-[8px] text-[13px] font-semibold text-[#1a1a1a] bg-white border border-[rgba(0,0,0,0.1)] hover:bg-[#ececf0] transition-colors">
-            Run Full Scan
-          </button>
           {!isHealthy && (
             <button
               className="h-[36px] px-5 rounded-[8px] text-[13px] font-semibold transition-colors border"
@@ -1164,7 +1152,6 @@ interface RowMenuProps {
 function RowMenu({ ep, onRestart }: RowMenuProps) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0, flipUp: false });
-  const [showUpgrade, setShowUpgrade] = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -1191,16 +1178,9 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
     setOpen(v => !v);
   }
 
-  const anyOutdated = ep.agentOld || ep.eppOld || ep.icOld;
-
-  const agentBadge = anyOutdated
-    ? { label: 'Outdated',   bg: '#fee2e2', color: '#991b1b' }
-    : { label: 'Up to date', bg: '#dcfce7', color: '#15803d' };
-
   const standardActions = [
-    { label: 'Restart',       badge: null,       disabled: false },
-    { label: 'Upgrade Agent', badge: agentBadge, disabled: !anyOutdated },
-    { label: 'View Details',  badge: null,       disabled: false },
+    { label: 'Restart',      badge: null, disabled: false },
+    { label: 'View Details', badge: null, disabled: false },
   ];
 
   const destructiveActions = [
@@ -1232,9 +1212,6 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
             border: '1px solid rgba(0,0,0,0.1)',
             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
           }}>
-          <div className="px-[14px] py-[10px] border-b border-[#f3f4f6]">
-            <span className="text-[12px] font-semibold text-[#1a1a1a]">{ep.name}</span>
-          </div>
           <div className="py-[4px]">
             {standardActions.map(({ label, badge, disabled }) => (
               <button key={label}
@@ -1245,7 +1222,6 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
                 onClick={() => {
                   if (!disabled) {
                     if (label === 'Restart') { onRestart(); }
-                    if (label === 'Upgrade Agent') { setShowUpgrade(true); }
                     if (label === 'View Details') { setShowDetails(true); }
                     setOpen(false);
                   }
@@ -1285,7 +1261,6 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
           )}
         </div>
       )}
-      {showUpgrade && <UpgradeAgentModal ep={ep} onClose={() => setShowUpgrade(false)} />}
       {showUninstall && <UninstallModal ep={ep} onClose={() => setShowUninstall(false)} />}
       {showDetails && <EndpointDetailModal ep={ep} onClose={() => setShowDetails(false)} />}
     </div>
@@ -1351,7 +1326,7 @@ export function EndpointsPage() {
   const macCount       = TENANT_ENDPOINTS.filter(e => e.os.toLowerCase().includes('macos') || e.os.toLowerCase().includes('mac')).length;
   const otherCount     = total - winCount - macCount;
 
-  const cols = ['DEVICE', 'USER', 'OS', 'UNIFIED CLIENT', 'CSE', 'THERON', 'CONNECTIVITY', 'LAST ACTIVE', 'ACTION'];
+  const cols = ['DEVICE', 'USER', 'OS', 'UNIFIED CLIENT', 'CSE', 'THERON', 'CONNECTIVITY', 'TRUST', 'LAST ACTIVE', 'ACTION'];
 
   const allSelected  = filtered.length > 0 && filtered.every(ep => selected.has(ep.name));
   const someSelected = filtered.some(ep => selected.has(ep.name)) && !allSelected;
@@ -1371,10 +1346,7 @@ export function EndpointsPage() {
 
   return (
     <div className="flex flex-col gap-[24px] w-full">
-      <PageHeader
-        title="Devices"
-        subtitle={`${total} device${total !== 1 ? 's' : ''}`}
-      />
+      <PageHeader title="Devices" />
 
       {/* Restart notification bar */}
       {restartNotification && (
@@ -1500,6 +1472,11 @@ export function EndpointsPage() {
                   {/* CONNECTIVITY */}
                   <td style={{ padding: '12px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                     <TunnelBadge tunnel={ep.tunnel} />
+                  </td>
+
+                  {/* TRUST (from CSE) */}
+                  <td style={{ padding: '12px', verticalAlign: 'middle' }}>
+                    <TrustBadge trust={ep.trust} />
                   </td>
 
                   {/* LAST ACTIVE */}

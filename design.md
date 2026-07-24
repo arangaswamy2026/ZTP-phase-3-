@@ -222,6 +222,8 @@ Space `xl` (32px) between sections; space `md` (16px) between fields within a se
 - **Helper text — descriptive:** Small, Text muted, left-aligned below the field; explains behavior (e.g. "Lower = higher priority" under Metric).
 - **Helper text — action:** a muted-Accent link row below a dropdown, prefixed `+` (e.g. "+ New address / address group", "+ New service / service group"), for creating a related object inline. Use only where the option list is a resource users commonly create on the fly (addresses, services) — not on every dropdown.
 
+**Body — read-only detail modals.** Modals that display data rather than collect it (e.g. Endpoint Detail) skip inputs entirely and use the metadata-grid recipe from the Resource detail card (§4.3) inside each section: label stacked *above* value, never side-by-side. Label is Micro type (11px / 600 / uppercase / tracking 1%), Text muted, `mb-1.5`; value is Body (13px / 400), Text primary, directly beneath. Fields sit in a two-column grid, `md` (16px)-ish gutter (`gap-x-6`), `gap-y-4` between rows — a lone trailing field stays in the left column only, same rule as the editable field grid above.
+
 **Footer** — 1px Border hairline above, padding matching header/body. Buttons right-aligned as a pair, no left-side content: `outline` Cancel (§4.1) first, `primary` Accent Save/action last — same height so the pair reads as matched.
 
 **Typography recap:** title (H3/600) > section label (Micro/600, muted, uppercase) ≈ field label (Micro/600, uppercase) > input/placeholder (Body/400) > helper text (Small/400, muted). Button text follows §4.1 (medium/semibold, per variant).
