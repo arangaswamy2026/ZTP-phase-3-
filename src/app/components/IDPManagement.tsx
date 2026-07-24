@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Search, MoreVertical, ExternalLink, Trash2, AlertTriangle, X, Monitor, Layers, Laptop, ChevronDown, CheckCircle2, Info } from 'lucide-react';
+import { Search, MoreVertical, ExternalLink, X, Monitor, Layers, Laptop, ChevronDown } from 'lucide-react';
 import { useTenant } from '../contexts/TenantContext';
 
 interface MockUser {
@@ -82,280 +82,6 @@ function EndpointLabel({ name }: { name: string }) {
   );
 }
 
-// ── Uninstall modal ──────────────────────────────────────────────────────────
-interface UninstallModalProps {
-  user: MockUser;
-  avatarColor: string;
-  onClose: () => void;
-}
-
-// App hierarchy: Unified Client (UC) is the wrapper; Theron and CSE are sub-apps.
-// Removing UC removes everything. Theron can be removed alone; CSE cannot (admin-managed).
-const APP_META: Record<string, { title: string; desc: string }> = {
-  UC:     { title: 'Unified Client', desc: 'Wrapper client for Theron and CSE' },
-  THERON: { title: 'Theron',         desc: 'SonicWall Theron security agent' },
-  CSE:    { title: 'CSE',            desc: 'SonicWall CSE agent' },
-};
-
-function joinAnd(items: string[]): string {
-  if (items.length <= 1) return items[0] || '';
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
-}
-
-function UninstallModal({ user, avatarColor, onClose }: UninstallModalProps) {
-  const apps = user.ucApps || [];
-  const hasUC = apps.includes('UC');
-  const hasTheron = apps.includes('THERON');
-  const hasCSE = apps.includes('CSE');
-  const canUninstall = hasUC || hasTheron;
-
-  // 'uc' removes the wrapper and every sub-app; 'theron' removes Theron only.
-  // Default to the least destructive available option.
-  const [scope, setScope] = useState<'uc' | 'theron'>(hasTheron ? 'theron' : 'uc');
-  const [step, setStep] = useState<'select' | 'done'>('select');
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  const primaryEndpoint = Array.isArray(user.endpointName) ? user.endpointName[0] : user.endpointName;
-  const deviceLabel = primaryEndpoint === '—' ? `${user.name}'s device` : primaryEndpoint;
-  const deviceType = deviceTypeFromName(primaryEndpoint);
-  const os = osFromName(primaryEndpoint);
-
-  // Everything the wrapper takes with it, filtered to what is actually installed.
-  const ucRemovalLabels = [
-    APP_META.UC.title,
-    ...(hasTheron ? [APP_META.THERON.title] : []),
-    ...(hasCSE ? [APP_META.CSE.title] : []),
-  ];
-  const removedLabels = scope === 'uc' ? ucRemovalLabels : [APP_META.THERON.title];
-  const confirmLabel = scope === 'uc' ? 'Uninstall Unified Client' : 'Uninstall Theron';
-
-  const RadioDot = ({ active }: { active: boolean }) => (
-    <span
-      className="flex items-center justify-center flex-shrink-0 mt-[1px]"
-      style={{ width: 16, height: 16, borderRadius: '50%', border: active ? '1.5px solid #0066cc' : '1.5px solid rgba(0,0,0,0.3)' }}
-    >
-      {active && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0066cc' }} />}
-    </span>
-  );
-
-  const RadioCard = ({ value, title, desc }: { value: 'uc' | 'theron'; title: string; desc: string }) => {
-    const active = scope === value;
-    return (
-      <button
-        onClick={() => setScope(value)}
-        className="flex items-start gap-3 text-left rounded-[8px] px-4 py-3 transition-colors w-full"
-        style={{ border: active ? '2px solid #0066cc' : '2px solid rgba(0,0,0,0.1)', background: active ? '#eff6ff' : '#fff', cursor: 'pointer' }}
-      >
-        <RadioDot active={active} />
-        <div>
-          <div className="text-[13px] font-semibold text-[#1a1a1a]">{title}</div>
-          <div className="text-[11px] mt-0.5" style={{ color: '#717182' }}>{desc}</div>
-        </div>
-      </button>
-    );
-  };
-
-  // ── Done / confirmation screen ──
-  if (step === 'done') {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center z-[60]" style={{ background: 'rgba(0,0,0,0.45)' }}>
-        <div
-          className="bg-white rounded-[12px] w-full max-w-[460px] mx-4 flex flex-col"
-          style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)' }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-            <span className="font-semibold text-[15px] text-[#1a1a1a]">Uninstall complete</span>
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center rounded-[6px] transition-colors"
-              style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <X style={{ width: 16, height: 16 }} />
-            </button>
-          </div>
-
-          {/* Success body */}
-          <div className="px-6 pt-6 pb-5 flex flex-col items-center gap-4 text-center">
-            <div className="flex items-center justify-center w-14 h-14 rounded-full" style={{ background: '#f0fdf4' }}>
-              <CheckCircle2 style={{ width: 32, height: 32, color: '#16a34a' }} />
-            </div>
-            <div>
-              <p className="font-semibold text-[15px] text-[#1a1a1a] leading-snug">
-                {joinAnd(removedLabels)} {removedLabels.length === 1 ? 'has' : 'have'} been uninstalled
-              </p>
-              <p className="text-[13px] mt-1" style={{ color: '#717182' }}>
-                Removed from <strong style={{ color: '#1a1a1a' }}>{deviceLabel}</strong>
-              </p>
-            </div>
-
-            {/* Irreversibility callout */}
-            <div className="w-full flex gap-3 rounded-[8px] px-4 py-3 text-left" style={{ background: '#fff5f5', border: '1px solid #fecaca' }}>
-              <AlertTriangle style={{ width: 16, height: 16, color: '#d4183d', flexShrink: 0, marginTop: 1 }} />
-              <p className="text-[13px] text-[#1a1a1a] leading-snug">
-                This action cannot be undone remotely — the app cannot be reinstalled without physical access to the device or a new deployment.
-              </p>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex justify-end px-6 pb-5">
-            <button
-              onClick={onClose}
-              className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
-              style={{ height: 36, border: 'none', background: '#1a1a1a', color: '#fff', cursor: 'pointer' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#333')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#1a1a1a')}
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Select screen — styled to match UserDetailsModal ──
-  return (
-    <div
-      className="fixed inset-0 flex items-center justify-center z-[60]"
-      style={{ background: 'rgba(0,0,0,0.45)' }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div
-        className="bg-white rounded-[12px] w-full max-w-[540px] mx-4 flex flex-col"
-        style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)', maxHeight: '85vh' }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center justify-center w-10 h-10 rounded-[8px] flex-shrink-0" style={{ background: '#fee2e2' }}>
-              <Trash2 style={{ width: 18, height: 18, color: '#d4183d' }} />
-            </div>
-            <div className="font-semibold text-[16px] text-[#1a1a1a] leading-snug">Uninstall apps</div>
-          </div>
-          <button
-            onClick={onClose}
-            className="flex items-center justify-center rounded-[6px] transition-colors flex-shrink-0"
-            style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <X style={{ width: 16, height: 16 }} />
-          </button>
-        </div>
-
-        {/* Scrollable body */}
-        <div className="overflow-y-auto px-6 py-5 flex flex-col gap-6">
-          {/* User identity */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-[8px]" style={{ background: '#f8f9fa', border: '1px solid rgba(0,0,0,0.07)' }}>
-            <Avatar className="h-9 w-9 flex-shrink-0">
-              <AvatarFallback className={`text-xs font-semibold text-white ${avatarColor}`}>
-                {userInitials(user.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <div className="font-semibold text-[13px] text-[#1a1a1a] truncate">{user.name}</div>
-              <div className="text-[12px] truncate" style={{ color: '#717182' }}>{user.email}</div>
-            </div>
-          </div>
-
-          {/* DEVICE */}
-          <section>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>Device</p>
-            <div className="rounded-[8px] overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.1)' }}>
-              <InfoRow label="Device">
-                {primaryEndpoint === '—'
-                  ? '—'
-                  : <span className="inline-flex items-center gap-2 justify-end">
-                      <span style={{ color: '#717182', display: 'inline-flex', flexShrink: 0 }}><OSIcon os={os} /></span>
-                      {primaryEndpoint}
-                    </span>}
-              </InfoRow>
-              <InfoRow label="Type">{deviceType}</InfoRow>
-              <InfoRow label="Mode" last>Managed</InfoRow>
-            </div>
-          </section>
-
-          {/* WHAT TO REMOVE */}
-          <section>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] mb-2" style={{ color: '#717182' }}>Select what to remove</p>
-            {!canUninstall ? (
-              <div
-                className="rounded-[8px] px-4 py-6 text-center text-[13px]"
-                style={{ border: '1px dashed rgba(0,0,0,0.15)', color: '#717182' }}
-              >
-                No removable apps are installed on this device.
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {hasUC && (
-                  <RadioCard
-                    value="uc"
-                    title="Uninstall Unified Client"
-                    desc={`Removes ${joinAnd(ucRemovalLabels)}.`}
-                  />
-                )}
-                {hasTheron && (
-                  <RadioCard
-                    value="theron"
-                    title="Uninstall Theron only"
-                    desc={`Removes Theron. Unified Client${hasCSE ? ' and CSE' : ''} stay${hasCSE ? '' : 's'} installed.`}
-                  />
-                )}
-              </div>
-            )}
-          </section>
-
-          {/* Info callout */}
-          {canUninstall && (
-            <div className="flex gap-3 rounded-[8px] px-4 py-3" style={{ background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-              <Info style={{ width: 16, height: 16, color: '#0066cc', flexShrink: 0, marginTop: 1 }} />
-              <p className="text-[13px] text-[#1a1a1a] leading-snug">
-                This will remove <strong>{joinAnd(removedLabels)}</strong> from <strong>{deviceLabel}</strong>. This action cannot be undone remotely.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-          <button
-            onClick={onClose}
-            className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
-            style={{ height: 36, border: '1px solid rgba(0,0,0,0.1)', background: '#fff', color: '#1a1a1a', cursor: 'pointer' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
-          >
-            Cancel
-          </button>
-          <button
-            disabled={!canUninstall}
-            onClick={() => setStep('done')}
-            className="text-[13px] font-semibold rounded-[8px] px-5 transition-colors"
-            style={{
-              height: 36,
-              border: 'none',
-              background: canUninstall ? '#d4183d' : '#ececf0',
-              color: canUninstall ? '#fff' : '#717182',
-              cursor: canUninstall ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Row overflow menu ────────────────────────────────────────────────────────
 // ── User details modal ────────────────────────────────────────────────────────
@@ -518,7 +244,6 @@ interface RowMenuProps {
 
 function RowMenu({ user, avatarColor }: RowMenuProps) {
   const [open, setOpen] = useState(false);
-  const [showUninstall, setShowUninstall] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -565,18 +290,6 @@ function RowMenu({ user, avatarColor }: RowMenuProps) {
               <ExternalLink style={{ width: 15, height: 15, color: '#717182' }} />
               View Details
             </button>
-
-            {/* Uninstall UC App */}
-            <button
-              className="flex items-center gap-3 w-full px-4 py-2 text-[13px] transition-colors"
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#d4183d' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#fff5f5')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              onClick={() => { setOpen(false); setShowUninstall(true); }}
-            >
-              <Trash2 style={{ width: 15, height: 15 }} />
-              Uninstall apps
-            </button>
           </div>
         )}
       </div>
@@ -586,14 +299,6 @@ function RowMenu({ user, avatarColor }: RowMenuProps) {
           user={user}
           avatarColor={avatarColor}
           onClose={() => setShowDetails(false)}
-        />
-      )}
-
-      {showUninstall && (
-        <UninstallModal
-          user={user}
-          avatarColor={avatarColor}
-          onClose={() => setShowUninstall(false)}
         />
       )}
     </>

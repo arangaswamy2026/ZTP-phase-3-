@@ -22,7 +22,7 @@ export const allTenantsNavItems: { id: string; icon: any; label: string }[] = [
   { id: 'msp-dashboard',            icon: LayoutDashboard, label: 'Dashboard' },
   { id: 'tenant-management',        icon: Building2,       label: 'Tenant Management' },
   { id: 'inventory',                icon: Box,             label: 'Inventory' },
-  { id: 'msp-endpoints',            icon: Laptop,          label: 'Endpoints' },
+  { id: 'msp-endpoints',            icon: Laptop,          label: 'Devices' },
   { id: 'all-tenants-system-status',icon: Monitor,         label: 'System Status' },
 ];
 
@@ -43,7 +43,7 @@ export const appNavItems: Record<string, { id: string; icon: any; label: string 
   'ztp': [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'users', icon: Users, label: 'IDP' },
-    { id: 'endpoints', icon: Laptop, label: 'Endpoints' },
+    { id: 'endpoints', icon: Laptop, label: 'Devices' },
     { id: 'access-policies', icon: FileText, label: 'Policies' },
     { id: 'profiles', icon: Layers, label: 'Profiles' },
     { id: 'connectors', icon: Server, label: 'System Status' },

@@ -200,6 +200,42 @@ The chart data tooltip pairs with the dashed hover guide and marker dots describ
 **Status badge:** 11px / 600, tinted background of its status color at low opacity with the status color as text.
 **Primary nav:** navy `#001b50` rail; idle icons `#c4d1e5`; active item gets orange `#ff5d00` icon + indicator bar; 52px rows.
 
+### 4.8 Modals
+
+Reference implementation: **Add Route**. Use this spec for every new modal so layout, spacing, and typography stay consistent.
+
+**Container** — Modal surface recipe (§4.3): `bg-surface` · radius `lg` (16px) · shadow `lg`. Fixed medium width (~680–720px); never full-viewport. Content scrolls internally past viewport height — header and footer stay pinned.
+
+**Header** — title (left) and close icon (right) on one row, vertically centered, padding `lg` (24px). Title is H3 weight, 600, Text primary — the largest text in the modal. Close is a `ghost` icon button (§4.1) at compact size, Text muted, no border/fill, `aria-label="Close"`. A 1px Border hairline spans the full width directly below the row.
+
+**Body — sections.** Group fields under labeled sections (e.g. General, Route Match, Next Hop) rather than a flat list:
+1. Section label — Micro type (11px / 600 / uppercase / tracking 1%), Text muted.
+2. 1px Border hairline directly beneath the label, full body width.
+3. Field grid for that section.
+
+Space `xl` (32px) between sections; space `md` (16px) between fields within a section — the gap makes sections read as distinct groups.
+
+**Body — field grid.** Two-column grid, equal-width columns, `md` (16px) gutter, for paired fields (Name + Route Type, Source + Destination Address). A single field (Metric, Gateway) stays in the left column only — never stretched full-width.
+
+- **Field label:** Micro type, bold, uppercase, Text primary. Required fields get a small Error `#d4183d` asterisk immediately after the label; optional fields carry no marker and no "(optional)" text.
+- **Input / Select:** standard control per §4.2 (radius `md`, 1px Border, Surface fill), `px-4 py-2.5` (16px / 10–12px). Placeholder is Text muted with a realistic example (`e.g. Branch Office Route`, `e.g. 192.168.1.1`) — never a generic instruction. Selects match the textbox with a trailing `ChevronDown`; empty state reads "Select" or a sensible default such as "Any" for match-type fields.
+- **Helper text — descriptive:** Small, Text muted, left-aligned below the field; explains behavior (e.g. "Lower = higher priority" under Metric).
+- **Helper text — action:** a muted-Accent link row below a dropdown, prefixed `+` (e.g. "+ New address / address group", "+ New service / service group"), for creating a related object inline. Use only where the option list is a resource users commonly create on the fly (addresses, services) — not on every dropdown.
+
+**Footer** — 1px Border hairline above, padding matching header/body. Buttons right-aligned as a pair, no left-side content: `outline` Cancel (§4.1) first, `primary` Accent Save/action last — same height so the pair reads as matched.
+
+**Typography recap:** title (H3/600) > section label (Micro/600, muted, uppercase) ≈ field label (Micro/600, uppercase) > input/placeholder (Body/400) > helper text (Small/400, muted). Button text follows §4.1 (medium/semibold, per variant).
+
+**Checklist:**
+- [ ] Header: title + close icon + full-width divider beneath
+- [ ] Fields grouped into labeled sections, each with its own divider
+- [ ] Two-column grid for paired fields; single fields stay left
+- [ ] Required fields marked with the Error asterisk; no marker on optional fields
+- [ ] Every input has a realistic `e.g. …` placeholder
+- [ ] Helper text only where it adds real guidance (behavior note or "+ New …" shortcut)
+- [ ] Footer divider present; Cancel (outline) + primary action (Accent fill) right-aligned, primary last
+- [ ] Spacing between sections (`xl`) exceeds spacing between fields within a section (`md`)
+
 ---
 
 ## 5. Voice

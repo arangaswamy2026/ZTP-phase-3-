@@ -66,127 +66,6 @@ const RULE_ICONS: Record<EPRuleType, React.ReactNode> = {
   custom:     <Sliders    className="w-5 h-5 text-[#717182]" />,
 };
 
-// ── SonicWall default exclusion list ────────────────────────────────
-
-interface SWExclusion {
-  type: string;
-  value: string;
-  description: string;
-}
-
-const SW_EXCLUSION_LIST: SWExclusion[] = [
-  { type: 'File path', value: 'C:\\Program Files\\SonicWall\\**', description: 'SonicWall Capture Client installation directory' },
-  { type: 'File path', value: 'C:\\Program Files (x86)\\SonicWall\\**', description: 'SonicWall Capture Client (x86) installation directory' },
-  { type: 'File path', value: 'C:\\ProgramData\\SonicWall\\**', description: 'SonicWall Capture Client data directory' },
-  { type: 'Process', value: 'SentinelAgent.exe', description: 'SonicWall Capture Client agent process' },
-  { type: 'Process', value: 'SentinelServiceHost.exe', description: 'SonicWall Capture Client service host' },
-  { type: 'Process', value: 'SentinelStaticEngine.exe', description: 'Static analysis engine' },
-  { type: 'Process', value: 'SentinelMemoryScanner.exe', description: 'In-memory threat scanner' },
-  { type: 'Process', value: 'SentinelUI.exe', description: 'Capture Client user interface process' },
-  { type: 'Process', value: 'captureClient.exe', description: 'SonicWall Capture Client main executable' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\drivers\\SentinelMonitor.sys', description: 'Kernel-mode monitor driver' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\drivers\\SentinelELAM.sys', description: 'Early-launch anti-malware driver' },
-  { type: 'File path', value: 'C:\\Windows\\SysWOW64\\SentinelHelperService.exe', description: 'Helper service (32-bit subsystem)' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\wbem\\**', description: 'WMI repository — required for telemetry collection' },
-  { type: 'File path', value: 'C:\\Windows\\Temp\\SonicWall\\**', description: 'Temporary files written during updates' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\svchost.exe', description: 'Windows service host — excludes false positives from system service scanning' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\lsass.exe', description: 'Local Security Authority — credential scanning exemption' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\csrss.exe', description: 'Client/Server Runtime Subsystem' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\smss.exe', description: 'Session Manager Subsystem' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\services.exe', description: 'Windows Services Control Manager' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\winlogon.exe', description: 'Windows logon process' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\explorer.exe', description: 'Windows shell process' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\ntoskrnl.exe', description: 'NT OS kernel image' },
-  { type: 'File path', value: 'C:\\Windows\\System32\\hal.dll', description: 'Hardware Abstraction Layer' },
-  { type: 'File path', value: 'C:\\Windows\\Microsoft.NET\\**', description: '.NET Framework runtime files' },
-  { type: 'File path', value: 'C:\\Windows\\assembly\\**', description: 'Global Assembly Cache' },
-  { type: 'File path', value: 'C:\\Program Files\\Microsoft SQL Server\\**', description: 'SQL Server data and binary files' },
-  { type: 'File path', value: 'C:\\Program Files\\Microsoft Office\\**', description: 'Microsoft Office application binaries' },
-  { type: 'File path', value: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', description: 'Google Chrome browser executable' },
-  { type: 'File path', value: 'C:\\Program Files\\Mozilla Firefox\\firefox.exe', description: 'Mozilla Firefox browser executable' },
-  { type: 'File path', value: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', description: 'Microsoft Edge browser executable' },
-  { type: 'Hash', value: 'SHA256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', description: 'Empty file hash — safe baseline' },
-  { type: 'Hash', value: 'SHA256:aec070645fe53ee3b3763059376134f058cc337247c978add178b6ccdfb0019f', description: 'SonicWall Capture Client v9.2 agent binary' },
-  { type: 'Hash', value: 'SHA256:f1d2d2f924e986ac86fdf7b36c94bcdf32beec15306d98c7e9e9e9b5bcff4729', description: 'SonicWall Capture Client service host v9.2' },
-  { type: 'Process', value: 'MsMpEng.exe', description: 'Windows Defender Antivirus engine — co-existence exclusion' },
-  { type: 'Process', value: 'NisSrv.exe', description: 'Windows Defender Network Inspection Service' },
-  { type: 'File path', value: 'C:\\ProgramData\\Microsoft\\Windows Defender\\**', description: 'Windows Defender definitions and quarantine store' },
-  { type: 'Process', value: 'vmtoolsd.exe', description: 'VMware Tools daemon — virtual machine co-existence' },
-  { type: 'Process', value: 'vmwaretray.exe', description: 'VMware Tools tray process' },
-  { type: 'File path', value: 'C:\\Program Files\\VMware\\VMware Tools\\**', description: 'VMware Tools installation directory' },
-  { type: 'File path', value: '\\\\.\\pipe\\SentinelStaticEngine', description: 'Named pipe for static engine IPC — must not be intercepted' },
-  { type: 'File path', value: '\\\\.\\pipe\\SentinelAgentWorker', description: 'Named pipe for agent worker IPC' },
-  { type: 'File path', value: 'C:\\SWExclusions\\**', description: 'Customer-defined exclusion staging folder' },
-];
-
-// ── SonicWall exclusion list modal ───────────────────────────────────
-
-function SWExclusionListModal({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-[12px] shadow-[0_20px_60px_rgba(0,0,0,0.18)] w-[720px] max-w-[calc(100vw-32px)] max-h-[80vh] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-start justify-between px-[24px] py-[20px] border-b border-[#e5e7eb] shrink-0">
-          <div>
-            <h2 className="font-['Inter',sans-serif] font-bold text-[15px] text-[#101828]">SonicWall Default Exclusion List</h2>
-            <p className="font-['Inter',sans-serif] font-normal text-[13px] text-[#6a7282] mt-[2px]">
-              {SW_EXCLUSION_LIST.length} built-in exclusions applied automatically to all SonicWall Capture Client deployments.
-            </p>
-          </div>
-          <button onClick={onClose} className="w-[28px] h-[28px] flex items-center justify-center rounded-[6px] hover:bg-[#f3f4f6] text-[#6a7282] shrink-0 ml-[16px]">
-            <X className="w-[16px] h-[16px]" />
-          </button>
-        </div>
-        {/* List */}
-        <div className="overflow-y-auto flex-1">
-          <table className="w-full border-collapse text-[13px]">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-[#f9fafb] border-b border-[#e5e7eb]">
-                <th className="px-[16px] py-[9px] text-left font-['Inter',sans-serif] font-medium text-[11px] uppercase tracking-[0.5px] text-[#6a7282] w-[100px]">Type</th>
-                <th className="px-[16px] py-[9px] text-left font-['Inter',sans-serif] font-medium text-[11px] uppercase tracking-[0.5px] text-[#6a7282]">Path / Value</th>
-                <th className="px-[16px] py-[9px] text-left font-['Inter',sans-serif] font-medium text-[11px] uppercase tracking-[0.5px] text-[#6a7282]">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SW_EXCLUSION_LIST.map((item, i) => (
-                <tr key={i} className="border-b border-[#f3f4f6] last:border-b-0 hover:bg-[#fafafa]">
-                  <td className="px-[16px] py-[10px] align-top">
-                    <span className={`inline-flex items-center rounded-[6px] px-[7px] py-[2px] text-[11px] font-medium ${
-                      item.type === 'Process'
-                        ? 'bg-[#eff6ff] text-[#1d4ed8]'
-                        : item.type === 'Hash'
-                        ? 'bg-[#fef3c7] text-[#92400e]'
-                        : 'bg-[#f0fdf4] text-[#166534]'
-                    }`}>
-                      {item.type}
-                    </span>
-                  </td>
-                  <td className="px-[16px] py-[10px] align-top">
-                    <span className="font-mono text-[12px] text-[#101828] break-all">{item.value}</span>
-                  </td>
-                  <td className="px-[16px] py-[10px] align-top">
-                    <span className="font-['Inter',sans-serif] font-normal text-[13px] text-[#6a7282]">{item.description}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Footer */}
-        <div className="px-[24px] py-[14px] border-t border-[#e5e7eb] flex justify-end shrink-0">
-          <button
-            onClick={onClose}
-            className="h-[36px] px-[20px] rounded-[8px] border border-[#d1d5db] bg-white font-['Inter',sans-serif] font-medium text-[14px] text-[#364153] hover:bg-[#f9fafb]"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Sub-components ───────────────────────────────────────────────────
 
 function EPStatusBadge({ status }: { status: 'Enabled' | 'Disabled' }) {
@@ -206,7 +85,7 @@ function EPToggle({ checked, onChange }: { checked: boolean; onChange: (v: boole
   );
 }
 
-function EPRuleTable({ type, rules, onAdd, onViewSWList }: { type: EPRuleType; rules: EPRule[]; onAdd: () => void; onViewSWList?: () => void }) {
+function EPRuleTable({ type, rules, onAdd }: { type: EPRuleType; rules: EPRule[]; onAdd: () => void }) {
   const cols = RULE_COLS[type];
   const empty = EMPTY_COPY[type];
 
@@ -227,14 +106,6 @@ function EPRuleTable({ type, rules, onAdd, onViewSWList }: { type: EPRuleType; r
             <div>
               <p className="font-['Inter',sans-serif] font-bold text-[15px] text-[#101828]">{empty.title}</p>
               <p className="font-['Inter',sans-serif] font-normal text-[13px] text-[#6a7282] mt-[4px]">{empty.body}</p>
-              {type === 'exclusion' && onViewSWList && (
-                <button
-                  onClick={onViewSWList}
-                  className="mt-[6px] font-['Inter',sans-serif] font-medium text-[13px] text-[#0066cc] hover:underline"
-                >
-                  View SonicWall default exclusion list
-                </button>
-              )}
             </div>
           </div>
         ) : (
@@ -443,7 +314,6 @@ export function EndpointProfilePage() {
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [activeRuleTypes, setActiveRuleTypes] = useState<EPRuleType[]>([]);
   const [modal, setModal] = useState<ModalState>({ open: false });
-  const [swListOpen, setSwListOpen] = useState(false);
 
   React.useEffect(() => {
     if (!createMenuOpen) return;
@@ -541,7 +411,6 @@ export function EndpointProfilePage() {
           type={type}
           rules={ep.rules[type]}
           onAdd={() => openModal(type)}
-          onViewSWList={type === 'exclusion' ? () => setSwListOpen(true) : undefined}
         />
       ))}
 
@@ -571,8 +440,6 @@ export function EndpointProfilePage() {
         onChange={(patch) => setModal((prev) => prev.open ? { ...prev, ...patch } : prev)}
         onSave={handleSaveRule}
       />
-
-      {swListOpen && <SWExclusionListModal onClose={() => setSwListOpen(false)} />}
     </div>
   );
 }

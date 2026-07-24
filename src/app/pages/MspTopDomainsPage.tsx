@@ -377,9 +377,9 @@ export function MspTopDomainsPage() {
               <tr className="border-b border-border bg-muted/40">
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground w-[36%]">Domain / Destination</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Total Requests</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Unique Users</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Unique Tenants</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Trend vs Prior</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Users</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Tenants</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Trend</th>
               </tr>
             </thead>
             <tbody>
@@ -425,9 +425,8 @@ export function MspTopDomainsPage() {
                               <tr className="border-b border-border/60">
                                 <th className="pl-10 pr-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70 w-[36%]">Tenant</th>
                                 <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Requests</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Unique Users</th>
+                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Users</th>
                                 <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70">Trend</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground/70"></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -437,16 +436,11 @@ export function MspTopDomainsPage() {
                                   className={`${i < d.tenantRows.length - 1 ? 'border-b border-border/40' : ''} hover:bg-muted/30 transition-colors`}
                                 >
                                   <td className="pl-10 pr-4 py-3">
-                                    <span className="text-[13px] font-medium text-action">{t.name}</span>
+                                    <span className="text-[13px] font-medium text-foreground">{t.name}</span>
                                   </td>
                                   <td className="px-4 py-3 tabular-nums text-[13px] text-foreground">{fmtNumFull(t.requests)}</td>
                                   <td className="px-4 py-3 tabular-nums text-[13px] text-foreground">{t.users}</td>
                                   <td className="px-4 py-3"><TenantTrendCell trend={t.trend} dir={t.dir} /></td>
-                                  <td className="px-4 py-3 text-right">
-                                    <button className="text-xs font-medium text-action hover:underline whitespace-nowrap">
-                                      Open tenant →
-                                    </button>
-                                  </td>
                                 </tr>
                               ))}
                             </tbody>

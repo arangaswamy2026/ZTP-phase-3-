@@ -36,6 +36,7 @@ interface Endpoint {
   icOld: boolean;
   health: 'active-threat' | 'at-risk' | 'isolated' | 'healthy' | 'disconnected';
   tunnel: 'connected' | 'degraded' | 'suspended' | 'off';
+  trust: 'low' | 'high';
   mods: { ztn: string; sia: string; eps: string };
   lastSeen: string;
   ip: string;
@@ -45,16 +46,16 @@ interface Endpoint {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const ENDPOINTS: Endpoint[] = [
-  { name: 'GAV-LAPTOP-03',   hw: 'Dell Latitude 5540',       tid: 'acme',       tenantName: 'Acme Corporation',      user: 'priya.k',     os: 'Windows 11 Enterprise', osBuild: '10.0.22631', agent: '4.0.8', agentOld: true,  eppVer: '3.6.2', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'active-threat', tunnel: 'degraded',   mods: { ztn: 'on', sia: 'on',  eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:55 PM',  ip: '192.168.163.45',  scan: { status: 'aborted',     timestamp: 'Jul 9, 2026 · 11:42 AM' } },
-  { name: 'GAV-WSTN-07',     hw: 'HP Z4 Workstation G4',     tid: 'acme',       tenantName: 'Acme Corporation',      user: 'arjun.m',     os: 'Windows 10 Enterprise', osBuild: '10.0.19045', agent: '4.0.8', agentOld: true,  eppVer: '3.6.2', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'active-threat', tunnel: 'connected',  mods: { ztn: 'on', sia: 'off', eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:48 PM',  ip: '192.168.163.91',  scan: { status: 'in-progress', progress: 62 } },
-  { name: 'GAV-SERVER-01',   hw: 'VMware Virtual Machine',   tid: 'acme',       tenantName: 'Acme Corporation',      user: 'svc-account', os: 'Windows Server 2022',   osBuild: '10.0.20348', agent: '3.9.1', agentOld: true,  eppVer: '3.5.0', eppOld: true,  icVer: '2.0.9', icOld: true,  health: 'active-threat', tunnel: 'degraded',   mods: { ztn: 'on', sia: 'on',  eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:52 PM',  ip: '192.168.163.10',  scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 9:05 AM' } },
-  { name: 'DESKTOP-CT7UT4D', hw: 'Dell OptiPlex 7090',       tid: 'acme',       tenantName: 'Acme Corporation',      user: 'bob',         os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'isolated',      tunnel: 'suspended',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 3:00 PM',  ip: '192.168.163.128', scan: { status: 'in-progress', progress: 15 } },
-  { name: 'VTB280-PC1',      hw: 'Lenovo ThinkCentre M70q',  tid: 'enterprise', tenantName: 'Enterprise Solutions',  user: 'N/A',         os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'at-risk',       tunnel: 'connected',  mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 10, 2026 · 2:00 PM',  ip: '10.5.65.222',     scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 8:30 AM' } },
-  { name: 'QA-DESK-12',      hw: 'Apple Mac mini M2',        tid: 'enterprise', tenantName: 'Enterprise Solutions',  user: 'james.t',     os: 'macOS 14.4',            osBuild: '23.4.0',     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.3', icOld: true,  health: 'at-risk',       tunnel: 'connected',  mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 10, 2026 · 2:26 PM',  ip: '10.5.65.45',      scan: { status: 'aborted',     timestamp: 'Jul 9, 2026 · 3:17 PM' } },
-  { name: 'YP-LAPTOP-02',    hw: 'ASUS VivoBook 15',         tid: 'global',     tenantName: 'Global Services LLC',   user: 'yash.p',      os: 'Windows 11 Home',       osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.6.8', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'at-risk',       tunnel: 'off',        mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 7, 2026 · 3:00 PM',   ip: '192.168.168.55',  scan: { status: 'in-progress', progress: 88 } },
-  { name: 'DESKTOP-M5K8HOU', hw: 'Custom Workstation',       tid: 'global',     tenantName: 'Global Services LLC',   user: 'Theron',      os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:30 PM',  ip: '192.168.168.171', scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 10:14 AM' } },
-  { name: 'DENTAL-PC-01',    hw: 'Dell OptiPlex 5000',       tid: 'riverside',  tenantName: 'Riverside Dental',      user: 'maria',       os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:18 PM',  ip: '10.0.0.21',       scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 7:52 AM' } },
-  { name: 'DENTAL-LAPTOP-03',hw: 'HP EliteBook 840',         tid: 'riverside',  tenantName: 'Riverside Dental',      user: 'dr.chen',     os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:00 PM',  ip: '10.0.0.35',       scan: { status: 'aborted',     timestamp: 'Jul 8, 2026 · 2:00 PM' } },
+  { name: 'GAV-LAPTOP-03',   hw: 'Dell Latitude 5540',       tid: 'acme',       tenantName: 'Acme Corporation',      user: 'priya.k',     os: 'Windows 11 Enterprise', osBuild: '10.0.22631', agent: '4.0.8', agentOld: true,  eppVer: '3.6.2', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'active-threat', tunnel: 'degraded',   trust: 'low',   mods: { ztn: 'on', sia: 'on',  eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:55 PM',  ip: '192.168.163.45',  scan: { status: 'aborted',     timestamp: 'Jul 9, 2026 · 11:42 AM' } },
+  { name: 'GAV-WSTN-07',     hw: 'HP Z4 Workstation G4',     tid: 'acme',       tenantName: 'Acme Corporation',      user: 'arjun.m',     os: 'Windows 10 Enterprise', osBuild: '10.0.19045', agent: '4.0.8', agentOld: true,  eppVer: '3.6.2', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'active-threat', tunnel: 'connected',  trust: 'low',  mods: { ztn: 'on', sia: 'off', eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:48 PM',  ip: '192.168.163.91',  scan: { status: 'in-progress', progress: 62 } },
+  { name: 'GAV-SERVER-01',   hw: 'VMware Virtual Machine',   tid: 'acme',       tenantName: 'Acme Corporation',      user: 'svc-account', os: 'Windows Server 2022',   osBuild: '10.0.20348', agent: '3.9.1', agentOld: true,  eppVer: '3.5.0', eppOld: true,  icVer: '2.0.9', icOld: true,  health: 'active-threat', tunnel: 'degraded',   trust: 'low',   mods: { ztn: 'on', sia: 'on',  eps: 'threat' }, lastSeen: 'Jul 10, 2026 · 2:52 PM',  ip: '192.168.163.10',  scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 9:05 AM' } },
+  { name: 'DESKTOP-CT7UT4D', hw: 'Dell OptiPlex 7090',       tid: 'acme',       tenantName: 'Acme Corporation',      user: 'bob',         os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'isolated',      tunnel: 'suspended',  trust: 'low',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 3:00 PM',  ip: '192.168.163.128', scan: { status: 'in-progress', progress: 15 } },
+  { name: 'VTB280-PC1',      hw: 'Lenovo ThinkCentre M70q',  tid: 'enterprise', tenantName: 'Enterprise Solutions',  user: 'N/A',         os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'at-risk',       tunnel: 'connected',  trust: 'low',  mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 10, 2026 · 2:00 PM',  ip: '10.5.65.222',     scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 8:30 AM' } },
+  { name: 'QA-DESK-12',      hw: 'Apple Mac mini M2',        tid: 'enterprise', tenantName: 'Enterprise Solutions',  user: 'james.t',     os: 'macOS 14.4',            osBuild: '23.4.0',     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.3', icOld: true,  health: 'at-risk',       tunnel: 'connected',  trust: 'low',  mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 10, 2026 · 2:26 PM',  ip: '10.5.65.45',      scan: { status: 'aborted',     timestamp: 'Jul 9, 2026 · 3:17 PM' } },
+  { name: 'YP-LAPTOP-02',    hw: 'ASUS VivoBook 15',         tid: 'global',     tenantName: 'Global Services LLC',   user: 'yash.p',      os: 'Windows 11 Home',       osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.6.8', eppOld: true,  icVer: '2.1.4', icOld: false, health: 'at-risk',       tunnel: 'off',        trust: 'low',        mods: { ztn: 'on', sia: 'on',  eps: 'off' },   lastSeen: 'Jul 7, 2026 · 3:00 PM',   ip: '192.168.168.55',  scan: { status: 'in-progress', progress: 88 } },
+  { name: 'DESKTOP-M5K8HOU', hw: 'Custom Workstation',       tid: 'global',     tenantName: 'Global Services LLC',   user: 'Theron',      os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  trust: 'high',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:30 PM',  ip: '192.168.168.171', scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 10:14 AM' } },
+  { name: 'DENTAL-PC-01',    hw: 'Dell OptiPlex 5000',       tid: 'riverside',  tenantName: 'Riverside Dental',      user: 'maria',       os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  trust: 'high',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:18 PM',  ip: '10.0.0.21',       scan: { status: 'complete',    timestamp: 'Jul 10, 2026 · 7:52 AM' } },
+  { name: 'DENTAL-LAPTOP-03',hw: 'HP EliteBook 840',         tid: 'riverside',  tenantName: 'Riverside Dental',      user: 'dr.chen',     os: 'Windows 11 Pro',        osBuild: '10.0.22631', agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false, health: 'healthy',       tunnel: 'connected',  trust: 'high',  mods: { ztn: 'on', sia: 'on',  eps: 'on' },    lastSeen: 'Jul 10, 2026 · 2:00 PM',  ip: '10.0.0.35',       scan: { status: 'aborted',     timestamp: 'Jul 8, 2026 · 2:00 PM' } },
 ];
 
 // ── Upgrade-Agent constants ───────────────────────────────────────────────────
@@ -78,6 +79,33 @@ function semverLt(a: string, b: string): boolean {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Mock timestamps are formatted "Jul 10, 2026 · 2:55 PM" — parse that back into a Date.
+function formatRelativeTime(timestamp: string): string {
+  const parsed = new Date(timestamp.replace(' · ', ' '));
+  if (isNaN(parsed.getTime())) return timestamp;
+
+  const diffSec = Math.round((Date.now() - parsed.getTime()) / 1000);
+  if (diffSec < 60) return 'Just now';
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour} hour${diffHour !== 1 ? 's' : ''} ago`;
+
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay < 7) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+
+  const diffWeek = Math.floor(diffDay / 7);
+  if (diffWeek < 4) return `${diffWeek} week${diffWeek !== 1 ? 's' : ''} ago`;
+
+  const diffMonth = Math.floor(diffDay / 30);
+  if (diffMonth < 12) return `${diffMonth} month${diffMonth !== 1 ? 's' : ''} ago`;
+
+  const diffYear = Math.floor(diffDay / 365);
+  return `${diffYear} year${diffYear !== 1 ? 's' : ''} ago`;
+}
 
 function osIcon(os: string) {
   if (os.toLowerCase().includes('macos') || os.toLowerCase().includes('mac')) {
@@ -121,6 +149,16 @@ function TunnelBadge({ tunnel }: { tunnel: Endpoint['tunnel'] }) {
     <span className="inline-flex items-center gap-[5px] text-[12px]" style={{ color: cfg.color }}>
       <span className="w-[7px] h-[7px] rounded-full flex-shrink-0" style={{ background: cfg.dot }} />
       {cfg.label}
+    </span>
+  );
+}
+
+function TrustBadge({ trust }: { trust: Endpoint['trust'] }) {
+  const isLow = trust === 'low';
+  return (
+    <span className="inline-flex items-center gap-[5px] text-[13px] font-medium" style={{ color: isLow ? '#991b1b' : '#374151' }}>
+      {isLow && <AlertTriangle className="w-[13px] h-[13px] text-[#dc2626] flex-shrink-0" />}
+      {isLow ? 'Low' : 'High'}
     </span>
   );
 }
@@ -238,7 +276,7 @@ function EndpointDetailModal({ ep, onClose }: { ep: Endpoint; onClose: () => voi
 
       {/* Modal card */}
       <div
-        className="relative z-10 bg-white rounded-[12px] shadow-[0_8px_40px_rgba(0,0,0,0.20)] w-[520px] max-h-[90vh] flex flex-col"
+        className="relative z-10 bg-white rounded-[12px] shadow-[0_8px_40px_rgba(0,0,0,0.20)] w-[720px] max-h-[90vh] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -255,47 +293,50 @@ function EndpointDetailModal({ ep, onClose }: { ep: Endpoint; onClose: () => voi
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-6 pb-2">
-
+        {/* Scrollable body — two columns for desktop */}
+        <div className="overflow-y-auto flex-1 px-6 pb-4">
           <div className="h-px bg-[#e5e7eb] mb-3" />
-          <SectionLabel>Identity</SectionLabel>
-          <Row label="Tenant">{ep.tenantName}</Row>
-          <Row label="Logged-in user">
-            <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6 flex-shrink-0">
-                <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
-                  {usernameInitials(ep.user)}
-                </AvatarFallback>
-              </Avatar>
-              <span>{ep.user}</span>
+          <div className="grid grid-cols-2 gap-x-8">
+            <div className="pr-2">
+              <SectionLabel>Identity</SectionLabel>
+              <Row label="Tenant">{ep.tenantName}</Row>
+              <Row label="Logged-in user">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6 flex-shrink-0">
+                    <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
+                      {usernameInitials(ep.user)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{ep.user}</span>
+                </div>
+              </Row>
+              <Row label="Domain / Auth">Active Directory</Row>
+
+              <div className="h-px bg-[#e5e7eb] mt-4 mb-3" />
+              <SectionLabel>System</SectionLabel>
+              <Row label="Hardware">{ep.hw}</Row>
+              <Row label="OS">{ep.os}</Row>
+              <Row label="OS build">{ep.osBuild}</Row>
+              <Row label="Architecture">x64</Row>
             </div>
-          </Row>
-          <Row label="Domain / Auth">Active Directory</Row>
 
-          <div className="h-px bg-[#e5e7eb] mt-4 mb-3" />
-          <SectionLabel>System</SectionLabel>
-          <Row label="Hardware">{ep.hw}</Row>
-          <Row label="OS">{ep.os}</Row>
-          <Row label="OS build">{ep.osBuild}</Row>
-          <Row label="Architecture">x64</Row>
+            <div className="pl-8 border-l border-[#e5e7eb]">
+              <SectionLabel>Connectivity &amp; Modules</SectionLabel>
+              <Row label="Tunnel"><TunnelBadge tunnel={ep.tunnel} /></Row>
+              <Row label="Location"><span>IN India</span></Row>
+              <Row label="Local IP">{ep.ip}</Row>
+              <Row label="MAC">F0:18:98:AA:BB:CC</Row>
+              <Row label="Modules"><ModuleIcons mods={ep.mods} /></Row>
 
-          <div className="h-px bg-[#e5e7eb] mt-4 mb-3" />
-          <SectionLabel>Connectivity &amp; Modules</SectionLabel>
-          <Row label="Tunnel"><TunnelBadge tunnel={ep.tunnel} /></Row>
-          <Row label="Location"><span>IN India</span></Row>
-          <Row label="Local IP">{ep.ip}</Row>
-          <Row label="MAC">F0:18:98:AA:BB:CC</Row>
-          <Row label="Modules"><ModuleIcons mods={ep.mods} /></Row>
-
-          <div className="h-px bg-[#e5e7eb] mt-4 mb-3" />
-          <SectionLabel>Agent</SectionLabel>
-          <Row label="Version">
-            <span>{ep.agent}{ep.agentOld && <span className="ml-[6px] text-[11px] text-[#717182]">(update available)</span>}</span>
-          </Row>
-          <Row label="Health"><HealthBadge health={ep.health} /></Row>
-          <Row label="Last check-in">{ep.lastSeen}</Row>
-
+              <div className="h-px bg-[#e5e7eb] mt-4 mb-3" />
+              <SectionLabel>Agent</SectionLabel>
+              <Row label="Version">
+                <span>{ep.agent}{ep.agentOld && <span className="ml-[6px] text-[11px] text-[#717182]">(update available)</span>}</span>
+              </Row>
+              <Row label="Health"><HealthBadge health={ep.health} /></Row>
+              <Row label="Last check-in">{ep.lastSeen}</Row>
+            </div>
+          </div>
         </div>
 
         {/* Footer — action buttons */}
@@ -1428,18 +1469,12 @@ function RowMenu({ ep, liveScan, onStartScan, onAbortScan, onRestart, onUpgrade 
   const standardActions = [
     { label: 'Restart',       badge: restartBadge, disabled: false },
     { label: 'Upgrade Agent', badge: agentBadge,   disabled: !anyOutdated },
-    { label: 'Run Full Scan', disabled: false },
-    { label: 'Push Policy',   disabled: false },
     { label: 'View Details',  disabled: false },
   ];
 
   const destructiveActions = [
-    ...( ep.health !== 'healthy'
-      ? [{ label: ep.health === 'isolated' ? 'Lift Isolation' : 'Isolate Endpoint' }]
-      : []
-    ),
     { label: 'Uninstall Agent' },
-    { label: 'Decommission Endpoint' },
+    { label: 'Decommission' },
   ];
 
   return (
@@ -1474,10 +1509,6 @@ function RowMenu({ ep, liveScan, onStartScan, onAbortScan, onRestart, onUpgrade 
                     if (label === 'Restart') { onRestart(); }
                     if (label === 'Upgrade Agent') { setShowUpgrade(true); onUpgrade(); }
                     if (label === 'View Details') setShowDetail(true);
-                    if (label === 'Run Full Scan') {
-                      if (!liveScan || liveScan.status !== 'in-progress') onStartScan();
-                      setShowScan(true);
-                    }
                     setOpen(false);
                   }
                 }}
@@ -1645,7 +1676,7 @@ export function MspEndpointsPage() {
   const macCount = ENDPOINTS.filter(e => e.os.toLowerCase().includes('macos') || e.os.toLowerCase().includes('mac')).length;
   const otherCount = total - winCount - macCount;
 
-  const cols = ['ENDPOINT', 'TENANT', 'USER', 'OS', 'UNIFIED CLIENT', 'EPP CLIENT', 'INTERNET CLIENT', 'SCAN STATUS', 'SERVICE TUNNEL', 'LAST ACTIVE', 'HEALTH', 'ACTION'];
+  const cols = ['DEVICE', 'TENANT', 'USER', 'OS', 'UNIFIED CLIENT', 'EPP CLIENT', 'INTERNET CLIENT', 'CONNECTIVITY', 'LAST ACTIVE', 'TRUST', 'ACTION'];
 
   const allSelected = filtered.length > 0 && filtered.every(ep => selected.has(ep.name));
   const someSelected = filtered.some(ep => selected.has(ep.name)) && !allSelected;
@@ -1887,13 +1918,10 @@ export function MspEndpointsPage() {
                     />
                   </td>
 
-                  {/* ENDPOINT */}
+                  {/* DEVICE */}
                   <td style={{ padding: '12px 12px', verticalAlign: 'middle' }}>
                     <div className="flex items-center gap-[8px]">
-                      <div>
-                        <p className="text-[13px] font-semibold text-[#111827] leading-snug">{ep.name}</p>
-                        <p className="text-[11px] text-[#9ca3af] leading-snug">{ep.hw}</p>
-                      </div>
+                      <p className="text-[13px] font-semibold text-[#111827] leading-snug">{ep.name}</p>
                     </div>
                   </td>
 
@@ -1935,31 +1963,20 @@ export function MspEndpointsPage() {
                     <VersionBadge ver={ep.icVer} old={ep.icOld} />
                   </td>
 
-                  {/* SCAN STATUS */}
-                  <td style={{ padding: '12px 12px', verticalAlign: 'middle' }}>
-                    <ScanStatusCell scan={ep.scan} liveScan={liveScans[ep.name]} />
-                  </td>
-
-                  {/* TUNNEL */}
+                  {/* CONNECTIVITY */}
                   <td style={{ padding: '12px 12px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                     <TunnelBadge tunnel={ep.tunnel} />
                   </td>
 
                   {/* LAST ACTIVE */}
-                  <td style={{ padding: '12px 12px', verticalAlign: 'middle' }}>
-                    {ep.lastSeen.includes('·') ? (
-                      <>
-                        <p style={{ fontSize: 13, color: '#374151', lineHeight: '1.4' }}>{ep.lastSeen.split('·')[0].trim()}</p>
-                        <p style={{ fontSize: 11, color: '#9ca3af', lineHeight: '1.4' }}>{ep.lastSeen.split('·')[1].trim()}</p>
-                      </>
-                    ) : (
-                      <span style={{ fontSize: 13, color: '#374151' }}>{ep.lastSeen}</span>
-                    )}
+                  <td style={{ padding: '12px 12px', verticalAlign: 'middle' }} title={ep.lastSeen}>
+                    <p style={{ fontSize: 13, color: '#374151', lineHeight: '1.4' }}>{formatRelativeTime(ep.lastSeen)}</p>
+                    <p style={{ fontSize: 11, color: '#9ca3af', lineHeight: '1.4' }}>{ep.lastSeen}</p>
                   </td>
 
-                  {/* HEALTH */}
+                  {/* TRUST */}
                   <td style={{ padding: '12px 12px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                    <HealthBadge health={ep.health} />
+                    <TrustBadge trust={ep.trust} />
                   </td>
 
                   {/* ACTION */}
