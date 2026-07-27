@@ -3,7 +3,7 @@ import { PageHeader } from '../components/PageHeader';
 import {
   Search, MoreVertical, Monitor, AlertTriangle, CheckCircle2,
   ChevronDown, RotateCcw, ArrowUpCircle, X, Info, UploadCloud, Calendar, Clock, Check,
-  ScanLine, Trash2,
+  ScanLine, Trash2, CircleX, ClockAlert,
 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
@@ -21,6 +21,8 @@ interface TenantEndpoint {
   name: string;
   hw: string;
   user: string;
+  userName: string;
+  userEmail: string;
   os: string;
   osBuild: string;
   agent: string;
@@ -36,13 +38,15 @@ interface TenantEndpoint {
   lastSeen: string;
   ip: string;
   scan: ScanInfo;
+  uninstallPending?: boolean;
+  uninstallInProgress?: boolean;
 }
 
 // ── Riverside Dental endpoints ────────────────────────────────────────────────
 
 const TENANT_ENDPOINTS: TenantEndpoint[] = [
   {
-    name: 'DENTAL-PC-01', hw: 'Dell OptiPlex 5000', user: 'maria',
+    name: 'DENTAL-PC-01', hw: 'Dell OptiPlex 5000', user: 'maria', userName: 'Dr. Maria Henderson', userEmail: 'maria@riversidedental.com',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
     trust: 'high',
@@ -51,34 +55,34 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     scan: { status: 'complete', timestamp: 'Jul 10, 2026 · 7:52 AM' },
   },
   {
-    name: 'OFFICE-LAPTOP', hw: 'HP EliteBook 840', user: 'jessica',
-    os: 'Windows 11 Pro', osBuild: '10.0.22631',
-    agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
+    name: 'OFFICE-LAPTOP', hw: 'HP EliteBook 840', user: '', userName: '', userEmail: '',
+    os: '', osBuild: '',
+    agent: '', agentOld: false, eppVer: '', eppOld: false, icVer: '', icOld: false,
     trust: 'high',
-    health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
+    health: 'healthy', tunnel: 'off', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 10, 2026 · 2:00 PM', ip: '10.0.0.35',
     scan: { status: 'in-progress', progress: 45 },
   },
   {
-    name: 'MARK-LAPTOP', hw: 'Lenovo ThinkPad X1', user: 'mark',
+    name: 'MARK-LAPTOP', hw: 'Lenovo ThinkPad X1', user: 'mark', userName: 'Mark Stevens', userEmail: 'mark@riversidedental.com',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
-    trust: 'high',
+    trust: 'high', uninstallPending: true,
     health: 'healthy', tunnel: 'connected', mods: { ztn: 'on', sia: 'on', eps: 'on' },
     lastSeen: 'Jul 22, 2026 · 10:12 AM', ip: '10.0.0.42',
     scan: { status: 'complete', timestamp: 'Jul 22, 2026 · 6:00 AM' },
   },
   {
-    name: 'ANGELA-SURFACE', hw: 'Microsoft Surface Pro 9', user: 'angela',
+    name: 'ANGELA-SURFACE', hw: 'Microsoft Surface Pro 9', user: 'angela', userName: 'Angela Price', userEmail: 'angela@riversidedental.com',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
-    agent: '4.0.8', agentOld: true, eppVer: '3.6.2', eppOld: true, icVer: '2.1.4', icOld: false,
-    trust: 'low',
+    agent: '4.0.8', agentOld: true, eppVer: '3.6.2', eppOld: true, icVer: '', icOld: false,
+    trust: 'low', uninstallInProgress: true,
     health: 'at-risk', tunnel: 'degraded', mods: { ztn: 'on', sia: 'off', eps: 'threat' },
     lastSeen: 'Jul 21, 2026 · 4:45 PM', ip: '10.0.0.58',
     scan: { status: 'aborted', timestamp: 'Jul 20, 2026 · 1:10 PM' },
   },
   {
-    name: 'KEVIN-DESKTOP', hw: 'Dell OptiPlex 3000', user: 'kevin',
+    name: 'KEVIN-DESKTOP', hw: 'Dell OptiPlex 3000', user: 'kevin', userName: 'Kevin Nguyen', userEmail: 'kevin@riversidedental.com',
     os: 'Windows 10 Pro', osBuild: '10.0.19045',
     agent: '3.9.1', agentOld: true, eppVer: '3.5.0', eppOld: true, icVer: '2.0.9', icOld: true,
     trust: 'low',
@@ -87,7 +91,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     scan: { status: 'aborted', timestamp: 'Jul 14, 2026 · 9:00 AM' },
   },
   {
-    name: 'BRIAN-WINDOWS-PC', hw: 'HP Pavilion Desktop', user: 'brian',
+    name: 'BRIAN-WINDOWS-PC', hw: 'HP Pavilion Desktop', user: 'brian', userName: 'Brian Holloway', userEmail: 'brian@riversidedental.com',
     os: 'Windows 11 Home', osBuild: '10.0.22631',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.4', icOld: false,
     trust: 'high',
@@ -96,7 +100,7 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     scan: { status: 'complete', timestamp: 'Jul 22, 2026 · 5:00 AM' },
   },
   {
-    name: 'TANYA-MACBOOK-AIR', hw: 'Apple MacBook Air M2', user: 'tanya',
+    name: 'TANYA-MACBOOK-AIR', hw: 'Apple MacBook Air M2', user: 'tanya', userName: 'Tanya Okafor', userEmail: 'tanya@riversidedental.com',
     os: 'macOS 14.4', osBuild: '23.4.0',
     agent: '4.1.2', agentOld: false, eppVer: '3.7.1', eppOld: false, icVer: '2.1.3', icOld: true,
     trust: 'low',
@@ -105,10 +109,10 @@ const TENANT_ENDPOINTS: TenantEndpoint[] = [
     scan: { status: 'in-progress', progress: 72 },
   },
   {
-    name: 'LUIS-THINKPAD', hw: 'Lenovo ThinkPad E15', user: 'luis',
+    name: 'LUIS-THINKPAD', hw: 'Lenovo ThinkPad E15', user: 'luis', userName: 'Luis Contreras', userEmail: 'luis@riversidedental.com',
     os: 'Windows 11 Pro', osBuild: '10.0.22631',
     agent: '4.1.1', agentOld: true, eppVer: '3.7.0', eppOld: true, icVer: '2.1.4', icOld: false,
-    trust: 'low',
+    trust: 'low', uninstallPending: true,
     health: 'isolated', tunnel: 'suspended', mods: { ztn: 'on', sia: 'off', eps: 'on' },
     lastSeen: 'Jul 19, 2026 · 11:20 AM', ip: '10.0.0.95',
     scan: { status: 'complete', timestamp: 'Jul 19, 2026 · 11:00 AM' },
@@ -166,11 +170,15 @@ function formatRelativeTime(timestamp: string): string {
   return `${diffYear} year${diffYear !== 1 ? 's' : ''} ago`;
 }
 
+const HONORIFICS = new Set(['dr', 'mr', 'mrs', 'ms', 'prof']);
+
 function usernameInitials(user: string): string {
   if (!user || user === 'N/A') return '?';
-  const parts = user.split(/[._\-\s]/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return user.slice(0, 2).toUpperCase();
+  let parts = user.split(/[._\-\s]/).filter(Boolean);
+  if (parts.length > 1 && HONORIFICS.has(parts[0].toLowerCase())) parts = parts.slice(1);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 function osIcon(os: string) {
@@ -203,7 +211,8 @@ function TunnelBadge({ tunnel }: { tunnel: TenantEndpoint['tunnel'] }) {
   );
 }
 
-function VersionBadge({ ver }: { ver: string; old: boolean }) {
+function VersionBadge({ ver, emptyLabel = '—' }: { ver: string; old: boolean; emptyLabel?: string }) {
+  if (!ver) return <span style={{ fontSize: 13, color: '#9ca3af' }}>{emptyLabel}</span>;
   return <span style={{ fontSize: 13, color: '#374151' }}>{ver}</span>;
 }
 
@@ -751,6 +760,69 @@ function InfoRow({ label, children, last }: { label: string; children: React.Rea
   );
 }
 
+function DecommissionModal({ ep, onClose }: { ep: TenantEndpoint; onClose: () => void }) {
+  function handleDecommission() {
+    onClose();
+    toast.success(`${ep.name} has been decommissioned`);
+  }
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-[60]" style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={onClose}>
+      <div className="bg-white rounded-[12px] w-full max-w-[460px] mx-4 flex flex-col"
+        style={{ boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)' }}
+        onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+          <span className="font-semibold text-[15px] text-[#1a1a1a]">Decommission device</span>
+          <button onClick={onClose}
+            className="flex items-center justify-center rounded-[6px] transition-colors"
+            style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', color: '#717182' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+            <X style={{ width: 16, height: 16 }} />
+          </button>
+        </div>
+        {/* Body */}
+        <div className="px-6 pt-6 pb-5 flex flex-col items-center gap-4 text-center">
+          <div className="flex items-center justify-center w-14 h-14 rounded-full" style={{ background: '#fee2e2' }}>
+            <AlertTriangle style={{ width: 28, height: 28, color: '#d4183d' }} />
+          </div>
+          <p className="font-semibold text-[15px] text-[#1a1a1a] leading-snug">
+            Are you sure you want to decommission <strong>{ep.name}</strong>?
+          </p>
+          <div className="w-full flex gap-3 rounded-[8px] px-4 py-3 text-left" style={{ background: '#fff5f5', border: '1px solid #fecaca' }}>
+            <AlertTriangle style={{ width: 16, height: 16, color: '#d4183d', flexShrink: 0, marginTop: 1 }} />
+            <p className="text-[13px] text-[#1a1a1a] leading-snug">This action cannot be undone. The device will be permanently removed from this tenant.</p>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="flex justify-end gap-[8px] px-6 pb-5">
+          <button onClick={onClose}
+            className="px-4 py-2 rounded-[6px] text-[13px] font-medium"
+            style={{ background: '#f3f4f6', border: 'none', color: '#374151', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#e5e7eb')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#f3f4f6')}>
+            Cancel
+          </button>
+          <button onClick={handleDecommission}
+            className="px-4 py-2 rounded-[6px] text-[13px] font-medium"
+            style={{ background: '#d4183d', border: 'none', color: '#fff', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#b91c1c')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#d4183d')}>
+            Decommission
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface UninstallModalProps {
   ep: TenantEndpoint;
   onClose: () => void;
@@ -1153,6 +1225,7 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0, flipUp: false });
   const [showUninstall, setShowUninstall] = useState(false);
+  const [showDecommission, setShowDecommission] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -1188,7 +1261,7 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
       ? [{ label: ep.health === 'isolated' ? 'Lift Isolation' : 'Isolate Endpoint' }]
       : []
     ),
-    { label: 'Uninstall apps' },
+    { label: !ep.agent ? 'Decommission device' : 'Uninstall apps' },
   ];
 
   return (
@@ -1250,6 +1323,7 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     onClick={() => {
                       if (label === 'Uninstall apps') { setShowUninstall(true); }
+                      if (label === 'Decommission device') { setShowDecommission(true); }
                       setOpen(false);
                     }}
                   >
@@ -1262,6 +1336,7 @@ function RowMenu({ ep, onRestart }: RowMenuProps) {
         </div>
       )}
       {showUninstall && <UninstallModal ep={ep} onClose={() => setShowUninstall(false)} />}
+      {showDecommission && <DecommissionModal ep={ep} onClose={() => setShowDecommission(false)} />}
       {showDetails && <EndpointDetailModal ep={ep} onClose={() => setShowDetails(false)} />}
     </div>
   );
@@ -1326,7 +1401,7 @@ export function EndpointsPage() {
   const macCount       = TENANT_ENDPOINTS.filter(e => e.os.toLowerCase().includes('macos') || e.os.toLowerCase().includes('mac')).length;
   const otherCount     = total - winCount - macCount;
 
-  const cols = ['DEVICE', 'USER', 'OS', 'UNIFIED CLIENT', 'CSE', 'THERON', 'CONNECTIVITY', 'TRUST', 'LAST ACTIVE', 'ACTION'];
+  const cols = ['DEVICE', 'USER', 'OS', 'UNIFIED CLIENT\nVERSION', 'CSE APP\nVERSION', 'THERON APP\nVERSION', 'CONNECTIVITY', 'TRUST', 'LAST ACTIVE', 'ACTION'];
 
   const allSelected  = filtered.length > 0 && filtered.every(ep => selected.has(ep.name));
   const someSelected = filtered.some(ep => selected.has(ep.name)) && !allSelected;
@@ -1412,8 +1487,8 @@ export function EndpointsPage() {
                     onChange={toggleAll} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: '#0066cc' }} />
                 </th>
                 {cols.map(col => (
-                  <th key={col} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#6b7280', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
-                    {col}
+                  <th key={col} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#6b7280', whiteSpace: col.includes('\n') ? 'normal' : 'nowrap', textTransform: 'uppercase' }}>
+                    {col.includes('\n') ? col.split('\n').map((line, i) => <span key={i} style={{ display: 'block' }}>{line}</span>) : col}
                   </th>
                 ))}
               </tr>
@@ -1433,50 +1508,105 @@ export function EndpointsPage() {
 
                   {/* DEVICE */}
                   <td style={{ padding: '12px', verticalAlign: 'middle', minWidth: 180 }}>
-                    <p className="text-[13px] font-bold text-[#111827] leading-tight">{ep.name}</p>
+                    <div className="flex items-center gap-[6px]">
+                      <p className="text-[13px] font-bold text-[#111827] leading-tight">{ep.name}</p>
+                      {(!ep.agent || ep.uninstallInProgress) && (
+                        <div style={{ position: 'relative', display: 'inline-flex' }}
+                          onMouseEnter={e => { const t = e.currentTarget.querySelector('.ep-tooltip') as HTMLElement; if (t) t.style.opacity = '1'; }}
+                          onMouseLeave={e => { const t = e.currentTarget.querySelector('.ep-tooltip') as HTMLElement; if (t) t.style.opacity = '0'; }}>
+                          <CircleX className="w-[14px] h-[14px] flex-shrink-0" style={{ color: '#9ca3af' }} />
+                          <div className="ep-tooltip" style={{
+                            position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+                            marginBottom: 6, background: '#1f2937', color: '#fff', fontSize: 11,
+                            padding: '4px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s', zIndex: 50,
+                          }}>
+                            {!ep.agent ? 'Unified Client app is uninstalled from this device' : 'Theron app is being uninstalled from this device'}
+                          </div>
+                        </div>
+                      )}
+{ep.uninstallPending && (
+                        <div style={{ position: 'relative', display: 'inline-flex' }}
+                          onMouseEnter={e => { const t = e.currentTarget.querySelector('.ep-tooltip') as HTMLElement; if (t) t.style.opacity = '1'; }}
+                          onMouseLeave={e => { const t = e.currentTarget.querySelector('.ep-tooltip') as HTMLElement; if (t) t.style.opacity = '0'; }}>
+                          <ClockAlert className="w-[14px] h-[14px] flex-shrink-0" style={{ color: '#f59e0b' }} />
+                          <div className="ep-tooltip" style={{
+                            position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+                            marginBottom: 6, background: '#1f2937', color: '#fff', fontSize: 11,
+                            padding: '4px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s', zIndex: 50,
+                          }}>
+                            Uninstall command sent
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </td>
 
                   {/* USER */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6 flex-shrink-0">
-                        <AvatarFallback className={`text-[10px] font-semibold text-white ${AVATAR_COLOR}`}>
-                          {usernameInitials(ep.user)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span style={{ fontSize: 13, color: '#374151' }}>{ep.user}</span>
-                    </div>
+                    {!ep.agent ? (
+                      <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>
+                    ) : ep.userName ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-7 w-7 flex-shrink-0">
+                          <AvatarFallback className={`text-[11px] font-semibold text-white ${AVATAR_COLOR}`}>
+                            {usernameInitials(ep.userName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-[13px] font-medium text-[#1a1a1a] leading-snug">{ep.userName}</p>
+                          {ep.userEmail && (
+                            <p className="text-[12px] leading-snug" style={{ color: '#717182' }}>{ep.userEmail}</p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: 13, color: '#9ca3af' }}>N/A</span>
+                    )}
                   </td>
 
                   {/* OS */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <p className="text-[13px] text-[#374151] leading-snug">{ep.os}</p>
-                    <p className="text-[11px] text-[#9ca3af] leading-snug">{ep.osBuild}</p>
+                    {!ep.agent ? (
+                      <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>
+                    ) : ep.os ? (
+                      <>
+                        <p className="text-[13px] text-[#374151] leading-snug">{ep.os}</p>
+                        <p className="text-[11px] text-[#9ca3af] leading-snug">{ep.osBuild}</p>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: 13, color: '#9ca3af' }}>N/A</span>
+                    )}
                   </td>
 
                   {/* UNIFIED CLIENT */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <VersionBadge ver={ep.agent} old={ep.agentOld} />
+                    <VersionBadge ver={ep.agent} old={ep.agentOld} emptyLabel="N/A" />
                   </td>
 
                   {/* CSE */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <VersionBadge ver={ep.eppVer} old={ep.eppOld} />
+                    <VersionBadge ver={ep.eppVer} old={ep.eppOld} emptyLabel="N/A" />
                   </td>
 
                   {/* THERON */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <VersionBadge ver={ep.icVer} old={ep.icOld} />
+                    <VersionBadge ver={ep.icVer} old={ep.icOld} emptyLabel="—" />
                   </td>
 
                   {/* CONNECTIVITY */}
                   <td style={{ padding: '12px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                    <TunnelBadge tunnel={ep.tunnel} />
+                    {!ep.agent
+                      ? <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>
+                      : <TunnelBadge tunnel={ep.tunnel} />}
                   </td>
 
                   {/* TRUST (from CSE) */}
                   <td style={{ padding: '12px', verticalAlign: 'middle' }}>
-                    <TrustBadge trust={ep.trust} />
+                    {!ep.agent
+                      ? <span style={{ fontSize: 13, color: '#9ca3af' }}>—</span>
+                      : <TrustBadge trust={ep.trust} />}
                   </td>
 
                   {/* LAST ACTIVE */}

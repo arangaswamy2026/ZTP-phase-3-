@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, Download, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
-import { SeverityChip, DataTable, THead, TH, TR, TD } from '../components/ds';
+import { Search, Download, ChevronLeft, ChevronRight, ChevronDown, Shield, ShieldAlert } from 'lucide-react';
+import { SeverityChip, StatusBadge, DataTable, THead, TH, TR, TD } from '../components/ds';
 import { PageHeader } from '../components/PageHeader';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ const THREAT_TYPES = [
 
 type ThreatKey = typeof THREAT_TYPES[number]['key'];
 
-const RANGE_MULT: Record<string, number> = { '24h': 0.14, '7d': 1, '30d': 4.3, custom: 1 };
+const RANGE_MULT: Record<string, number> = { today: 0.05, yesterday: 0.14, '7d': 1, '30d': 4.3, custom: 1 };
 
 interface TenantData {
   id: string;
@@ -109,12 +109,6 @@ function tenantTotal(t: TenantData, range: string) {
 function tenantCritical(t: TenantData, range: string) {
   return scaled(t.counts.c2 + t.counts.lateral, range);
 }
-function sevBreakdown(t: TenantData, range: string) {
-  const out = { Critical: 0, High: 0, Medium: 0 } as Record<string, number>;
-  THREAT_TYPES.forEach((tt) => { out[tt.severity] += scaled(t.counts[tt.key], range); });
-  return out;
-}
-
 function exportCSV(headers: string[], rows: (string | number)[][], filename: string) {
   const csv = [headers, ...rows]
     .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
@@ -128,15 +122,15 @@ function exportCSV(headers: string[], rows: (string | number)[][], filename: str
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
-function StatCard({ label, value, sub, trend, accent }: {
-  label: string; value: string; sub?: string; trend?: { text: string; up: boolean }; accent?: boolean;
+function StatCard({ label, value, sub, trend }: {
+  label: string; value: string; sub?: string; trend?: { text: string; up: boolean };
 }) {
   return (
     <div className="bg-card border rounded-2xl shadow-sm p-5 flex-1 min-w-[150px]">
       <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">{label}</div>
-      <div className={`text-[28px] font-bold mt-1.5 mb-1 ${accent ? 'text-destructive' : 'text-foreground'}`}>{value}</div>
+      <div className="text-[28px] font-bold mt-1.5 mb-1 text-foreground">{value}</div>
       {trend && (
-        <div className={`text-xs font-medium ${trend.up ? 'text-destructive' : 'text-success'}`}>
+        <div className="text-xs font-medium text-muted-foreground">
           {trend.up ? '↑' : '↓'} {trend.text}
         </div>
       )}
@@ -148,28 +142,26 @@ function StatCard({ label, value, sub, trend, accent }: {
 // ── Time range selector ────────────────────────────────────────────────────────
 
 const RANGES = [
-  { key: '24h', label: '24h' },
-  { key: '7d',  label: '7 days' },
-  { key: '30d', label: '30 days' },
-  { key: 'custom', label: 'Custom' },
+  { key: 'today',     label: 'Today' },
+  { key: 'yesterday', label: 'Yesterday' },
+  { key: '7d',        label: 'Last 7 days' },
+  { key: '30d',        label: 'Last 30 days' },
+  { key: 'custom',     label: 'Custom Range' },
 ];
 
 function RangeSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex border border-border rounded-lg overflow-hidden">
-      {RANGES.map((r) => (
-        <button
-          key={r.key}
-          onClick={() => onChange(r.key)}
-          className={`px-3.5 py-1.5 text-xs font-medium border-r border-border last:border-0 transition-colors ${
-            value === r.key
-              ? 'bg-action text-action-foreground'
-              : 'bg-card text-muted-foreground hover:bg-muted'
-          }`}
-        >
-          {r.label}
-        </button>
-      ))}
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 pl-3 pr-7 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground focus:outline-none cursor-pointer appearance-none"
+      >
+        {RANGES.map((r) => (
+          <option key={r.key} value={r.key}>{r.label}</option>
+        ))}
+      </select>
+      <ChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
     </div>
   );
 }
@@ -195,14 +187,13 @@ function AllTenantsView({
 }: {
   range: string;
   onRangeChange: (r: string) => void;
-  onDrilldown: (id: string, severity?: string) => void;
+  onDrilldown: (id: string) => void;
 }) {
   const navigate = useNavigate();
   // Aggregate stats
   const total    = TENANTS.reduce((s, t) => s + tenantTotal(t, range), 0);
   const critical = TENANTS.reduce((s, t) => s + tenantCritical(t, range), 0);
   const affected = TENANTS.filter((t) => tenantTotal(t, range) > 0).length;
-  const mfa      = TENANTS.reduce((s, t) => s + scaled(t.counts.mfa, range), 0);
 
   // Event log state
   const [logSearch,       setLogSearch]       = useState('');
@@ -247,22 +238,7 @@ function AllTenantsView({
   const sorted = [...TENANTS].sort((a, b) => tenantTotal(b, range) - tenantTotal(a, range));
   const maxTotal = Math.max(...sorted.map((t) => tenantTotal(t, range)), 1);
 
-  function handleExport() {
-    exportCSV(
-      ['Tenant', 'Total Blocked', 'Critical', 'Top Threat'],
-      TENANTS.map((t) => [
-        t.name,
-        tenantTotal(t, range),
-        tenantCritical(t, range),
-        THREAT_TYPES.reduce((best, tt) =>
-          t.counts[tt.key] > t.counts[best.key as ThreatKey] ? tt : best
-        ).label,
-      ]),
-      'blocked-threats-all-tenants.csv',
-    );
-  }
-
-  const rangeLabel: Record<string, string> = { '24h': 'Last 24 hours', '7d': 'Last 7 days', '30d': 'Last 30 days', custom: 'Custom range' };
+  const rangeLabel: Record<string, string> = { today: 'Today', yesterday: 'Yesterday', '7d': 'Last 7 days', '30d': 'Last 30 days', custom: 'Custom range' };
 
   return (
     <div className="space-y-5 pb-10">
@@ -281,36 +257,24 @@ function AllTenantsView({
         <div className="flex items-center gap-2.5 flex-wrap">
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Live — refreshes every 5 min
+            Live — Auto-refresh every 5 min
           </span>
           <RangeSelector value={range} onChange={onRangeChange} />
-          <button
-            onClick={handleExport}
-            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Export CSV
-          </button>
         </div>
       </div>
 
       {/* Stat cards */}
       <div className="flex gap-4 flex-wrap">
-        <StatCard label="Total Blocked"         value={total.toLocaleString()}    trend={{ text: '14% vs prior period', up: true }}  accent />
-        <StatCard label="Critical Events"        value={critical.toLocaleString()} sub="C2 attempts + lateral movement" />
-        <StatCard label="Tenants Affected"       value={`${affected} of ${TENANTS.length}`} sub="managed tenants" />
-        <StatCard label="Unique Users Blocked"   value="37"                        trend={{ text: '8 vs prior period', up: true }} />
-        <StatCard label="MFA Failures"           value={mfa.toLocaleString()}      trend={{ text: '22% vs prior period', up: true }} />
+        <StatCard label="Total Blocked"    value={total.toLocaleString()}    trend={{ text: '14% vs prior period', up: true }} />
+        <StatCard label="Critical Events"  value={critical.toLocaleString()} sub="C2 attempts + lateral movement" />
+        <StatCard label="Tenants Affected" value={`${affected} of ${TENANTS.length}`} sub="managed tenants" />
       </div>
 
-      {/* Two-column grid */}
+      {/* Threat breakdown + top tenants by volume */}
       <div className="flex gap-4 flex-wrap items-start">
 
-        {/* Left column: threat breakdown + event log stacked */}
-        <div className="flex-1 min-w-[300px] flex flex-col gap-4">
-
         {/* Threat type breakdown */}
-        <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex-1 min-w-[320px] bg-card border rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
             <span className="text-sm font-medium text-foreground">Threat Type Breakdown</span>
             <span className="text-xs text-muted-foreground">{rangeLabel[range] ?? ''}</span>
@@ -318,253 +282,208 @@ function AllTenantsView({
           <div className="p-5 space-y-3.5">
             {aggCounts.map((tt) => (
               <div key={tt.key} className="flex items-center gap-3">
-                <span className="text-xs text-foreground w-52 shrink-0 leading-snug">{tt.display}</span>
+                <span className="text-xs text-foreground w-48 shrink-0 truncate">{tt.display}</span>
                 <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${maxCount > 0 ? Math.round((tt.count / maxCount) * 100) : 0}%`, background: SEV[tt.severity].bar }}
+                    className="h-full rounded-full bg-action transition-all duration-500"
+                    style={{ width: `${maxCount > 0 ? Math.round((tt.count / maxCount) * 100) : 0}%` }}
                   />
                 </div>
-                <span className="text-xs font-semibold text-foreground w-8 text-right tabular-nums">{tt.count.toLocaleString()}</span>
-                <SeverityChip level={SEV[tt.severity].level} className="w-16 justify-center">{tt.severity}</SeverityChip>
+                <span className="text-xs font-semibold text-foreground w-10 text-right tabular-nums">{tt.count.toLocaleString()}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Aggregate event log ──────────────────────────────────────────── */}
-        <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
+        {/* Top tenants by volume */}
+        <div className="flex-1 min-w-[320px] bg-card border rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-sm font-medium text-foreground">Event Log — All Tenants</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">{logFiltered.length} event{logFiltered.length !== 1 ? 's' : ''}</span>
-              <button
-                onClick={handleLogExport}
-                className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
-              >
-                <Download className="w-3 h-3" />
-                CSV
-              </button>
-            </div>
+            <span className="text-sm font-medium text-foreground">Top Tenants by Volume</span>
           </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-2 flex-wrap px-5 py-3 border-b border-border">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search user, IP, or tenant…"
-                value={logSearch}
-                onChange={(e) => { setLogSearch(e.target.value); setLogPage(1); }}
-                className="h-8 pl-8 pr-3 w-56 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card"
-              />
-            </div>
-            <select
-              value={logFilterTenant}
-              onChange={(e) => { setLogFilterTenant(e.target.value); setLogPage(1); }}
-              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
-            >
-              <option value="">All Tenants</option>
-              {activeTenants.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </select>
-            <select
-              value={logFilterThreat}
-              onChange={(e) => { setLogFilterThreat(e.target.value); setLogPage(1); }}
-              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
-            >
-              <option value="">All Threat Types</option>
-              {THREAT_TYPES.map((t) => <option key={t.key} value={t.label}>{t.label}</option>)}
-            </select>
-            <select
-              value={logFilterSev}
-              onChange={(e) => { setLogFilterSev(e.target.value); setLogPage(1); }}
-              className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
-            >
-              <option value="">All Severities</option>
-              {['Critical', 'High', 'Medium'].map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            {(logSearch || logFilterTenant || logFilterThreat || logFilterSev) && (
-              <button
-                onClick={() => { setLogSearch(''); setLogFilterTenant(''); setLogFilterThreat(''); setLogFilterSev(''); setLogPage(1); }}
-                className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-muted-foreground transition-colors ml-auto"
-              >
-                Clear
-              </button>
-            )}
+          <div className="p-5 space-y-3.5">
+            {sorted.map((t) => {
+              const tot = tenantTotal(t, range);
+              const isZero = tot === 0;
+              const pct = isZero ? 0 : Math.max(2, Math.round((tot / maxTotal) * 100));
+              return (
+                <div key={t.id} className={`flex items-center gap-3 ${isZero ? 'opacity-40' : ''}`}>
+                  {isZero ? (
+                    <span className="text-xs text-foreground w-48 shrink-0 truncate">{t.name}</span>
+                  ) : (
+                    <button
+                      onClick={() => onDrilldown(t.id)}
+                      className="text-xs text-foreground w-48 shrink-0 truncate text-left hover:text-action transition-colors"
+                    >
+                      {t.name}
+                    </button>
+                  )}
+                  <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-action transition-all duration-500"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-semibold text-foreground w-10 text-right tabular-nums">
+                    {isZero ? '—' : tot.toLocaleString()}
+                  </span>
+                </div>
+              );
+            })}
           </div>
+        </div>
+      </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
-            {logFiltered.length === 0 ? (
-              <div className="text-center py-10 text-sm text-muted-foreground">No events match the current filters.</div>
-            ) : (
-              <DataTable>
-                <THead>
-                  <tr>
-                    {['Timestamp', 'Tenant', 'Threat Type', 'User', 'Destination App', 'Severity', 'Action'].map((h) => (
-                      <TH key={h}>{h}</TH>
-                    ))}
-                  </tr>
-                </THead>
-                <tbody>
-                  {logPageEvents.map((e, i) => (
-                    <TR key={i}>
-                      <TD className="text-xs text-muted-foreground whitespace-nowrap font-mono">{e.ts}</TD>
-                      <TD>
-                        <button
-                          onClick={() => onDrilldown(e.tenantId)}
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-action hover:underline"
-                        >
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.tenantColor }} />
-                          {e.tenantName}
-                        </button>
-                      </TD>
-                      <TD className="text-foreground">{e.type}</TD>
-                      <TD className="text-foreground">{e.user}</TD>
-                      <TD className="text-foreground">{e.app}</TD>
-                      <TD><SeverityChip level={SEV[e.severity]?.level ?? 'med'}>{e.severity}</SeverityChip></TD>
-                      <TD className="text-xs font-semibold text-destructive">{e.action}</TD>
-                    </TR>
-                  ))}
-                </tbody>
-              </DataTable>
-            )}
+      {/* ── Aggregate event log — full width ────────────────────────────── */}
+      <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+          <span className="text-sm font-medium text-foreground">Event Log — All Tenants</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{logFiltered.length} event{logFiltered.length !== 1 ? 's' : ''}</span>
+            <button
+              onClick={handleLogExport}
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
+            >
+              <Download className="w-3 h-3" />
+              CSV
+            </button>
           </div>
+        </div>
 
-          {/* Pagination */}
-          {logFiltered.length > 0 && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-border text-xs text-muted-foreground">
-              <span>
-                Showing {(logSafePage - 1) * LOG_PAGE_SIZE + 1}–{Math.min(logSafePage * LOG_PAGE_SIZE, logFiltered.length)} of {logFiltered.length} events
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setLogPage((p) => Math.max(1, p - 1))}
-                  disabled={logSafePage <= 1}
-                  className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-                {Array.from({ length: logTotalPages }, (_, i) => i + 1)
-                  .filter((p) => logTotalPages <= 7 || p <= 2 || p >= logTotalPages - 1 || Math.abs(p - logSafePage) <= 1)
-                  .map((p, idx, arr) => (
-                    <span key={p}>
-                      {idx > 0 && arr[idx - 1] !== p - 1 && <span className="px-1 text-muted-foreground">…</span>}
-                      <button
-                        onClick={() => setLogPage(p)}
-                        className={`w-7 h-7 flex items-center justify-center rounded-md border text-xs font-medium transition-colors ${
-                          p === logSafePage
-                            ? 'bg-action text-action-foreground border-action'
-                            : 'border-border hover:bg-muted text-foreground'
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    </span>
-                  ))}
-                <button
-                  onClick={() => setLogPage((p) => Math.min(logTotalPages, p + 1))}
-                  disabled={logSafePage >= logTotalPages}
-                  className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
+        {/* Filters */}
+        <div className="flex items-center gap-2 flex-wrap px-5 py-3 border-b border-border">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              placeholder="Search user, IP, or tenant…"
+              value={logSearch}
+              onChange={(e) => { setLogSearch(e.target.value); setLogPage(1); }}
+              className="h-8 pl-8 pr-3 w-56 text-sm border border-input rounded-lg bg-muted focus:outline-none focus:border-action focus:bg-card"
+            />
+          </div>
+          <select
+            value={logFilterTenant}
+            onChange={(e) => { setLogFilterTenant(e.target.value); setLogPage(1); }}
+            className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+          >
+            <option value="">All Tenants</option>
+            {activeTenants.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+          <select
+            value={logFilterThreat}
+            onChange={(e) => { setLogFilterThreat(e.target.value); setLogPage(1); }}
+            className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+          >
+            <option value="">All Threat Types</option>
+            {THREAT_TYPES.map((t) => <option key={t.key} value={t.label}>{t.label}</option>)}
+          </select>
+          <select
+            value={logFilterSev}
+            onChange={(e) => { setLogFilterSev(e.target.value); setLogPage(1); }}
+            className="h-8 px-2.5 text-sm border border-input rounded-lg bg-card focus:outline-none cursor-pointer text-foreground"
+          >
+            <option value="">All Severities</option>
+            {['Critical', 'High', 'Medium'].map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          {(logSearch || logFilterTenant || logFilterThreat || logFilterSev) && (
+            <button
+              onClick={() => { setLogSearch(''); setLogFilterTenant(''); setLogFilterThreat(''); setLogFilterSev(''); setLogPage(1); }}
+              className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-muted-foreground transition-colors ml-auto"
+            >
+              Clear
+            </button>
           )}
         </div>
 
-        </div>{/* end left column */}
-
-        {/* Top tenants by volume */}
-        <div className="w-[340px] min-w-[280px] bg-card border rounded-2xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-sm font-medium text-foreground">Top Tenants by Volume</span>
-            <span className="text-xs text-muted-foreground">Bar = total · color = severity</span>
-          </div>
-          <div className="p-5">
-            {/* Legend */}
-            <div className="flex gap-4 mb-4 text-xs text-muted-foreground">
-              {[[SEV.Critical.bar,'Critical'],[SEV.High.bar,'High'],[SEV.Medium.bar,'Medium']].map(([color, label]) => (
-                <span key={label} className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-sm" style={{ background: color }} />
-                  {label}
-                </span>
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              {sorted.map((t) => {
-                const tot = tenantTotal(t, range);
-                const sev = sevBreakdown(t, range);
-                const barW = Math.max(8, Math.round((tot / maxTotal) * 100));
-                if (tot === 0) {
+        {/* Table */}
+        <div className="overflow-x-auto">
+          {logFiltered.length === 0 ? (
+            <div className="text-center py-10 text-sm text-muted-foreground">No events match the current filters.</div>
+          ) : (
+            <DataTable>
+              <THead>
+                <tr>
+                  {['Threat Name', 'Tenant', 'Severity', 'Endpoint', 'User', 'Status', 'Time'].map((h) => (
+                    <TH key={h}>{h}</TH>
+                  ))}
+                </tr>
+              </THead>
+              <tbody>
+                {logPageEvents.map((e, i) => {
+                  const threatName = THREAT_TYPES.find((tt) => tt.label === e.type)?.display ?? e.type;
                   return (
-                    <div key={t.id} className="opacity-40 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                          <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
-                          {t.name}
+                    <TR key={i}>
+                      <TD className="text-foreground">
+                        <span className="inline-flex items-center gap-1.5 font-medium">
+                          {SEV[e.severity]?.level === 'crit'
+                            ? <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-destructive" />
+                            : <Shield className="w-3.5 h-3.5 shrink-0 text-warning" />}
+                          {threatName}
                         </span>
-                        <span className="text-xs text-muted-foreground">—</span>
-                      </div>
-                      <div className="h-4 bg-muted rounded" />
-                      <div className="text-[11px] text-muted-foreground">No blocked threats this period</div>
-                    </div>
+                        <div className="text-xs text-muted-foreground mt-0.5">{e.policy}</div>
+                      </TD>
+                      <TD>
+                        <button
+                          onClick={() => onDrilldown(e.tenantId)}
+                          className="text-xs font-semibold text-foreground hover:text-action transition-colors"
+                        >
+                          {e.tenantName}
+                        </button>
+                      </TD>
+                      <TD><SeverityChip level={SEV[e.severity]?.level ?? 'med'}>{e.severity}</SeverityChip></TD>
+                      <TD className="text-xs text-foreground font-mono whitespace-nowrap">{e.ip}</TD>
+                      <TD className="text-foreground">{e.user}</TD>
+                      <TD><StatusBadge variant="neutral">{e.action}</StatusBadge></TD>
+                      <TD className="text-xs text-muted-foreground whitespace-nowrap font-mono">{e.ts}</TD>
+                    </TR>
                   );
-                }
-                return (
-                  <div key={t.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => onDrilldown(t.id)}
-                        className="flex items-center gap-1.5 text-xs font-medium text-action hover:underline"
-                      >
-                        <span className="w-2 h-2 rounded-full" style={{ background: t.color }} />
-                        {t.name}
-                      </button>
-                      <span className="text-xs font-bold text-foreground tabular-nums">{tot.toLocaleString()}</span>
-                    </div>
-                    <div className="flex h-4 rounded overflow-hidden bg-muted" style={{ width: `${barW}%` }}>
-                      {sev.Critical > 0 && (
-                        <button
-                          title={`Critical: ${sev.Critical}`}
-                          onClick={() => onDrilldown(t.id, 'Critical')}
-                          className="h-full hover:brightness-90 transition-[filter]"
-                          style={{ width: `${(sev.Critical / tot) * 100}%`, background: SEV.Critical.bar }}
-                        />
-                      )}
-                      {sev.High > 0 && (
-                        <button
-                          title={`High: ${sev.High}`}
-                          onClick={() => onDrilldown(t.id, 'High')}
-                          className="h-full hover:brightness-90 transition-[filter]"
-                          style={{ width: `${(sev.High / tot) * 100}%`, background: SEV.High.bar }}
-                        />
-                      )}
-                      {sev.Medium > 0 && (
-                        <button
-                          title={`Medium: ${sev.Medium}`}
-                          onClick={() => onDrilldown(t.id, 'Medium')}
-                          className="h-full hover:brightness-90 transition-[filter]"
-                          style={{ width: `${(sev.Medium / tot) * 100}%`, background: SEV.Medium.bar }}
-                        />
-                      )}
-                    </div>
-                    <div className="flex gap-3 text-[11px] text-muted-foreground">
-                      <button onClick={() => onDrilldown(t.id, 'Critical')} className="text-destructive font-semibold hover:underline">
-                        {sev.Critical} critical
-                      </button>
-                      <span>{sev.High} high</span>
-                      <span>{sev.Medium} medium</span>
-                    </div>
-                  </div>
-                );
-              })}
+                })}
+              </tbody>
+            </DataTable>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {logFiltered.length > 0 && (
+          <div className="flex items-center justify-between px-5 py-3 border-t border-border text-xs text-muted-foreground">
+            <span>
+              Showing {(logSafePage - 1) * LOG_PAGE_SIZE + 1}–{Math.min(logSafePage * LOG_PAGE_SIZE, logFiltered.length)} of {logFiltered.length} events
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setLogPage((p) => Math.max(1, p - 1))}
+                disabled={logSafePage <= 1}
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              {Array.from({ length: logTotalPages }, (_, i) => i + 1)
+                .filter((p) => logTotalPages <= 7 || p <= 2 || p >= logTotalPages - 1 || Math.abs(p - logSafePage) <= 1)
+                .map((p, idx, arr) => (
+                  <span key={p}>
+                    {idx > 0 && arr[idx - 1] !== p - 1 && <span className="px-1 text-muted-foreground">…</span>}
+                    <button
+                      onClick={() => setLogPage(p)}
+                      className={`w-7 h-7 flex items-center justify-center rounded-md border text-xs font-medium transition-colors ${
+                        p === logSafePage
+                          ? 'bg-action text-action-foreground border-action'
+                          : 'border-border hover:bg-muted text-foreground'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  </span>
+                ))}
+              <button
+                onClick={() => setLogPage((p) => Math.min(logTotalPages, p + 1))}
+                disabled={logSafePage >= logTotalPages}
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-border hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
     </div>
@@ -578,13 +497,11 @@ function DrilldownView({
   range,
   onRangeChange,
   onBack,
-  presetSeverity,
 }: {
   tenantId: string;
   range: string;
   onRangeChange: (r: string) => void;
   onBack: () => void;
-  presetSeverity?: string;
 }) {
   const tenant = TENANTS.find((t) => t.id === tenantId)!;
   const allEvents = EVENTS_BY_TENANT[tenantId] ?? [];
@@ -592,7 +509,7 @@ function DrilldownView({
   const [search,    setSearch]    = useState('');
   const [filterThreat, setFilterThreat] = useState('');
   const [filterApp, setFilterApp] = useState('');
-  const [filterSev, setFilterSev] = useState(presetSeverity ?? '');
+  const [filterSev, setFilterSev] = useState('');
   const [page, setPage] = useState(1);
 
   const apps = useMemo(
@@ -734,13 +651,20 @@ function DrilldownView({
                 {pageEvents.map((e, i) => (
                   <TR key={i}>
                     <TD className="text-xs text-muted-foreground whitespace-nowrap font-mono">{e.ts}</TD>
-                    <TD className="text-foreground">{e.type}</TD>
+                    <TD className="text-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        {SEV[e.severity]?.level === 'crit'
+                          ? <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-destructive" />
+                          : <Shield className="w-3.5 h-3.5 shrink-0 text-warning" />}
+                        {e.type}
+                      </span>
+                    </TD>
                     <TD className="text-foreground">{e.user}</TD>
                     <TD className="text-xs font-mono text-muted-foreground">{e.ip}</TD>
                     <TD className="text-foreground">{e.app}</TD>
                     <TD className="text-xs text-muted-foreground">{e.policy}</TD>
                     <TD><SeverityChip level={SEV[e.severity]?.level ?? 'med'}>{e.severity}</SeverityChip></TD>
-                    <TD className="text-xs font-semibold text-destructive">{e.action}</TD>
+                    <TD><StatusBadge variant="neutral">{e.action}</StatusBadge></TD>
                   </TR>
                 ))}
               </tbody>
@@ -799,18 +723,15 @@ function DrilldownView({
 // ── Root page component ────────────────────────────────────────────────────────
 
 export function BlockedThreatsPage() {
-  const [range, setRange]             = useState('7d');
+  const [range, setRange]             = useState('yesterday');
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
-  const [presetSev, setPresetSev]     = useState<string | undefined>();
 
-  const handleDrilldown = useCallback((id: string, severity?: string) => {
+  const handleDrilldown = useCallback((id: string) => {
     setDrilldownId(id);
-    setPresetSev(severity);
   }, []);
 
   const handleBack = useCallback(() => {
     setDrilldownId(null);
-    setPresetSev(undefined);
   }, []);
 
   if (drilldownId) {
@@ -820,7 +741,6 @@ export function BlockedThreatsPage() {
         range={range}
         onRangeChange={setRange}
         onBack={handleBack}
-        presetSeverity={presetSev}
       />
     );
   }

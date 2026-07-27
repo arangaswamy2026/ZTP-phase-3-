@@ -236,7 +236,7 @@ export function DashboardPage() {
               <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
                 <Monitor className="w-4 h-4 text-green-600" />
               </div>
-              <span className="text-sm font-semibold text-gray-900">Endpoint Threats</span>
+              <span className="text-sm font-semibold text-gray-900">Threats</span>
             </div>
             <PeriodSelect value={endpointsPeriod} onChange={setEndpointsPeriod} />
           </div>

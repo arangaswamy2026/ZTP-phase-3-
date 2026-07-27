@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { Server, MoreVertical, Settings, Info, X, Search, Trash2, ChevronLeft, CheckCircle2 } from 'lucide-react@0.487.0';
+import { Server, MoreVertical, Settings, Info, X, Search, ChevronLeft, CheckCircle2 } from 'lucide-react@0.487.0';
 import { TablePanel, DataTable, THead, TH, TR, TD, TableFoot, StatusBadge as DSStatusBadge } from './ds';
 import { Avatar, AvatarFallback } from './ui/avatar';
 
@@ -25,28 +25,8 @@ interface ConnectorCard {
   policyRules?: string[];
 }
 
-// ── Toggle ──────────────────────────────────────────────────────────────────────
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-[22px] w-[40px] shrink-0 rounded-full transition-colors duration-200 focus:outline-none ${
-        checked ? 'bg-[#0066cc]' : 'bg-[#d1d5db]'
-      }`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-[18px] w-[18px] rounded-full bg-white shadow transition-transform duration-200 mt-[2px] ${
-          checked ? 'translate-x-[20px]' : 'translate-x-[2px]'
-        }`}
-      />
-    </button>
-  );
-}
-
 // ── Days of week ────────────────────────────────────────────────────────────────
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const FULL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 // ── TimeSlider ───────────────────────────────────────────────────────────────────
 function TimeSlider({ label, value, max, onChange }: { label: string; value: number; max: number; onChange: (v: number) => void }) {
@@ -169,171 +149,6 @@ function CalendarPicker({
   );
 }
 
-// ── SetScheduleView ─────────────────────────────────────────────────────────────
-function SetScheduleView({ onBack }: { onBack: () => void }) {
-  const [dayEnabled, setDayEnabled] = useState<boolean[]>([false, false, false, false, false, false, true]);
-  const [startHr, setStartHr] = useState(1);
-  const [startMin, setStartMin] = useState(0);
-  const [endHr, setEndHr] = useState(2);
-  const [endMin, setEndMin] = useState(0);
-  const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
-  const [scheduleList, setScheduleList] = useState<string[]>(['Sun 01:00 to 02:00']);
-
-  const fmt = (h: number, m: number) => `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-  const startTime = fmt(startHr, startMin);
-  const endTime = fmt(endHr, endMin);
-
-  const allSelected = dayEnabled.every(Boolean);
-  const toggleAll = (v: boolean) => setDayEnabled(DAYS.map(() => v));
-
-  const activeDayLabels = DAYS.filter((_, i) => dayEnabled[i]);
-  const previewLabel = activeDayLabels.length > 0
-    ? `${activeDayLabels.join('-')} ${startTime} to ${endTime}`
-    : '';
-
-  const addSchedule = () => {
-    if (!previewLabel) return;
-    setScheduleList(prev => [...prev, previewLabel]);
-  };
-
-  return (
-    <>
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onBack}
-            className="w-7 h-7 flex items-center justify-center rounded-[6px] hover:bg-[#ececf0] text-[#717182]"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <h2 className="text-[16px] font-semibold text-[#1a1a1a]">Set Schedule</h2>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="overflow-y-auto flex-1 px-6 pb-2">
-        <div className="h-px bg-[rgba(0,0,0,0.1)] mb-4" />
-
-        <div className="flex gap-4">
-          {/* Left: Select Day */}
-          <div className="flex-1">
-            <p className="text-[12px] font-medium text-[#1a1a1a] text-center mb-2">Select Day</p>
-            <div className="border border-[rgba(0,0,0,0.1)] rounded-[8px] overflow-hidden">
-              {DAYS.map((day, i) => (
-                <div key={day} className={`flex items-center justify-between px-3 py-2 ${i < DAYS.length - 1 ? 'border-b border-[rgba(0,0,0,0.06)]' : ''}`}>
-                  <span className="text-[13px] text-[#1a1a1a]">{day}</span>
-                  <Toggle checked={dayEnabled[i]} onChange={(v) => {
-                    const next = [...dayEnabled]; next[i] = v; setDayEnabled(next);
-                  }} />
-                </div>
-              ))}
-            </div>
-
-            {/* Select All */}
-            <div className="flex items-center gap-2 mt-3">
-              <span className="text-[13px] text-[#1a1a1a]">Select All</span>
-              <Toggle checked={allSelected} onChange={toggleAll} />
-            </div>
-
-            {/* Start Time */}
-            <div className="flex items-center gap-2 mt-3 relative">
-              <span className="text-[13px] text-[#1a1a1a] w-20">Start Time</span>
-              <button
-                onClick={() => setOpenPicker(openPicker === 'start' ? null : 'start')}
-                className={`h-[34px] px-3 text-[13px] border rounded-[6px] flex items-center gap-2 min-w-[100px] ${openPicker === 'start' ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'}`}
-              >
-                <span>{startTime}</span>
-                <svg className="w-3.5 h-3.5 text-[#717182]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              </button>
-              {openPicker === 'start' && (
-                <div className="absolute left-[88px] top-[38px] z-50 bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 w-[200px]">
-                  <div className="flex flex-col gap-4">
-                    <TimeSlider label="Hr" value={startHr} max={23} onChange={setStartHr} />
-                    <TimeSlider label="Min" value={startMin} max={59} onChange={setStartMin} />
-                  </div>
-                  <div className="absolute left-[18px] -top-[6px] w-3 h-3 bg-white border-l border-t border-[rgba(0,0,0,0.1)] rotate-45" />
-                </div>
-              )}
-            </div>
-
-            {/* End Time */}
-            <div className="flex items-center gap-2 mt-2 relative">
-              <span className="text-[13px] text-[#1a1a1a] w-20">End Time</span>
-              <button
-                onClick={() => setOpenPicker(openPicker === 'end' ? null : 'end')}
-                className={`h-[34px] px-3 text-[13px] border rounded-[6px] flex items-center gap-2 min-w-[100px] ${openPicker === 'end' ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'}`}
-              >
-                <span>{endTime}</span>
-                <svg className="w-3.5 h-3.5 text-[#717182]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              </button>
-              {openPicker === 'end' && (
-                <div className="absolute left-[88px] top-[38px] z-50 bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 w-[200px]">
-                  <div className="flex flex-col gap-4">
-                    <TimeSlider label="Hr" value={endHr} max={23} onChange={setEndHr} />
-                    <TimeSlider label="Min" value={endMin} max={59} onChange={setEndMin} />
-                  </div>
-                  <div className="absolute left-[18px] -top-[6px] w-3 h-3 bg-white border-l border-t border-[rgba(0,0,0,0.1)] rotate-45" />
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={addSchedule}
-              className="mt-3 h-9 px-4 text-[13px] font-medium text-white bg-[#0066cc] rounded-[8px] hover:bg-[#0052a6]"
-            >
-              Add
-            </button>
-          </div>
-
-          {/* Right: Schedule List */}
-          <div className="flex-1">
-            <p className="text-[12px] font-medium text-[#1a1a1a] text-center mb-2">Schedule List</p>
-            <div className="border border-[rgba(0,0,0,0.1)] rounded-[8px] min-h-[200px]">
-              <div className="flex items-center justify-end px-3 py-2 border-b border-[rgba(0,0,0,0.06)]">
-                <button onClick={() => setScheduleList([])} className="text-[#717182] hover:text-[#d4183d]">
-                  <Trash2 className="w-[14px] h-[14px]" />
-                </button>
-              </div>
-              {scheduleList.map((entry, i) => (
-                <div key={i} className={`flex items-center justify-between px-3 py-2.5 ${i < scheduleList.length - 1 ? 'border-b border-[rgba(0,0,0,0.06)]' : ''} ${i === 0 ? 'bg-[#eff6ff] border-l-2 border-l-[#0066cc]' : ''}`}>
-                  <span className="text-[13px] text-[#1a1a1a]">{entry}</span>
-                  <button onClick={() => setScheduleList(prev => prev.filter((_, j) => j !== i))} className="text-[#717182] hover:text-[#d4183d] ml-2">
-                    <Trash2 className="w-[13px] h-[13px]" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="pb-4" />
-      </div>
-
-      {/* Default setting note */}
-      <p className="px-6 pb-3 text-[12px] text-[#717182] leading-snug">
-        This is the default maintenance window. You can change it anytime to align with your schedule.
-      </p>
-
-      {/* Footer */}
-      <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[rgba(0,0,0,0.1)] shrink-0">
-        <button
-          onClick={onBack}
-          className="h-[34px] px-5 text-[13px] font-medium text-[#1a1a1a] border border-[#d1d5db] rounded-[8px] hover:bg-[#f8f9fa]"
-        >
-          Close
-        </button>
-        <button
-          onClick={onBack}
-          className="h-[34px] px-5 text-[13px] font-medium text-white bg-[#0066cc] rounded-[8px] hover:bg-[#0052a6]"
-        >
-          Save
-        </button>
-      </div>
-    </>
-  );
-}
-
 // ── FirmwareToast ────────────────────────────────────────────────────────────────
 export function FirmwareToast({ fileName, firmware, model, onDismiss, tenants }: { fileName: string; firmware: string; model: string; onDismiss: () => void; tenants?: string[] }) {
   useEffect(() => {
@@ -393,6 +208,35 @@ export function FirmwareToast({ fileName, firmware, model, onDismiss, tenants }:
 
 // ── UploadFirmwareModal ─────────────────────────────────────────────────────────
 type UploadStep = 'idle' | 'confirm' | 'uploading' | 'scheduled';
+
+const DEPLOY_OPTIONS = [
+  {
+    value: 'now',
+    label: 'Now',
+    description: "Overrides each device's preset upgrade schedule and starts installation immediately for all selected tenants.",
+  },
+  {
+    value: 'later',
+    label: 'Later',
+    description: 'Overrides each device\'s preset schedule and applies this exact date and time to all selected tenants.',
+  },
+  {
+    value: 'tenant-schedule',
+    label: 'Follow individual tenant schedule',
+    description: 'Each device installs at its own preset time. Times vary by tenant – no single upgrade window applies.',
+  },
+] as const;
+
+function formatDeployWindow(dateStr: string, hr: number, min: number) {
+  const d = new Date(`${dateStr}T00:00:00`);
+  const dateLabel = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+  const to12 = (h: number) => { const m = h % 12; return m === 0 ? 12 : m; };
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const ampm = hr < 12 ? 'AM' : 'PM';
+  const endHr = (hr + 1) % 24;
+  const timeRangeLabel = `${pad(to12(hr))}:${pad(min)} - ${pad(to12(endHr))}:${pad(min)} ${ampm}`;
+  return { dateLabel, timeRangeLabel };
+}
 
 /* Shared sub-components */
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -575,89 +419,75 @@ export function UploadFirmwareModal({ open, onClose, onSuccess, tenants }: { ope
                   </div>
                 </div>
 
-                {/* Deploy */}
+                {/* Upgrade Time */}
                 <div>
-                  <FieldLabel>Deploy</FieldLabel>
-                  <div className="flex flex-col gap-2.5">
-                    {([
-                      { value: 'now',             label: 'Now' },
-                      { value: 'later',           label: 'Later' },
-                      { value: 'tenant-schedule', label: 'Follow individual tenant schedule' },
-                    ] as const).map(({ value, label }) => (
-                      <label key={value} className="flex items-center gap-2 cursor-pointer">
-                        <span
+                  <FieldLabel>Upgrade Time</FieldLabel>
+                  <div className="flex flex-col gap-3">
+                    {DEPLOY_OPTIONS.map(({ value, label, description }) => {
+                      const selected = deploy === value;
+                      return (
+                        <div
+                          key={value}
                           onClick={() => setDeploy(value)}
-                          className={`w-[15px] h-[15px] rounded-full border-2 flex items-center justify-center cursor-pointer shrink-0 ${
-                            deploy === value ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.2)]'
+                          className={`border rounded-[10px] px-4 py-3.5 cursor-pointer transition-colors ${
+                            selected ? 'border-[#0066cc] bg-[#eff6ff]' : 'border-[rgba(0,0,0,0.1)] hover:border-[rgba(0,0,0,0.2)]'
                           }`}
                         >
-                          {deploy === value && <span className="w-[7px] h-[7px] rounded-full bg-[#0066cc]" />}
-                        </span>
-                        <span className="text-[13px] text-[#1a1a1a]">{label}</span>
-                      </label>
-                    ))}
-                  </div>
-
-                  {/* Tenant schedule callout */}
-                  {deploy === 'tenant-schedule' && (
-                    <div className="flex items-start gap-2 bg-[#eff6ff] border border-[#bfdbfe] rounded-[8px] px-3 py-2.5 mt-1">
-                      <svg className="w-[14px] h-[14px] text-[#0066cc] shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      <p className="text-[12px] text-[#1e40af] leading-snug">
-                        Firmware will be installed during each tenant's configured maintenance window. Schedules can be managed in Upload Firmware at Tenant level.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Later — date + time side by side */}
-                  {deploy === 'later' && (() => {
-                    const pad = (n: number) => String(n).padStart(2, '0');
-                    const timeLabel = `${pad(scheduleHr)}:${pad(scheduleMin)}`;
-                    const dateObj = new Date(`${scheduleDate}T00:00`);
-                    const formatted = `${dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} at ${timeLabel} ${scheduleHr < 12 ? 'AM' : 'PM'}`;
-                    return (
-                      <div className="flex flex-col gap-3 mt-1">
-                        <div className="flex items-end gap-3">
-                          {/* Date */}
-                          <div className="flex-1">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#717182] mb-1.5">Start Date</p>
-                            <input
-                              type="date"
-                              value={scheduleDate}
-                              onChange={(e) => setScheduleDate(e.target.value)}
-                              className="h-[34px] w-full px-3 text-[13px] text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[6px] bg-white focus:outline-none focus:border-[#0066cc]"
-                            />
-                          </div>
-                          {/* Time button + popover */}
-                          <div className="flex-1 relative">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#717182] mb-1.5">Start Time</p>
-                            <button
-                              onClick={() => setSchedulePickerOpen(o => !o)}
-                              className={`h-[34px] w-full px-3 text-[13px] border rounded-[6px] flex items-center gap-2 ${schedulePickerOpen ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'}`}
+                          <div className="flex items-start gap-2.5">
+                            <span
+                              className={`mt-[2px] w-[15px] h-[15px] rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                selected ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.25)]'
+                              }`}
                             >
-                              <span className="flex-1 text-left text-[#1a1a1a]">{timeLabel}</span>
-                              <svg className="w-3.5 h-3.5 text-[#717182] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                            </button>
-                            {schedulePickerOpen && (
-                              <div className="absolute left-0 top-[38px] z-50 bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 w-[200px]">
-                                <div className="flex flex-col gap-4">
-                                  <TimeSlider label="Hr"  value={scheduleHr}  max={23} onChange={setScheduleHr} />
-                                  <TimeSlider label="Min" value={scheduleMin} max={59} onChange={setScheduleMin} />
-                                </div>
-                                <div className="absolute left-[18px] -top-[6px] w-3 h-3 bg-white border-l border-t border-[rgba(0,0,0,0.1)] rotate-45" />
+                              {selected && <span className="w-[7px] h-[7px] rounded-full bg-[#0066cc]" />}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold text-[#1a1a1a]">{label}</p>
+                              <div className="flex items-start gap-1.5 mt-1">
+                                <Info className="w-3.5 h-3.5 text-[#94a3b8] shrink-0 mt-px" />
+                                <p className="text-[12px] text-[#64748b] leading-snug">{description}</p>
                               </div>
-                            )}
+
+                              {value === 'later' && selected && (
+                                <div className="mt-3 relative">
+                                  <FieldLabel>Date &amp; Time</FieldLabel>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setSchedulePickerOpen(o => !o); }}
+                                    className={`h-9 w-full px-3 text-[13px] border rounded-[8px] bg-white flex items-center gap-4 ${
+                                      schedulePickerOpen ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'
+                                    }`}
+                                  >
+                                    {(() => {
+                                      const { dateLabel, timeRangeLabel } = formatDeployWindow(scheduleDate, scheduleHr, scheduleMin);
+                                      return (
+                                        <span className="flex-1 flex items-center gap-4 text-left text-[#1a1a1a]">
+                                          <span>{dateLabel}</span>
+                                          <span>{timeRangeLabel}</span>
+                                        </span>
+                                      );
+                                    })()}
+                                    <svg className="w-3.5 h-3.5 text-[#717182] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                  </button>
+                                  {schedulePickerOpen && (
+                                    <div className="absolute left-0 top-[42px] z-50" onClick={(e) => e.stopPropagation()}>
+                                      <CalendarPicker
+                                        dateStr={scheduleDate}
+                                        hr={scheduleHr}
+                                        min={scheduleMin}
+                                        onDateChange={setScheduleDate}
+                                        onHrChange={setScheduleHr}
+                                        onMinChange={setScheduleMin}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        {/* Info callout */}
-                        <div className="flex items-start gap-2 bg-[#eff6ff] border border-[#bfdbfe] rounded-[8px] px-3 py-2.5">
-                          <svg className="w-[14px] h-[14px] text-[#0066cc] shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                          <p className="text-[12px] text-[#1e40af] leading-snug">
-                            Firmware upgrade is scheduled for <strong>{formatted}</strong>.
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })()}
+                      );
+                    })}
+                  </div>
                 </div>
               </>
             )}
@@ -913,8 +743,13 @@ export function UploadFirmwareModal({ open, onClose, onSuccess, tenants }: { ope
 
 // ── FirmwareSettingsModal ───────────────────────────────────────────────────────
 export function FirmwareSettingsModal({ open, onClose, tenants }: { open: boolean; onClose: () => void; tenants?: string[] }) {
-  const [showSchedule, setShowSchedule] = useState(false);
   const [showAllTenants, setShowAllTenants] = useState(false);
+  const [scheduleDay, setScheduleDay] = useState('Sunday');
+  const [startHr, setStartHr] = useState(1);
+  const [startMin, setStartMin] = useState(0);
+  const [endHr, setEndHr] = useState(2);
+  const [endMin, setEndMin] = useState(0);
+  const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null);
 
   if (!open) return null;
 
@@ -923,6 +758,13 @@ export function FirmwareSettingsModal({ open, onClose, tenants }: { open: boolea
   const pillsToShow = showAllTenants ? tenantList : tenantList.slice(0, PILL_MAX);
   const overflow = tenantList.length - PILL_MAX;
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const to12 = (h: number) => { const m = h % 12; return m === 0 ? 12 : m; };
+  const ampm = (h: number) => (h < 12 ? 'AM' : 'PM');
+  const clockIcon = (
+    <svg className="w-3.5 h-3.5 text-[#717182] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -930,87 +772,128 @@ export function FirmwareSettingsModal({ open, onClose, tenants }: { open: boolea
 
       {/* Modal card */}
       <div className="relative z-10 bg-white rounded-[12px] shadow-[0_8px_40px_rgba(0,0,0,0.20)] w-[580px] max-h-[90vh] flex flex-col">
-
-        {showSchedule ? (
-          <SetScheduleView onBack={() => setShowSchedule(false)} />
-        ) : (
-          <>
-            {/* Header */}
-            <div className="flex items-start justify-between px-6 pt-5 pb-4 shrink-0">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-[16px] font-semibold text-[#1a1a1a] leading-tight">Auto Update Firmware Settings</h2>
-                {tenantList.length > 0 ? (
-                  <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                    {pillsToShow.map((t) => (
-                      <span key={t} className="inline-flex items-center h-[22px] px-2 text-[11px] font-medium text-[#1a1a1a] bg-[#ececf0] border border-[rgba(0,0,0,0.1)] rounded-full whitespace-nowrap">
-                        {t}
-                      </span>
-                    ))}
-                    {!showAllTenants && overflow > 0 && (
-                      <button
-                        onClick={() => setShowAllTenants(true)}
-                        className="inline-flex items-center h-[22px] px-2 text-[11px] font-medium text-[#0066cc] bg-[#eff6ff] border border-[#bfdbfe] rounded-full whitespace-nowrap hover:bg-[#dbeafe] transition-colors"
-                      >
-                        +{overflow} more
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-[13px] text-[#717182] mt-0.5">Configure automatic update and install preferences for this connector</p>
+        {/* Header */}
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 shrink-0">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-[16px] font-semibold text-[#1a1a1a] leading-tight">Auto Update Firmware Settings</h2>
+            {tenantList.length > 0 ? (
+              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                {pillsToShow.map((t) => (
+                  <span key={t} className="inline-flex items-center h-[22px] px-2 text-[11px] font-medium text-[#1a1a1a] bg-[#ececf0] border border-[rgba(0,0,0,0.1)] rounded-full whitespace-nowrap">
+                    {t}
+                  </span>
+                ))}
+                {!showAllTenants && overflow > 0 && (
+                  <button
+                    onClick={() => setShowAllTenants(true)}
+                    className="inline-flex items-center h-[22px] px-2 text-[11px] font-medium text-[#0066cc] bg-[#eff6ff] border border-[#bfdbfe] rounded-full whitespace-nowrap hover:bg-[#dbeafe] transition-colors"
+                  >
+                    +{overflow} more
+                  </button>
                 )}
               </div>
-              <button
-                onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center rounded-[6px] hover:bg-[#ececf0] text-[#717182] shrink-0 ml-4 mt-0.5"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            ) : (
+              <p className="text-[13px] text-[#717182] mt-0.5">Configure automatic update and install preferences for this connector</p>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-[6px] hover:bg-[#ececf0] text-[#717182] shrink-0 ml-4 mt-0.5"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-            {/* Body */}
-            <div className="px-6 py-5 flex flex-col gap-4">
-              <div className="h-px bg-[rgba(0,0,0,0.1)]" />
+        {/* Body */}
+        <div className="px-6 py-5 flex flex-col gap-4">
+          <div className="h-px bg-[rgba(0,0,0,0.1)]" />
 
-              {/* Schedule row */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[13px] font-semibold text-[#1a1a1a] leading-tight">Default Firmware Install Hours</p>
-                  <p className="text-[12px] text-[#717182] mt-0.5">Sunday 01:00 – 02:00 AM</p>
-                </div>
-                <button
-                  onClick={() => setShowSchedule(true)}
-                  className="h-9 px-4 text-[13px] font-medium text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[8px] hover:bg-[#ececf0] whitespace-nowrap transition-colors"
+          {/* Schedule row */}
+          <div>
+            <p className="text-[13px] font-semibold text-[#1a1a1a] leading-tight mb-2">Default Firmware Install Hours</p>
+            <div className="flex items-center gap-2">
+              {/* Day select */}
+              <div className="relative">
+                <select
+                  value={scheduleDay}
+                  onChange={(e) => setScheduleDay(e.target.value)}
+                  className="h-9 pl-3 pr-8 text-[13px] text-[#1a1a1a] border border-[rgba(0,0,0,0.1)] rounded-[8px] bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#0066cc]"
                 >
-                  Set Schedule
+                  {FULL_DAYS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+                <svg className="w-3.5 h-3.5 text-[#717182] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+
+              {/* Start time */}
+              <div className="relative">
+                <button
+                  onClick={() => setOpenPicker(openPicker === 'start' ? null : 'start')}
+                  className={`h-9 px-3 text-[13px] border rounded-[8px] bg-white flex items-center gap-2 ${openPicker === 'start' ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'}`}
+                >
+                  <span className="text-[#1a1a1a]">{pad(to12(startHr))}:{pad(startMin)} {ampm(startHr)}</span>
+                  {clockIcon}
                 </button>
+                {openPicker === 'start' && (
+                  <div className="absolute left-0 top-[42px] z-50 bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 w-[200px]">
+                    <div className="flex flex-col gap-4">
+                      <TimeSlider label="Hr" value={startHr} max={23} onChange={setStartHr} />
+                      <TimeSlider label="Min" value={startMin} max={59} onChange={setStartMin} />
+                    </div>
+                    <div className="absolute left-[18px] -top-[6px] w-3 h-3 bg-white border-l border-t border-[rgba(0,0,0,0.1)] rotate-45" />
+                  </div>
+                )}
               </div>
 
-              {/* Info callout */}
-              <div className="flex items-start gap-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-[8px] px-3 py-2.5">
-                <Info className="w-[14px] h-[14px] text-[#0066cc] shrink-0 mt-px" />
-                <p className="text-[12px] text-[#1e40af] leading-snug">
-                  Schedule installation of firmware updates to be done during quieter maintenance windows. Firewalls may go offline during upgrade — firmware upgrade takes around 20 minutes. Schedule during non-business hours to minimize impact.
-                </p>
+              <span className="text-[13px] text-[#717182]">–</span>
+
+              {/* End time */}
+              <div className="relative">
+                <button
+                  onClick={() => setOpenPicker(openPicker === 'end' ? null : 'end')}
+                  className={`h-9 px-3 text-[13px] border rounded-[8px] bg-white flex items-center gap-2 ${openPicker === 'end' ? 'border-[#0066cc]' : 'border-[rgba(0,0,0,0.1)]'}`}
+                >
+                  <span className="text-[#1a1a1a]">{pad(to12(endHr))}:{pad(endMin)} {ampm(endHr)}</span>
+                  {clockIcon}
+                </button>
+                {openPicker === 'end' && (
+                  <div className="absolute left-0 top-[42px] z-50 bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 w-[200px]">
+                    <div className="flex flex-col gap-4">
+                      <TimeSlider label="Hr" value={endHr} max={23} onChange={setEndHr} />
+                      <TimeSlider label="Min" value={endMin} max={59} onChange={setEndMin} />
+                    </div>
+                    <div className="absolute left-[18px] -top-[6px] w-3 h-3 bg-white border-l border-t border-[rgba(0,0,0,0.1)] rotate-45" />
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#e5e7eb] shrink-0">
-              <button
-                onClick={onClose}
-                className="h-[34px] px-5 text-[13px] font-medium text-[#1a1a1a] border border-[#d1d5db] rounded-[8px] hover:bg-[#f8f9fa]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={onClose}
-                className="h-[34px] px-5 text-[13px] font-medium text-white bg-[#0066cc] rounded-[8px] hover:bg-[#0052a6]"
-              >
-                Save
-              </button>
-            </div>
-          </>
-        )}
+          {/* Info callout */}
+          <div className="flex items-start gap-2.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-[8px] px-3 py-2.5">
+            <Info className="w-[14px] h-[14px] text-[#0066cc] shrink-0 mt-px" />
+            <p className="text-[12px] text-[#1e40af] leading-snug">
+              Schedule installation of firmware updates to be done during quieter maintenance windows. Firewalls may go offline during upgrade — firmware upgrade takes around 20 minutes. Schedule during non-business hours to minimize impact.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#e5e7eb] shrink-0">
+          <button
+            onClick={onClose}
+            className="h-[34px] px-5 text-[13px] font-medium text-[#1a1a1a] border border-[#d1d5db] rounded-[8px] hover:bg-[#f8f9fa]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onClose}
+            className="h-[34px] px-5 text-[13px] font-medium text-white bg-[#0066cc] rounded-[8px] hover:bg-[#0052a6]"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1111,7 +994,7 @@ function StatusBadge({ status }: { status: 'online' | 'offline' }) {
   );
 }
 
-function OverflowMenu({ onSettings, onUploadFirmware }: { onSettings: () => void; onUploadFirmware: () => void; }) {
+function OverflowMenu({ onSettings, onUploadFirmware, onSystemLogs }: { onSettings: () => void; onUploadFirmware: () => void; onSystemLogs: () => void; }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -1147,7 +1030,7 @@ function OverflowMenu({ onSettings, onUploadFirmware }: { onSettings: () => void
           </button>
           <button
             className="w-full px-3 py-2 text-[13px] text-[#1a1a1a] hover:bg-[#f8f9fa] text-left"
-            onClick={() => { setOpen(false); }}
+            onClick={() => { setOpen(false); onSystemLogs(); }}
           >
             System Logs
           </button>
@@ -1162,6 +1045,7 @@ function ConnectorCard({ connector }: { connector: ConnectorCard }) {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [toast, setToast] = useState<{ fileName: string } | null>(null);
   const hasSettings = connector.type === 'secure-remote-access';
+  const navigate = useNavigate();
 
   return (
     <>
@@ -1204,7 +1088,7 @@ function ConnectorCard({ connector }: { connector: ConnectorCard }) {
           )}
           <div className="flex items-center gap-2 shrink-0">
             <StatusBadge status={connector.status} />
-            {hasSettings && <OverflowMenu onSettings={() => setModalOpen(true)} onUploadFirmware={() => setUploadOpen(true)} />}
+            {hasSettings && <OverflowMenu onSettings={() => setModalOpen(true)} onUploadFirmware={() => setUploadOpen(true)} onSystemLogs={() => navigate('/system-logs')} />}
           </div>
         </div>
 

@@ -33,6 +33,7 @@ import { TenantTopDomainsPage } from "./pages/TenantTopDomainsPage";
 import { TenantActivityLogPage } from "./pages/TenantActivityLogPage";
 import { AllTenantsSystemStatusPage } from "./pages/AllTenantsSystemStatusPage";
 import { ConnectorDetailPage } from "./pages/ConnectorDetailPage";
+import { SystemLogsPage } from "./pages/SystemLogsPage";
 import { NetworkPage } from "./pages/NetworkPage";
 import { MspDashboardPage } from "./pages/MspDashboardPage";
 import { MspTopDomainsPage } from "./pages/MspTopDomainsPage";
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { path: "private-access-policy/:id", Component: PrivateAccessPolicyDetailPage },
       { path: "private-access-policy/:id/edit", Component: CreatePrivateAccessPolicyPage },
       { path: "connectors", Component: ConnectorsPage },
+      { path: "system-logs", Component: SystemLogsPage },
       { path: "users", Component: UsersPage },
       { path: "tenants", Component: TenantsPage },
       { path: "msp-dashboard", Component: MspDashboardPage },

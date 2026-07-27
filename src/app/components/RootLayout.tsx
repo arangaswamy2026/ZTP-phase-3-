@@ -155,7 +155,7 @@ function RootLayoutContent() {
         </main>
       </div>
       
-      <Toaster position="top-center" />
+      <Toaster position="top-center" closeButton />
       <ClientDownloadModal 
         isOpen={showClientDownloadModal} 
         onClose={() => setShowClientDownloadModal(false)} 

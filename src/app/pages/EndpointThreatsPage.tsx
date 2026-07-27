@@ -102,7 +102,7 @@ export function EndpointThreatsPage() {
     return true;
   }), [sevFilter, statusFilter, search]);
 
-  const COL_HEADERS = ['Threat Name', 'Severity', 'Endpoint', 'User', 'Status', 'Time'];
+  const COL_HEADERS = ['Threat Name', 'Severity', 'Endpoint', 'User', 'Status', 'Time', ''];
 
   return (
     <div className="space-y-5 pb-10">
@@ -300,12 +300,11 @@ export function EndpointThreatsPage() {
                     onChange={e => setSelected(e.target.checked ? new Set(filtered.map(r => r.id)) : new Set())}
                   />
                 </th>
-                {COL_HEADERS.map(h => (
-                  <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#717182', whiteSpace: 'nowrap', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    {h}<span style={{ opacity: 0.4, marginLeft: '3px', fontSize: '9px' }}>⇅</span>
+                {COL_HEADERS.map((h, i) => (
+                  <th key={i} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#717182', whiteSpace: 'nowrap', cursor: h ? 'pointer' : 'default', fontFamily: 'inherit' }}>
+                    {h}{h && <span style={{ opacity: 0.4, marginLeft: '3px', fontSize: '9px' }}>⇅</span>}
                   </th>
                 ))}
-                <th style={{ width: '40px' }} />
               </tr>
             </thead>
             <tbody>
@@ -392,15 +391,15 @@ export function EndpointThreatsPage() {
                       {row.time}
                     </td>
 
-                    {/* Overflow menu */}
-                    <td style={{ padding: '12px 16px', verticalAlign: 'middle', textAlign: 'center' }}>
+                    {/* View details */}
+                    <td style={{ padding: '12px 16px', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                       <button
                         onClick={() => setDrawer(row)}
-                        style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', background: '#fff', color: '#717182', cursor: 'pointer' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#f8f9fa'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; }}
+                        style={{ fontSize: '13px', fontWeight: 500, color: '#0066cc', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = '#0052a6'; e.currentTarget.style.textDecoration = 'underline'; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = '#0066cc'; e.currentTarget.style.textDecoration = 'none'; }}
                       >
-                        <svg viewBox="0 0 16 16" width="13" height="13"><circle cx="8" cy="3.5" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="12.5" r="1.2" fill="currentColor"/></svg>
+                        View details
                       </button>
                     </td>
                   </tr>
@@ -434,15 +433,16 @@ export function EndpointThreatsPage() {
         </div>
       </div>
 
-      {/* ── Detail Drawer ───────────────────────────────────────────────────────── */}
+      {/* ── Threat Detail Modal ─────────────────────────────────────────────────── */}
       {drawer && (
-        <>
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+          onClick={() => setDrawer(null)}
+        >
           <div
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200 }}
-            onClick={() => setDrawer(null)}
-          />
-          <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '420px', background: '#ffffff', borderLeft: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 12px 32px rgba(0,0,0,0.12)', zIndex: 201, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
+            style={{ background: '#ffffff', borderRadius: '12px', width: '100%', maxWidth: '560px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 32px rgba(0,0,0,0.18)', border: '1px solid rgba(0,0,0,0.08)' }}
+            onClick={e => e.stopPropagation()}
+          >
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.08)', flexShrink: 0 }}>
               <div>
@@ -452,54 +452,33 @@ export function EndpointThreatsPage() {
               <button
                 onClick={() => setDrawer(null)}
                 style={{ width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', background: 'none', border: 'none', color: '#717182', cursor: 'pointer', flexShrink: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#ececf0')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
                 <X style={{ width: '14px', height: '14px' }} />
               </button>
             </div>
 
-            {/* Tabs */}
-            <div style={{ display: 'flex', padding: '0 20px', borderBottom: '2px solid rgba(0,0,0,0.08)', flexShrink: 0 }}>
-              {['Overview', 'Timeline', 'Related'].map((t, i) => (
-                <div
-                  key={t}
-                  style={{
-                    padding: '8px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                    color:        i === 0 ? '#ff5d00' : '#717182',
-                    borderBottom: i === 0 ? '2px solid #ff5d00' : '2px solid transparent',
-                    marginBottom: '-2px',
-                  }}
-                >
-                  {t}
-                </div>
-              ))}
-            </div>
-
             {/* Body */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
 
-              {/* Threat details KV */}
+              {/* Threat Details */}
               <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#717182', marginBottom: '8px' }}>Threat Details</div>
               <div style={{ border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
                 {([
-                  ['Severity', (
-                    <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.04em', background: SEV_CHIP[drawer.severity].bg, color: SEV_CHIP[drawer.severity].text }}>{drawer.severity}</span>
-                  )],
-                  ['Status', (
-                    <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, background: STATUS_CHIP[drawer.statusLabel].bg, color: STATUS_CHIP[drawer.statusLabel].text }}>
-                      {drawer.statusLabel}
-                    </span>
-                  )],
+                  ['Severity', <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.04em', background: SEV_CHIP[drawer.severity].bg, color: SEV_CHIP[drawer.severity].text }}>{drawer.severity}</span>],
+                  ['Status',   <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 600, background: STATUS_CHIP[drawer.statusLabel].bg, color: STATUS_CHIP[drawer.statusLabel].text }}>{drawer.statusLabel}</span>],
                   ['Detected via', drawer.detectedVia],
                   ['Time',         drawer.time],
-                ] as [string, React.ReactNode][]).map(([k, v], i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '130px 1fr', borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                ] as [string, React.ReactNode][]).map(([k, v], i, arr) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '130px 1fr', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                     <div style={{ padding: '9px 12px', background: '#f8f9fa', fontSize: '12px', color: '#717182', borderRight: '1px solid rgba(0,0,0,0.06)' }}>{k}</div>
                     <div style={{ padding: '9px 12px', fontSize: '13px', fontWeight: 500, color: '#1a1a1a' }}>{v}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Endpoint KV */}
+              {/* Endpoint */}
               <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#717182', marginBottom: '8px' }}>Endpoint</div>
               <div style={{ border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
                 {([
@@ -508,22 +487,34 @@ export function EndpointThreatsPage() {
                   ['User',     drawer.userName],
                   ['Email',    <span style={{ fontSize: '12px' }}>{drawer.userEmail}</span>],
                   ['IP',       <span style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', fontSize: '12px' }}>{drawer.ip}</span>],
-                ] as [string, React.ReactNode][]).map(([k, v], i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '130px 1fr', borderBottom: i < 4 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                ] as [string, React.ReactNode][]).map(([k, v], i, arr) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '130px 1fr', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                     <div style={{ padding: '9px 12px', background: '#f8f9fa', fontSize: '12px', color: '#717182', borderRight: '1px solid rgba(0,0,0,0.06)' }}>{k}</div>
                     <div style={{ padding: '9px 12px', fontSize: '13px', fontWeight: 500, color: '#1a1a1a' }}>{v}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Hash */}
+              {/* File Hash */}
               <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#717182', marginBottom: '8px' }}>File Hash</div>
               <div style={{ border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 12px', fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', fontSize: '12px', color: '#717182', wordBreak: 'break-all' }}>
                 {drawer.hash}
               </div>
             </div>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 20px', borderTop: '1px solid rgba(0,0,0,0.08)', flexShrink: 0 }}>
+              <button
+                onClick={() => setDrawer(null)}
+                style={{ height: '32px', padding: '0 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, border: '1px solid rgba(0,0,0,0.1)', background: '#f3f4f6', color: '#374151', cursor: 'pointer', fontFamily: 'inherit' }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#e5e7eb')}
+                onMouseLeave={e => (e.currentTarget.style.background = '#f3f4f6')}
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
