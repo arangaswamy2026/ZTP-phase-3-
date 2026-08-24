@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { MoreHorizontal, Download } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from 'recharts';
+import { MoreHorizontal, Download, Search } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +22,8 @@ function TrafficFunnelChart() {
   const CHART_H = 160;
   const CY = CHART_H / 2;
   const PAD_X = 20;
-  const LABEL_H = 130;
   const W = FUNNEL_STAGES.length * SEG_W + PAD_X * 2;
-  const VH = CHART_H + LABEL_H;
+  const VH = CHART_H;
 
   // Height at each boundary = remaining (passed-through) traffic / total
   const passed = [1486, 414, 59, 13, 0];
@@ -37,23 +36,9 @@ function TrafficFunnelChart() {
         const x2 = PAD_X + (i + 1) * SEG_W;
         const h1 = boundH[i], h2 = boundH[i + 1];
         const d = `M${x1},${CY - h1 / 2} L${x2},${CY - h2 / 2} L${x2},${CY + h2 / 2} L${x1},${CY + h1 / 2}Z`;
-        const tickTopY = CY + h2 / 2;
-        const labelY = CHART_H + 14;
         return (
           <g key={s.name}>
             <path d={d} fill={s.color} />
-            <line x1={x2} y1={tickTopY} x2={x2} y2={labelY - 2} stroke="#d1d5db" strokeWidth="1" />
-            <text
-              x={x2}
-              y={labelY}
-              transform={`rotate(-45, ${x2}, ${labelY})`}
-              textAnchor="end"
-              fontSize="10.5"
-              fontFamily="Inter, system-ui, sans-serif"
-              fill="#717182"
-            >
-              {`${s.short}: ${s.pct}`}
-            </text>
           </g>
         );
       })}
@@ -74,7 +59,7 @@ const THREAT_PIE = [
 ];
 
 const STYLES = `
-.thr-opt2{display:flex;flex-direction:column;gap:18px;padding-bottom:40px;max-width:1200px;width:100%;--navy:#001b50;--blue:#0066cc;--ink:#1a1a1a;--muted:#717182;--line:rgba(0,0,0,.1);--red:#d4183d;--surface:#fff;--subtle:#ececf0;--bg:#f8f9fa;--success:#16a34a;--warning:#d97706;--shadow-sm:0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.08)}
+.thr-opt2{display:flex;flex-direction:column;gap:18px;padding-bottom:40px;width:100%;--navy:#001b50;--blue:#0066cc;--ink:#1a1a1a;--muted:#717182;--line:rgba(0,0,0,.1);--red:#d4183d;--surface:#fff;--subtle:#ececf0;--bg:#f8f9fa;--success:#16a34a;--warning:#d97706;--shadow-sm:0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 12px rgba(0,0,0,.08)}
 .thr-opt2 .page-heading{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .thr-opt2 .page-h1{font-size:1.5rem;font-weight:700;letter-spacing:-.0036em;color:#1a1a1a}
 .thr-opt2 .page-tenant-badge{font-size:0.6875rem;font-weight:600;padding:3px 10px;border-radius:0.5rem;background:#0066cc1a;color:#0066cc;border:1px solid rgba(0,102,204,.2)}
@@ -117,7 +102,7 @@ const STYLES = `
 .thr-opt2 .flow-legend{display:flex;align-items:center;gap:14px;margin-left:auto}
 .thr-opt2 .fl-item{display:flex;align-items:center;gap:5px;font-size:0.6875rem;font-weight:600}
 .thr-opt2 .fl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.thr-opt2 .insights-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.thr-opt2 .insights-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .thr-opt2 .ins-card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:1rem;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .thr-opt2 .ins-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid rgba(0,0,0,.1)}
 .thr-opt2 .ins-title{font-size:1rem;font-weight:600;color:#1a1a1a}
@@ -147,15 +132,6 @@ const STYLES = `
 .thr-opt2 .xbtn{font-family:inherit;font-size:0.8125rem;font-weight:600;height:36px;padding:0 1rem;border-radius:0.5rem;border:1px solid rgba(0,0,0,.1);background:#fff;color:#1a1a1a;cursor:pointer;display:inline-flex;align-items:center}
 .thr-opt2 .xbtn.primary{background:#0066cc;border-color:#0066cc;color:#fff}
 .thr-opt2 .xbtn.danger{background:#d4183d1a;border-color:rgba(212,24,61,.25);color:#d4183d}
-.thr-opt2 table{width:100%;border-collapse:collapse}
-.thr-opt2 thead th{padding:10px 16px;text-align:left;font-size:0.6875rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#717182;background:#ececf0;border-bottom:1px solid rgba(0,0,0,.1);white-space:nowrap}
-.thr-opt2 tbody td{padding:12px 16px;font-size:0.8125rem;color:#1a1a1a;border-bottom:1px solid rgba(0,0,0,.06);vertical-align:middle}
-.thr-opt2 tbody tr:last-child td{border-bottom:none}
-.thr-opt2 tbody tr.hot{background:#fff8f8}
-.thr-opt2 tbody tr:hover td{background:#ececf0}
-.thr-opt2 tbody tr.hot:hover td{background:#fee2e2}
-.thr-opt2 .xcb{width:16px;height:16px;border:1px solid rgba(0,0,0,.2);border-radius:4px;display:inline-block;vertical-align:middle;margin-right:4px}
-.thr-opt2 .xcb.on{background:#001b50;border-color:#001b50}
 .thr-opt2 .inc-name{font-size:0.8125rem;font-weight:600;color:#0066cc}
 .thr-opt2 .inc-ctx{font-size:0.6875rem;color:#717182;margin-top:2px}
 .thr-opt2 .grp{display:inline-flex;align-items:center;font-size:0.6875rem;font-weight:600;padding:1.5px 6px;border-radius:0.25rem;background:#ececf0;color:#717182;margin-left:5px;vertical-align:middle}
@@ -219,18 +195,41 @@ const ACTION_STATUS: Record<string, { label: string; variant: 'success' | 'neutr
   'Restore Affected File': { label: 'File Restored',       variant: 'success' },
 };
 
+const DEVICE_TYPE_COLORS: Record<string, string> = {
+  'Ransomware':         '#ef4444',
+  'Suspicious Shell':   '#f59e0b',
+  'Exploit':            '#b45309',
+  'Malware C2':         '#dc2626',
+  'Malware Prevention': '#f97316',
+  'Phishing':           '#d97706',
+};
+
 const DEVICE_THREATS_TENANT = [
-  { id:1, name:'Ransom.Malbazar',          sub:'Ransomware · In Memory · ×8',         severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-05-29 08:01' },
-  { id:2, name:'cmd.exe',                  sub:'Suspicious Shell · Process Behavior',  severity:'High',     device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-05-29 08:33' },
-  { id:3, name:'Exploit.CVE-2024-1234',    sub:'Exploit · In Memory',                 severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-05-29 07:42' },
-  { id:4, name:'Ransomware.LockBit3',      sub:'Ransomware · In Memory',              severity:'Critical', device:'LAPTOP-RD-088',   userInitials:'MK', userName:'Mark Klein',          avatarColor:'#374151', status:'Process Killed',  time:'2026-05-29 02:17' },
-  { id:5, name:'Malware C2 callback',      sub:'Malware C2 · ×3 · Dentrix Cloud',     severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'MM', userName:'Mark Martinez',       avatarColor:'#c8102e', status:'Process Killed',  time:'2026-05-29 08:01' },
-  { id:6, name:'Malware & Ransomware',     sub:'Malware Prevention · Blocked at file', severity:'High',    device:'LAPTOP-RD-088',   userInitials:'MM', userName:'Mark Martinez',       avatarColor:'#c8102e', status:'Process Killed',  time:'2026-05-29 07:58' },
-  { id:7, name:'Phishing domain blocked',  sub:'Phishing · ×4 · HR Records Portal',   severity:'High',     device:'203.0.113.17',    userInitials:'?',  userName:'unknown@extern.com',  avatarColor:'#9ca3af', status:'Process Killed',  time:'2026-05-29 08:31' },
+  { id:1, name:'Ransom.Malbazar',          sub:'Ransomware · In Memory · ×8',         severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-08-24 08:01' },
+  { id:2, name:'cmd.exe',                  sub:'Suspicious Shell · Process Behavior',  severity:'High',     device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-08-23 08:33' },
+  { id:3, name:'Exploit.CVE-2024-1234',    sub:'Exploit · In Memory',                 severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'BM', userName:'Bob Martinez',        avatarColor:'#6b7280', status:'Not Quarantined', time:'2026-08-23 07:42' },
+  { id:4, name:'Ransomware.LockBit3',      sub:'Ransomware · In Memory',              severity:'Critical', device:'LAPTOP-RD-088',   userInitials:'MK', userName:'Mark Klein',          avatarColor:'#374151', status:'Process Killed',  time:'2026-08-22 02:17' },
+  { id:5, name:'Malware C2 callback',      sub:'Malware C2 · ×3 · Dentrix Cloud',     severity:'Critical', device:'DESKTOP-CT7UT4D', userInitials:'MM', userName:'Mark Martinez',       avatarColor:'#c8102e', status:'Process Killed',  time:'2026-08-21 08:01' },
+  { id:6, name:'Malware & Ransomware',     sub:'Malware Prevention · Blocked at file', severity:'High',    device:'LAPTOP-RD-088',   userInitials:'MM', userName:'Mark Martinez',       avatarColor:'#c8102e', status:'Process Killed',  time:'2026-08-20 07:58' },
+  { id:7, name:'Phishing domain blocked',  sub:'Phishing · ×4 · HR Records Portal',   severity:'High',     device:'203.0.113.17',    userInitials:'?',  userName:'unknown@extern.com',  avatarColor:'#9ca3af', status:'Process Killed',  time:'2026-08-19 08:31' },
 ];
 
+const deviceNeedActionCount    = DEVICE_THREATS_TENANT.filter(r => r.status === 'Not Quarantined').length;
+const deviceQuarantinedCount   = DEVICE_THREATS_TENANT.filter(r => r.status === 'Quarantined').length;
+const deviceAutoContainedCount = DEVICE_THREATS_TENANT.filter(r => r.status === 'Process Killed').length;
+
+const DEVICE_THREATS_BY_TYPE_TENANT = (() => {
+  const counts: Record<string, number> = {};
+  DEVICE_THREATS_TENANT.forEach((r) => {
+    const type = r.sub.split(' · ')[0];
+    counts[type] = (counts[type] ?? 0) + 1;
+  });
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, value]) => ({ name, value, color: DEVICE_TYPE_COLORS[name] ?? '#9ca3af' }));
+})();
+
 export function ThreatsPage() {
-  const [annotOpen, setAnnotOpen]   = useState(false);
   const [rowActions, setRowActions] = useState<Record<number, string>>({});
 
   return (
@@ -245,7 +244,6 @@ export function ThreatsPage() {
               <div className="page-h1">Threats</div>
               <div className="page-tenant-badge">Riverside Dental Office</div>
             </div>
-            <div className="page-sub">Security posture for this tenant — enforcement layers, top users at risk, open device incidents</div>
           </div>
           <button className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium border border-[var(--color-border)] rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-surface-raised)] text-[var(--color-text)] transition-colors shrink-0">
             <Download className="w-3.5 h-3.5" />
@@ -260,22 +258,21 @@ export function ThreatsPage() {
             <div className="flow-sub">How 1,486 threats against Riverside Dental were intercepted this period</div>
           </div>
           <div style={{ padding: '20px 24px 24px' }}>
-            {/* Legend */}
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '14px' }}>
+            {/* Legend + summary note */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', marginBottom: '14px' }}>
               {FUNNEL_STAGES.map(s => (
                 <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                   <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: s.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.6875rem', color: '#1a1a1a', fontWeight: 600 }}>{s.name}</span>
-                  <span style={{ fontSize: '0.6875rem', color: '#717182' }}>{s.count.toLocaleString()} · {s.pct}</span>
+                  <span style={{ fontSize: '0.8125rem', color: '#1a1a1a', fontWeight: 600 }}>{s.name}</span>
+                  <span style={{ fontSize: '0.8125rem', color: '#1a1a1a', fontWeight: 600 }}>{s.count.toLocaleString()}</span>
                 </div>
               ))}
+              <span style={{ marginLeft: 'auto', fontSize: '0.8125rem', color: '#717182', whiteSpace: 'nowrap' }}>
+                1,473 threats stopped before reaching any Riverside Dental device
+              </span>
             </div>
             {/* Funnel chart */}
             <TrafficFunnelChart />
-            {/* Footer note */}
-            <div style={{ marginTop: '6px', fontSize: '0.6875rem', color: '#717182' }}>
-              1,473 threats stopped before reaching any Riverside Dental device
-            </div>
           </div>
         </div>
 
@@ -285,7 +282,7 @@ export function ThreatsPage() {
           {/* Threat type breakdown */}
           <div className="ins-card">
             <div className="ins-head">
-              <span className="ins-title">Threat by type</span>
+              <span className="ins-title">Domain threats by type</span>
               <span className="ins-meta">1,473 blocked events</span>
             </div>
             <div className="ins-body" style={{ paddingBottom: '10px' }}>
@@ -303,6 +300,22 @@ export function ThreatsPage() {
                     {THREAT_PIE.map((entry, i) => (
                       <Cell key={i} fill={entry.color} stroke="none" />
                     ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        const { cx, cy } = viewBox as { cx: number; cy: number };
+                        const total = THREAT_PIE.reduce((s, d) => s + d.value, 0);
+                        return (
+                          <g>
+                            <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '22px', fontWeight: 700, fill: '#1a1a1a' }}>
+                              {total.toLocaleString()}
+                            </text>
+                            <text x={cx} y={cy + 12} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '10px', fill: '#717182' }}>
+                              threats
+                            </text>
+                          </g>
+                        );
+                      }}
+                    />
                   </Pie>
                   <Tooltip
                     formatter={(value: number, name: string) => [value.toLocaleString(), name]}
@@ -315,34 +328,78 @@ export function ThreatsPage() {
             </div>
           </div>
 
-          {/* Device threats */}
+          {/* Top device threats */}
           <div className="ins-card">
             <div className="ins-head">
-              <span className="ins-title">Device threats</span>
-              <span className="ins-meta">13 this period · 3 awaiting action</span>
+              <span className="ins-title">Top device threats</span>
+              <StatusBadge variant="warning" dot>3 awaiting action</StatusBadge>
             </div>
             <div className="ins-body">
               {([
-                ['#fca5a5', 'DESKTOP-CT7UT4D', 'Bob Martinez · 11 incidents', '11 threats', 'ds-alert', '3 open'],
-                ['#a78bfa', 'LAPTOP-RD-088', 'Mark Klein · LockBit3', '1 threat', 'ds-ok', 'Process killed'],
-                [null, 'LAPTOP-RD-071', 'Chris Jensen · AgentTesla', '1 threat', 'ds-ok', 'Process killed'],
-                [null, 'DESKTOP-RD-045', 'James Hardy · TrickBot', '1 threat', 'ds-ok', 'Process killed'],
-                [null, 'DESKTOP-RD-033', 'Sara Lee · BrowseFox', '1 threat', 'ds-quar', 'Quarantined'],
-              ] as [string | null, string, string, string, string, string][]).map(([dotColor, device, user, count, stateCls, stateLabel]) => (
+                ['#fca5a5', 'DESKTOP-CT7UT4D', '11 incidents', '11 threats', 'ds-alert', '3 open'],
+                ['#a78bfa', 'LAPTOP-RD-088', 'LockBit3', '1 threat', 'ds-ok', 'Process killed'],
+                [null, 'LAPTOP-RD-071', 'AgentTesla', '1 threat', 'ds-ok', 'Process killed'],
+                [null, 'DESKTOP-RD-045', 'TrickBot', '1 threat', 'ds-ok', 'Process killed'],
+                [null, 'DESKTOP-RD-033', 'BrowseFox', '1 threat', 'ds-quar', 'Quarantined'],
+              ] as [string | null, string, string, string, string, string][]).map(([, device, , count]) => (
                 <div className="dev-row" key={device}>
-                  <div className="dev-icon">
-                    <div className="dev-icon-dot" style={dotColor ? { background: dotColor } : undefined} />
-                  </div>
                   <div>
                     <div className="dev-name">{device}</div>
-                    <div className="dev-user">{user}</div>
                   </div>
                   <div className="dev-right">
                     <div className="dev-count">{count}</div>
-                    <div className={`dev-state ${stateCls}`}>{stateLabel}</div>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Device threats by type */}
+          <div className="ins-card">
+            <div className="ins-head">
+              <span className="ins-title">Device threats by type</span>
+              <span className="ins-meta">{DEVICE_THREATS_TENANT.length} device events</span>
+            </div>
+            <div className="ins-body" style={{ paddingBottom: '10px' }}>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={DEVICE_THREATS_BY_TYPE_TENANT}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={46}
+                    outerRadius={76}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {DEVICE_THREATS_BY_TYPE_TENANT.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} stroke="none" />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        const { cx, cy } = viewBox as { cx: number; cy: number };
+                        return (
+                          <g>
+                            <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '22px', fontWeight: 700, fill: '#1a1a1a' }}>
+                              {DEVICE_THREATS_TENANT.length}
+                            </text>
+                            <text x={cx} y={cy + 12} textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '10px', fill: '#717182' }}>
+                              threats
+                            </text>
+                          </g>
+                        );
+                      }}
+                    />
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [value, name]}
+                    contentStyle={{ fontSize: '12px', borderRadius: '8px', border: '1px solid rgba(0,0,0,.1)', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}
+                    itemStyle={{ color: '#1a1a1a', fontWeight: 600 }}
+                    labelStyle={{ display: 'none' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+
             </div>
           </div>
 
@@ -352,13 +409,26 @@ export function ThreatsPage() {
         <div>
           <div className="section-head">
             <div className="sec-h2">Device threats</div>
-            <span className="sec-badge red">3 awaiting action</span>
+          </div>
+          <div className="flex gap-3 mb-4">
+            {([
+              { label: 'Total Device Threats', value: DEVICE_THREATS_TENANT.length, sub: 'Reached device',  variant: 'info'    },
+              { label: 'Awaiting Action',       value: deviceNeedActionCount,        sub: 'Needs response',  variant: 'warning' },
+              { label: 'Quarantined',           value: deviceQuarantinedCount,       sub: 'File isolated',   variant: 'neutral' },
+              { label: 'Auto Contained',        value: deviceAutoContainedCount,     sub: 'Process killed',  variant: 'success' },
+            ] as { label: string; value: number; sub: string; variant: 'info' | 'warning' | 'neutral' | 'success' }[]).map(({ label, value, sub, variant }) => (
+              <div key={label} className="flex-1 bg-card border border-border rounded-[12px] p-4 shadow-sm min-w-0">
+                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.04em] mb-1">{label}</div>
+                <div className={`text-[26px] font-extrabold text-foreground tabular-nums leading-none ${value > 0 ? 'mb-2' : ''}`}>{value}</div>
+                {value > 0 && <StatusBadge variant={variant}>{sub}</StatusBadge>}
+              </div>
+            ))}
           </div>
           <TablePanel>
           <DataTable>
-            <THead>
+            <THead className="!bg-transparent">
               <tr>
-                {['Threat Name', 'Severity', 'Device', 'User', 'Status', 'Timestamp', 'Action'].map((h) => (
+                {['Timestamp', 'Threat Name', 'Severity', 'Device', 'User', 'Status', 'Action'].map((h) => (
                   <TH key={h}>{h}</TH>
                 ))}
               </tr>
@@ -374,6 +444,10 @@ export function ThreatsPage() {
 
                 return (
                   <TR key={r.id}>
+                    {/* Timestamp */}
+                    <TD>
+                      <span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap">{r.time}</span>
+                    </TD>
                     {/* Threat Name */}
                     <TD>
                       <div className="font-medium text-[var(--color-text)]">{r.name}</div>
@@ -393,7 +467,7 @@ export function ThreatsPage() {
                     <TD>
                       <div className="flex items-center gap-1.5">
                         <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shrink-0"
-                          style={{ background: r.avatarColor }}>
+                          style={{ background: '#9ca3af' }}>
                           {r.userInitials}
                         </div>
                         <span className="text-sm text-[var(--color-text)]">{r.userName}</span>
@@ -410,10 +484,6 @@ export function ThreatsPage() {
                           {r.status}
                         </StatusBadge>
                       )}
-                    </TD>
-                    {/* Timestamp */}
-                    <TD>
-                      <span className="text-sm text-[var(--color-text-muted)]">{r.time}</span>
                     </TD>
                     {/* Action */}
                     <TD>
@@ -472,30 +542,30 @@ export function ThreatsPage() {
         <div>
           <div className="section-head">
             <div className="sec-h2">Domain Threats</div>
-            <span className="sec-badge">1,473 events · last 7 days</span>
           </div>
           <TablePanel>
             {/* toolbar */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <span className="text-[13px] text-[var(--color-text-muted)]">All blocked threat events — Riverside Dental</span>
-              <div className="flex items-center gap-2">
-                <select className="text-[13px] border border-border rounded-md px-2 py-1 bg-[var(--color-surface)] text-[var(--color-text)] outline-none cursor-pointer">
-                  <option>All Threat Types</option>
-                  <option>Phishing</option>
-                  <option>Malware C2</option>
-                  <option>Malware &amp; Ransomware</option>
-                  <option>Dangerous Config</option>
-                </select>
-                <select className="text-[13px] border border-border rounded-md px-2 py-1 bg-[var(--color-surface)] text-[var(--color-text)] outline-none cursor-pointer">
-                  <option>All Severities</option>
-                  <option>Critical</option>
-                  <option>High</option>
-                  <option>Medium</option>
-                </select>
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-border flex-wrap">
+              <div className="relative w-[180px]">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                <input type="text" placeholder="Search threats…" className="w-full pl-8 pr-3 h-8 text-[13px] border border-border rounded-lg bg-card focus:outline-none focus:ring-1 focus:ring-[var(--color-action)]" />
               </div>
+              <select className="h-8 px-2.5 text-[13px] border border-border rounded-lg bg-card text-foreground focus:outline-none cursor-pointer">
+                <option>All Threat Types</option>
+                <option>Phishing</option>
+                <option>Malware C2</option>
+                <option>Malware &amp; Ransomware</option>
+                <option>Dangerous Config</option>
+              </select>
+              <select className="h-8 px-2.5 text-[13px] border border-border rounded-lg bg-card text-foreground focus:outline-none cursor-pointer">
+                <option>All Severities</option>
+                <option>Critical</option>
+                <option>High</option>
+                <option>Medium</option>
+              </select>
             </div>
             <DataTable>
-              <THead>
+              <THead className="!bg-transparent">
                 <tr>
                   {['Timestamp', 'Threat Type', 'User', 'Source IP', 'Destination App', 'Policy Matched', 'Severity', 'Action'].map((h) => (
                     <TH key={h}>{h}</TH>
@@ -551,55 +621,6 @@ export function ThreatsPage() {
           </TablePanel>
         </div>
 
-        {/* ── DESIGN DECISIONS ── */}
-        <div className="accordion">
-          <button className="acc-trigger" onClick={() => setAnnotOpen(o => !o)}>
-            <span className="acc-label">Design decisions</span>
-            <span className="acc-sub">Tenant page vs MSP page — what changed and why</span>
-            <span className={`acc-arrow${annotOpen ? ' open' : ''}`}>▾</span>
-          </button>
-          {annotOpen && (
-            <div className="acc-body">
-              <div className="annot-grid">
-                <div>
-                  <div className="a-section">
-                    <div className="a-sec-title">Structural alignment with MSP Option 2</div>
-                    <ul className="a-list">
-                      <li>Same three-section layout: Traffic Flow → Security Insights → Response Queue. An MSP already familiar with their Option 2 view reads this page immediately.</li>
-                      <li>Scope selector changes from "All Tenants · 4" to "Riverside Dental Office" with a colour dot. Breadcrumb adds the tenant level. Sidenav shows a tenant context badge.</li>
-                      <li>"← All Tenants" back control in the topbar and sidenav — operator never loses their way back to the MSP view.</li>
-                    </ul>
-                  </div>
-                  <div className="a-section">
-                    <div className="a-sec-title">Traffic Flow — tenant scoped</div>
-                    <ul className="a-list">
-                      <li>Same four-stage funnel. Numbers replace the MSP totals with Riverside Dental's own: 1,486 total, 1,072 at domain (72.1%), 355 at URL (23.9%), 46 at file (3.1%), 13 reached device (0.87%).</li>
-                      <li>Domain % is lower for this tenant (72% vs 93% MSP-wide) because their phishing and config volumes pull more traffic into lower layers.</li>
-                    </ul>
-                  </div>
-                </div>
-                <div>
-                  <div className="a-section">
-                    <div className="a-sec-title">Insights columns change at tenant scope</div>
-                    <ul className="a-list">
-                      <li>MSP centre card = "Tenant risk" (which customer). Tenant centre card = "Top users at risk" (which person within this customer).</li>
-                      <li>MSP right card = "Response overview" (cross-tenant stats). Tenant right card = "Device incidents" (specific machines, users, and threat names).</li>
-                      <li>Threat type breakdown uses Riverside Dental's real counts — Phishing 412, Config 340, Spam 171, 3rd Party 141.</li>
-                    </ul>
-                  </div>
-                  <div className="a-section">
-                    <div className="a-sec-title">Queue — no Tenant column</div>
-                    <ul className="a-list">
-                      <li>Tenant column removed. Column slot replaced by Device and User as first-class columns — the identifiers the operator needs at this level.</li>
-                      <li>Bulk action bar gains "Isolate device" as a primary action — at tenant scope, device isolation is in-context.</li>
-                      <li>Blocked event log added below the queue as a secondary table — at tenant scope, the full event history is relevant context.</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
 
       </div>
     </>

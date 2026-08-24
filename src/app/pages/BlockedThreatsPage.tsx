@@ -109,28 +109,28 @@ interface DeviceThreat {
 }
 
 const DEVICE_THREATS: DeviceThreat[] = [
-  { id:1,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'7 min ago'   },
-  { id:2,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'8 min ago'   },
-  { id:3,  name:'cmd.exe',               sub:'Suspicious Shell · Process Behavior', severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'9 min ago'   },
-  { id:4,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'13 min ago'  },
-  { id:5,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'14 min ago'  },
-  { id:6,  name:'harmless_md5_1.txt',    sub:'Suspicious File · On Scan',           severity:'Medium', endpoint:'VTB280-PC1',        ui:'SY', uname:'System',        uemail:'system@qa.sonicwall.com',      status:'Quarantined',     time:'23 min ago'  },
-  { id:7,  name:'ae1bc3bfec00e96fc4ab70',sub:'PUA · On Download',                  severity:'Low',    endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'30 min ago'  },
-  { id:8,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'35 min ago'  },
-  { id:9,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'36 min ago'  },
-  { id:10, name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'38 min ago'  },
-  { id:11, name:'Trojan.GenericKD',      sub:'Trojan · On Download',                severity:'High',   endpoint:'LAPTOP-QA-007',    ui:'AC', uname:'Alice Chen',    uemail:'alice.chen@qa.sonicwall.com',  status:'Process Killed',  time:'42 min ago'  },
-  { id:12, name:'Adware.InstallCore',    sub:'Adware · On Scan',                    severity:'Medium', endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'51 min ago'  },
-  { id:13, name:'PUP.Optional.Bundler',  sub:'PUP · On Scan',                       severity:'Low',    endpoint:'VTB280-PC2',        ui:'CN', uname:'Charlie Nwosu', uemail:'charlie.n@qa.sonicwall.com',   status:'Quarantined',     time:'1 hr ago'    },
-  { id:14, name:'Exploit.CVE-2024-1234', sub:'Exploit · In Memory',                 severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'1 hr ago'    },
-  { id:15, name:'Backdoor.Agent.XZ',     sub:'Backdoor · On Process Behavior',      severity:'High',   endpoint:'LAPTOP-QA-012',    ui:'DO', uname:'Diana Osei',    uemail:'diana.osei@qa.sonicwall.com',  status:'Quarantined',     time:'1.5 hrs ago' },
-  { id:16, name:'Spyware.AgentTesla',    sub:'Spyware · On Download',               severity:'Medium', endpoint:'LAPTOP-YP-003',    ui:'EP', uname:'Evan Park',     uemail:'evan.park@yashpersonal.com',   status:'Quarantined',     time:'2 hrs ago'   },
-  { id:17, name:'Worm.Conficker.B',      sub:'Worm · On Process Behavior',          severity:'High',   endpoint:'DESKTOP-GI-044',   ui:'PS', uname:'Priya Sharma',  uemail:'priya.sharma@gav-india.com',   status:'Process Killed',  time:'2 hrs ago'   },
-  { id:18, name:'Trojan.Dropper.Win32',  sub:'Trojan · On Scan',                    severity:'Medium', endpoint:'VTB280-PC3',        ui:'SY', uname:'System',        uemail:'system@qa.sonicwall.com',      status:'Quarantined',     time:'3 hrs ago'   },
-  { id:19, name:'Rootkit.Necurs',        sub:'Rootkit · In Memory',                 severity:'High',   endpoint:'DESKTOP-GI-055',   ui:'RK', uname:'Ravi Kumar',    uemail:'ravi.kumar@gav-india.com',     status:'Process Killed',  time:'3 hrs ago'   },
-  { id:20, name:'Adware.Crossrider',     sub:'Adware · On Download',                severity:'Low',    endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'4 hrs ago'   },
-  { id:21, name:'Ransomware.Lockbit',    sub:'Ransomware · In Memory',              severity:'High',   endpoint:'LAPTOP-QA-021',    ui:'FW', uname:'Fiona Walsh',   uemail:'fiona.walsh@qa.sonicwall.com', status:'Process Killed',  time:'4 hrs ago'   },
-  { id:22, name:'Miner.XMRig',           sub:'Cryptominer · On Process Behavior',   severity:'Medium', endpoint:'DESKTOP-GI-066',   ui:'SP', uname:'Suresh Pillai', uemail:'suresh.pillai@gav-india.com',  status:'Process Killed',  time:'5 hrs ago'   },
+  { id:1,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'2026-08-24 09:53' },
+  { id:2,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'2026-08-24 09:52' },
+  { id:3,  name:'cmd.exe',               sub:'Suspicious Shell · Process Behavior', severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Not Quarantined', time:'2026-08-24 09:51' },
+  { id:4,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 09:47' },
+  { id:5,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 09:46' },
+  { id:6,  name:'harmless_md5_1.txt',    sub:'Suspicious File · On Scan',           severity:'Medium', endpoint:'VTB280-PC1',        ui:'SY', uname:'System',        uemail:'system@qa.sonicwall.com',      status:'Quarantined',     time:'2026-08-24 09:37' },
+  { id:7,  name:'ae1bc3bfec00e96fc4ab70',sub:'PUA · On Download',                  severity:'Low',    endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'2026-08-24 09:30' },
+  { id:8,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 09:25' },
+  { id:9,  name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 09:24' },
+  { id:10, name:'Ransom.Malbazar',       sub:'Ransomware · In Memory',              severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 09:22' },
+  { id:11, name:'Trojan.GenericKD',      sub:'Trojan · On Download',                severity:'High',   endpoint:'LAPTOP-QA-007',    ui:'AC', uname:'Alice Chen',    uemail:'alice.chen@qa.sonicwall.com',  status:'Process Killed',  time:'2026-08-24 09:18' },
+  { id:12, name:'Adware.InstallCore',    sub:'Adware · On Scan',                    severity:'Medium', endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'2026-08-24 09:09' },
+  { id:13, name:'PUP.Optional.Bundler',  sub:'PUP · On Scan',                       severity:'Low',    endpoint:'VTB280-PC2',        ui:'CN', uname:'Charlie Nwosu', uemail:'charlie.n@qa.sonicwall.com',   status:'Quarantined',     time:'2026-08-24 09:00' },
+  { id:14, name:'Exploit.CVE-2024-1234', sub:'Exploit · In Memory',                 severity:'High',   endpoint:'DESKTOP-CT7UT4D',  ui:'BM', uname:'Bob Martinez',  uemail:'bob.martinez@gav-india.com',   status:'Process Killed',  time:'2026-08-24 08:58' },
+  { id:15, name:'Backdoor.Agent.XZ',     sub:'Backdoor · On Process Behavior',      severity:'High',   endpoint:'LAPTOP-QA-012',    ui:'DO', uname:'Diana Osei',    uemail:'diana.osei@qa.sonicwall.com',  status:'Quarantined',     time:'2026-08-24 08:30' },
+  { id:16, name:'Spyware.AgentTesla',    sub:'Spyware · On Download',               severity:'Medium', endpoint:'LAPTOP-YP-003',    ui:'EP', uname:'Evan Park',     uemail:'evan.park@yashpersonal.com',   status:'Quarantined',     time:'2026-08-24 08:00' },
+  { id:17, name:'Worm.Conficker.B',      sub:'Worm · On Process Behavior',          severity:'High',   endpoint:'DESKTOP-GI-044',   ui:'PS', uname:'Priya Sharma',  uemail:'priya.sharma@gav-india.com',   status:'Process Killed',  time:'2026-08-24 07:58' },
+  { id:18, name:'Trojan.Dropper.Win32',  sub:'Trojan · On Scan',                    severity:'Medium', endpoint:'VTB280-PC3',        ui:'SY', uname:'System',        uemail:'system@qa.sonicwall.com',      status:'Quarantined',     time:'2026-08-24 07:00' },
+  { id:19, name:'Rootkit.Necurs',        sub:'Rootkit · In Memory',                 severity:'High',   endpoint:'DESKTOP-GI-055',   ui:'RK', uname:'Ravi Kumar',    uemail:'ravi.kumar@gav-india.com',     status:'Process Killed',  time:'2026-08-24 06:55' },
+  { id:20, name:'Adware.Crossrider',     sub:'Adware · On Download',                severity:'Low',    endpoint:'DESKTOP-M5K8HOU',  ui:'TJ', uname:'Theron James',  uemail:'theron@yashpersonal.com',      status:'Quarantined',     time:'2026-08-24 06:00' },
+  { id:21, name:'Ransomware.Lockbit',    sub:'Ransomware · In Memory',              severity:'High',   endpoint:'LAPTOP-QA-021',    ui:'FW', uname:'Fiona Walsh',   uemail:'fiona.walsh@qa.sonicwall.com', status:'Process Killed',  time:'2026-08-24 05:58' },
+  { id:22, name:'Miner.XMRig',           sub:'Cryptominer · On Process Behavior',   severity:'Medium', endpoint:'DESKTOP-GI-066',   ui:'SP', uname:'Suresh Pillai', uemail:'suresh.pillai@gav-india.com',  status:'Process Killed',  time:'2026-08-24 05:00' },
 ];
 
 // ── Domain threat events ──────────────────────────────────────────────────────
@@ -179,11 +179,9 @@ function BlockedThreatsFunnelChart() {
   const CHART_H = 160;
   const CY = CHART_H / 2;
   const PAD_X = 20;
-  const LABEL_H = 130;
   const W = BT_FUNNEL_STAGES.length * SEG_W + PAD_X * 2;
-  const VH = CHART_H + LABEL_H;
+  const VH = CHART_H;
 
-  // remaining (passed-through) traffic at each boundary
   const passed = [TOTAL, 1384, 144, 16, 0];
   const boundH = passed.map((p) => Math.max((p / TOTAL) * CHART_H, 1.5));
 
@@ -194,23 +192,9 @@ function BlockedThreatsFunnelChart() {
         const x2 = PAD_X + (i + 1) * SEG_W;
         const h1 = boundH[i], h2 = boundH[i + 1];
         const d = `M${x1},${CY - h1 / 2} L${x2},${CY - h2 / 2} L${x2},${CY + h2 / 2} L${x1},${CY + h1 / 2}Z`;
-        const tickTopY = CY + h2 / 2;
-        const labelY = CHART_H + 14;
         return (
           <g key={s.name}>
             <path d={d} fill={s.color} />
-            <line x1={x2} y1={tickTopY} x2={x2} y2={labelY - 2} stroke="#d1d5db" strokeWidth="1" />
-            <text
-              x={x2}
-              y={labelY}
-              transform={`rotate(-45, ${x2}, ${labelY})`}
-              textAnchor="end"
-              fontSize="10.5"
-              fontFamily="Inter, system-ui, sans-serif"
-              fill="#717182"
-            >
-              {`${s.short}: ${s.pct}`}
-            </text>
           </g>
         );
       })}
@@ -345,6 +329,38 @@ const THREAT_TYPE_COLORS: Record<string, string> = {
   geo:          '#8b5cf6',
 };
 
+const DEVICE_THREAT_TYPE_COLORS: Record<string, string> = {
+  'Ransomware':       '#ef4444',
+  'Trojan':           '#f97316',
+  'Adware':           '#d97706',
+  'Cryptominer':      '#8b5cf6',
+  'Spyware':          '#ec4899',
+  'Worm':             '#06b6d4',
+  'Backdoor':         '#dc2626',
+  'Rootkit':          '#7c3aed',
+  'Exploit':          '#b45309',
+  'PUP':              '#6b7280',
+  'PUA':              '#9ca3af',
+  'Suspicious Shell': '#f59e0b',
+  'Suspicious File':  '#3b82f6',
+};
+
+const DEVICE_THREATS_BY_TYPE = (() => {
+  const counts: Record<string, number> = {};
+  DEVICE_THREATS.forEach((r) => {
+    const type = r.sub.split(' · ')[0];
+    counts[type] = (counts[type] ?? 0) + 1;
+  });
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, count]) => ({
+      key:   label.toLowerCase().replace(/\s+/g, '-'),
+      label,
+      count,
+      color: DEVICE_THREAT_TYPE_COLORS[label] ?? '#9ca3af',
+    }));
+})();
+
 // ── Donut pie chart ───────────────────────────────────────────────────────────
 
 function ThreatPieChart({ data }: {
@@ -382,8 +398,8 @@ function ThreatPieChart({ data }: {
   const hovered = hoveredIdx !== null ? segments[hoveredIdx] : null;
 
   return (
-    <div className="flex flex-col items-center px-5 py-5">
-      <div className="relative w-64 h-64">
+    <div className="flex flex-col items-center px-3 py-3">
+      <div className="relative w-44 h-44">
         <svg viewBox="0 0 200 200" className="w-full h-full">
           <circle cx={cx} cy={cy} r={outerR + 1} fill="white" />
           {segments.map((seg, i) =>
@@ -582,13 +598,8 @@ function AllTenantsView({
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Threats</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Security posture across all tenants</p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Live
-          </span>
           <RangeSelector value={range} onChange={onRangeChange} />
           <button
             onClick={handleExport}
@@ -600,42 +611,38 @@ function AllTenantsView({
         </div>
       </div>
 
-      {/* ── Security Traffic Flow ─────────────────────────────────────────────── */}
+      {/* ── Security Traffic Flow (full width) ───────────────────────────────── */}
       <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-        {/* header */}
         <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-border">
           <span className="text-sm font-bold text-foreground">Security Traffic Flow</span>
           <span className="text-xs text-muted-foreground">
             How 20,784 threats were intercepted across enforcement layers — {rangeLabel[range] ?? range}
           </span>
         </div>
-
         <div className="px-6 py-5">
-          {/* Legend */}
           <div className="flex items-center gap-5 flex-wrap mb-3">
             {BT_FUNNEL_STAGES.map((s) => (
               <div key={s.name} className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: s.color }} />
-                <span className="text-[11px] font-semibold text-foreground">{s.name}</span>
-                <span className="text-[11px] text-muted-foreground">{s.count.toLocaleString()} · {s.pct}</span>
+                <span className="text-[13px] font-semibold text-foreground">{s.name}</span>
+                <span className="text-[13px] font-semibold text-foreground">{s.count.toLocaleString()}</span>
               </div>
             ))}
+            <span className="ml-auto text-[13px] text-muted-foreground whitespace-nowrap">
+              20,768 threats stopped before reaching any device
+            </span>
           </div>
-          {/* Funnel chart */}
           <BlockedThreatsFunnelChart />
-          <p className="text-[11px] text-muted-foreground mt-1.5">
-            20,768 threats stopped before reaching any device
-          </p>
         </div>
       </div>
 
-      {/* ── Security Insights 3-col grid ─────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
+      {/* ── Insights 3-col grid ───────────────────────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-3.5">
 
-        {/* Card 1: Threats by type */}
+        {/* Domain threats by type */}
         <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-sm font-bold text-foreground">Threats by type</span>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm font-bold text-foreground">Domain threats by type</span>
             <span className="text-[11px] text-muted-foreground">{rangeLabel[range] ?? range}</span>
           </div>
           <ThreatPieChart
@@ -648,10 +655,10 @@ function AllTenantsView({
           />
         </div>
 
-        {/* Card 2: Tenant risk */}
+        {/* Tenants by risk */}
         <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-sm font-bold text-foreground">Tenant risk</span>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm font-bold text-foreground">Tenants by risk</span>
             <button
               onClick={() => navigate('/tenant-management')}
               className="text-[11px] font-medium text-action hover:text-action/80 transition-colors"
@@ -659,25 +666,25 @@ function AllTenantsView({
               View all
             </button>
           </div>
-          <div className="px-5 py-4 space-y-3">
+          <div className="px-4 py-3 space-y-2.5">
             {activeTenants.slice(0, 4).map((t) => {
               const tot = tenantTotal(t, range);
               const crit = tenantCritical(t, range);
               return (
-                <div key={t.id} className="space-y-1.5">
+                <div key={t.id} className="space-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <button
                       onClick={() => onDrilldown(t.id)}
-                      className="flex items-center gap-2 min-w-0 text-left group"
+                      className="flex items-center gap-1.5 min-w-0 text-left group"
                     >
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
-                      <span className="text-[12px] font-medium text-foreground group-hover:text-action truncate transition-colors">{t.name}</span>
+                      <span className="text-[11px] font-medium text-foreground group-hover:text-action truncate transition-colors">{t.name}</span>
                     </button>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {crit > 0 && (
                         <StatusBadge variant="error">{crit} crit</StatusBadge>
                       )}
-                      <span className="text-[12px] font-bold text-foreground tabular-nums">{tot.toLocaleString()}</span>
+                      <span className="text-[11px] font-bold text-foreground tabular-nums">{tot.toLocaleString()}</span>
                     </div>
                   </div>
                   <div className="h-1.5 rounded-full bg-muted overflow-hidden">
@@ -690,32 +697,14 @@ function AllTenantsView({
               );
             })}
           </div>
-
         </div>
 
-        {/* Card 3: Response overview */}
+        {/* Device threats by type */}
         <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-            <span className="text-sm font-bold text-foreground">Response overview</span>
-            <StatusBadge variant="warning" dot>{needActionRows.length} need action</StatusBadge>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <span className="text-sm font-bold text-foreground">Device threats by type</span>
           </div>
-          <div className="px-5 py-4">
-            {/* 2×2 stat tiles */}
-            <div className="grid grid-cols-2 gap-2.5 mb-4">
-              {[
-                { label: 'Awaiting action',  value: needActionRows.length,      variant: 'warning' as const,  sub: 'Needs MSP response' },
-                { label: 'Auto-contained',   value: autoContainedCount,         variant: 'success' as const,  sub: 'Process killed' },
-                { label: 'Quarantined',      value: quarantinedCount,           variant: 'neutral' as const,  sub: 'File isolated' },
-                { label: 'Total endpoint',   value: DEVICE_THREATS.length,      variant: 'info' as const,     sub: 'Reached device' },
-              ].map(({ label, value, variant, sub }) => (
-                <div key={label} className="bg-muted/50 rounded-xl p-3 border border-border">
-                  <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.04em]">{label}</div>
-                  <div className="text-[22px] font-extrabold text-foreground tabular-nums leading-none mt-1">{value}</div>
-                  <StatusBadge variant={variant} className="mt-1.5">{sub}</StatusBadge>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ThreatPieChart data={DEVICE_THREATS_BY_TYPE} />
         </div>
 
       </div>
@@ -723,16 +712,28 @@ function AllTenantsView({
       {/* ── Device Threats ───────────────────────────────────────────────────── */}
       <div>
         {/* section header */}
-        <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-          <h2 className="text-base font-bold text-foreground">Device threats</h2>
-          <StatusBadge variant="warning" dot>{needActionRows.length} need action</StatusBadge>
-          <StatusBadge variant="success">{containedTotal} auto-contained</StatusBadge>
+        <h2 className="text-base font-bold text-foreground mb-3">Device threats</h2>
+
+        {/* Response overview cards */}
+        <div className="flex gap-3 mb-4">
+          {[
+            { label: 'Total Device Threats', value: DEVICE_THREATS.length,  sub: 'Reached device',      variant: 'info' as const    },
+            { label: 'Awaiting Action',       value: needActionRows.length,  sub: 'Needs MSP response',  variant: 'warning' as const },
+            { label: 'Quarantined',           value: quarantinedCount,       sub: 'File isolated',       variant: 'neutral' as const },
+            { label: 'Auto Contained',        value: autoContainedCount,     sub: 'Process killed',      variant: 'success' as const },
+          ].map(({ label, value, sub, variant }) => (
+            <div key={label} className="flex-1 bg-card border border-border rounded-[12px] p-4 shadow-sm min-w-0">
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.04em] mb-1">{label}</div>
+              <div className="text-[26px] font-extrabold text-foreground tabular-nums leading-none mb-2">{value}</div>
+              <StatusBadge variant={variant}>{sub}</StatusBadge>
+            </div>
+          ))}
         </div>
 
         <TablePanel>
           {/* toolbar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border flex-wrap">
-            <div className="relative flex-1 min-w-[160px]">
+            <div className="relative w-[180px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
@@ -777,7 +778,7 @@ function AllTenantsView({
                       className="w-3.5 h-3.5 accent-[#0066cc] cursor-pointer"
                     />
                   </TH>
-                  {['Threat Name', 'Severity', 'Tenant', 'Device', 'Status', 'Action'].map((h) => (
+                  {['Timestamp', 'Threat Name', 'Severity', 'Tenant', 'Device', 'Status', 'Action'].map((h) => (
                     <TH key={h}>{h}</TH>
                   ))}
                 </tr>
@@ -790,7 +791,7 @@ function AllTenantsView({
                     <Fragment key={r.id}>
                       {sepHere && (
                         <tr>
-                          <td colSpan={7} className="px-5 py-2 bg-muted/50 border-y border-border">
+                          <td colSpan={8} className="px-5 py-2 bg-muted/50 border-y border-border">
                             <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground">
                               <Shield className="w-3.5 h-3.5 text-success shrink-0" />
                               Blocked before reaching device — 20,768 events in period
@@ -808,6 +809,8 @@ function AllTenantsView({
                             className="w-3.5 h-3.5 accent-[#0066cc] cursor-pointer"
                           />
                         </TD>
+                        {/* Timestamp */}
+                        <TD><span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap">{r.time}</span></TD>
                         {/* Threat Name */}
                         <TD>
                           <span className="text-[13px] font-semibold text-foreground">{r.name}</span>
@@ -973,7 +976,7 @@ function AllTenantsView({
         <TablePanel>
           {/* toolbar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border flex-wrap">
-            <div className="relative flex-1 min-w-[160px]">
+            <div className="relative w-[180px]">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
@@ -1007,7 +1010,7 @@ function AllTenantsView({
             <DataTable>
               <THead>
                 <tr>
-                  {['Threat Type', 'Tenant', 'Severity', 'Device', 'Status', 'Timestamp'].map((h) => (
+                  {['Timestamp', 'Threat Type', 'Tenant', 'Severity', 'Device', 'Status'].map((h) => (
                     <TH key={h}>{h}</TH>
                   ))}
                 </tr>
@@ -1015,6 +1018,7 @@ function AllTenantsView({
               <tbody>
                 {domainPageEvents.map((r) => (
                   <TR key={r.id}>
+                    <TD><span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap">{r.ts}</span></TD>
                     <TD><span className="font-semibold">{r.type}</span></TD>
                     <TD>{r.tenant}</TD>
                     <TD>
@@ -1025,7 +1029,6 @@ function AllTenantsView({
                     </TD>
                     <TD><span className="font-mono text-xs text-[var(--color-text-muted)]">{r.device}</span></TD>
                     <TD><StatusBadge variant="neutral">{r.status}</StatusBadge></TD>
-                    <TD><span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap">{r.ts}</span></TD>
                   </TR>
                 ))}
               </tbody>
@@ -1150,10 +1153,6 @@ function DrilldownView({
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Live
-          </span>
           <RangeSelector value={range} onChange={onRangeChange} />
           <button onClick={onBack} className="h-8 px-3 text-xs font-medium border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors">
             ← All Tenants

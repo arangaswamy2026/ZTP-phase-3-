@@ -65,8 +65,116 @@ const TENANT_BREAKDOWN = [
   { name: 'Enterprise Solutions',   status: 'Active',        endpoints: '18 / 22', policies: 14, traffic: '4,201,740', threats: '248',   activity: '5 min ago',  action: 'View' },
   { name: 'Global Services LLC',    status: 'Active',        endpoints: '12 / 20', policies: 14, traffic: '5,129,002', threats: '156',   activity: '18 min ago', action: 'View' },
   { name: 'Riverside Dental Office', status: 'Active',       endpoints: '7 / 12',  policies: 6,  traffic: '1,250,400', threats: '89',    activity: '42 min ago', action: 'View' },
-  { name: 'Cloud Innovations',      status: 'Pending Setup', endpoints: '— / —',   policies: '—', traffic: '—',       threats: '—',     activity: '—',          action: 'Continue Setup' },
 ];
+
+// ── Threats histogram ─────────────────────────────────────────────────────────
+
+// 30-day deterministic daily domain/device threat data (seeded LCG, no Math.random)
+const DOMAIN_THREATS_DAILY = genSeries(13, 692, 240);
+const DEVICE_THREATS_DAILY = genSeries(77, 6, 5).map((v) => Math.max(0, v));
+const DOMAIN_THREATS_TOTAL = 20_768; // threats stopped before reaching any device
+const DEVICE_THREATS_TOTAL = DEVICE_THREATS_DAILY.reduce((a, b) => a + b, 0);
+
+function ThreatsHistogram() {
+  const W = 740, H = 190;
+  const padL = 42, padR = 8, padT = 8, padB = 22;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const n = 30;
+  const gap = 2;
+  const barW = Math.floor(innerW / n) - gap;
+
+  const maxVal = Math.max(...DOMAIN_THREATS_DAILY.map((d, i) => d + DEVICE_THREATS_DAILY[i]));
+  const yMax = Math.ceil(maxVal / 200) * 200;
+
+  return (
+    <div className="flex flex-col h-full px-5 pt-4 pb-4">
+      {/* Stat cards */}
+      <div className="flex items-stretch gap-5 mb-4 shrink-0">
+        <div>
+          <div className="text-[22px] font-extrabold text-foreground tabular-nums leading-none">
+            {DOMAIN_THREATS_TOTAL.toLocaleString()}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1 leading-snug">
+            Stopped before device
+          </div>
+        </div>
+        <div className="w-px self-stretch bg-border shrink-0" />
+        <div>
+          <div className="text-[22px] font-extrabold tabular-nums leading-none" style={{ color: '#d4183d' }}>
+            {DEVICE_THREATS_TOTAL.toLocaleString()}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1">Device threats</div>
+        </div>
+        <div className="w-px self-stretch bg-border shrink-0" />
+        <div>
+          <div className="text-[22px] font-extrabold text-foreground tabular-nums leading-none">
+            {(DOMAIN_THREATS_TOTAL + DEVICE_THREATS_TOTAL).toLocaleString()}
+          </div>
+          <div className="text-[11px] text-muted-foreground mt-1">Total threats</div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex gap-4 mb-2 shrink-0">
+        {([['#0066cc', 'Blocked domain threats'], ['#d4183d', 'Device threats']] as [string, string][]).map(([color, label]) => (
+          <span key={label} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className="inline-block w-3 h-2 rounded-sm shrink-0" style={{ background: color }} />
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Histogram */}
+      <div className="flex-1 min-h-0">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-full">
+          {/* Gridlines + y-axis labels */}
+          {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
+            const val = Math.round(yMax * frac);
+            const yy = padT + innerH * (1 - frac);
+            return (
+              <g key={i}>
+                <line x1={padL} y1={yy} x2={W - padR} y2={yy} stroke="#f1f5f9" strokeWidth={1} />
+                <text x={padL - 5} y={yy + 3} textAnchor="end" style={{ fontSize: 9, fill: '#717182' }}>
+                  {val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* X-axis labels */}
+          {([0, 9, 19, 29] as number[]).map((i) => (
+            <text
+              key={i}
+              x={padL + (i + 0.5) * (innerW / n)}
+              y={H - 5}
+              textAnchor="middle"
+              style={{ fontSize: 9, fill: '#717182' }}
+            >
+              D{i + 1}
+            </text>
+          ))}
+
+          {/* Stacked bars */}
+          {DOMAIN_THREATS_DAILY.map((dv, i) => {
+            const dev = DEVICE_THREATS_DAILY[i];
+            const x = padL + i * (innerW / n) + gap / 2;
+            const domH = Math.max(0, (dv / yMax) * innerH);
+            const devH = dev > 0 ? Math.max(3, (dev / yMax) * innerH) : 0;
+            return (
+              <g key={i}>
+                <rect x={x} y={padT + innerH - domH} width={barW} height={domH} fill="#0066cc" rx={1} />
+                {devH > 0 && (
+                  <rect x={x} y={padT + innerH - domH - devH} width={barW} height={devH} fill="#d4183d" rx={1} />
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+}
 
 // ── Sub-components ──────────────────────────────────────────────────────────────
 
@@ -192,12 +300,10 @@ function TrafficLineChart() {
 
 export function MspDashboardPage() {
   const navigate = useNavigate();
-  const maxThreat = Math.max(...THREAT_BREAKDOWN.map((t) => t.count));
   const [trafficPeriod, setTrafficPeriod] = useState<WidgetPeriod>('15d');
   const [threatPeriod, setThreatPeriod] = useState<WidgetPeriod>('15d');
   const [domainsPeriod, setDomainsPeriod] = useState<WidgetPeriod>('yesterday');
   const [actionsPeriod, setActionsPeriod] = useState<WidgetPeriod>('15d');
-  const [tenantPeriod, setTenantPeriod] = useState<WidgetPeriod>('15d');
 
   return (
     <div className="space-y-6 pb-10">
@@ -205,9 +311,9 @@ export function MspDashboardPage() {
 
       {/* Uniform widget grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Web Traffic Trend */}
+        {/* Web Traffic */}
         <DashboardWidget
-          title="Web Traffic Trend"
+          title="Web traffic"
           icon={<div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0"><TrendingUp className="w-4 h-4 text-green-600" /></div>}
           sub="· requests / day"
           period={trafficPeriod}
@@ -219,28 +325,16 @@ export function MspDashboardPage() {
           <TrafficLineChart />
         </DashboardWidget>
 
-        {/* Blocked Threats */}
+        {/* Threats */}
         <DashboardWidget
-          title="Blocked Threats"
+          title="Threats"
           icon={<div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center shrink-0"><Shield className="w-4 h-4 text-[#d4183d]" /></div>}
           period={threatPeriod}
           onPeriodChange={setThreatPeriod}
           onViewAll={() => navigate('/blocked-threats')}
           className="h-[400px]"
         >
-          <div className="h-full overflow-auto px-5 pt-5 pb-5">
-            <div className="space-y-3">
-              {THREAT_BREAKDOWN.map((t) => (
-                <div key={t.label} className="flex items-center gap-3">
-                  <span className="text-xs text-foreground w-48 shrink-0 leading-snug">{t.label}</span>
-                  <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
-                    <div className="h-full rounded-full bg-muted-foreground/50" style={{ width: `${Math.round((t.count / maxThreat) * 100)}%` }} />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground w-8 text-right tabular-nums">{t.count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ThreatsHistogram />
         </DashboardWidget>
 
         {/* Top Domains & Traffic */}
@@ -257,7 +351,7 @@ export function MspDashboardPage() {
           <DataTable>
             <THead className="sticky top-0">
               <tr>
-                {['Domain / Destination', 'Type', 'Requests'].map((h) => (
+                {['Domain / Destination', 'Requests'].map((h) => (
                   <TH key={h} className="px-4">{h}</TH>
                 ))}
               </tr>
@@ -267,9 +361,6 @@ export function MspDashboardPage() {
                 <TR key={d.domain}>
                   <TD className="px-4">
                     <span className="text-[13px] text-foreground whitespace-nowrap">{d.domain}</span>
-                  </TD>
-                  <TD className="px-4">
-                    <StatusBadge variant={d.badge === 'Shadow IT' ? 'warning' : 'success'}>{d.badge}</StatusBadge>
                   </TD>
                   <TD className="px-4 tabular-nums whitespace-nowrap">
                     <span className="text-[13px] text-foreground">{d.requests}</span>
@@ -345,18 +436,15 @@ export function MspDashboardPage() {
 
         {/* Tenant Breakdown — full width */}
         <DashboardWidget
-          title="Tenant Breakdown"
-          period={tenantPeriod}
-          onPeriodChange={setTenantPeriod}
+          title="Tenant"
           onViewAll={() => {}}
           viewAllLabel="Manage tenants"
-          bodyClass="overflow-auto"
-          className="h-[400px] lg:col-span-2"
+          className="lg:col-span-2"
         >
           <DataTable>
             <THead className="sticky top-0">
               <tr>
-                {['Tenant', 'Status', 'Endpoints', 'Policies', 'Web Traffic (30D)', 'Threats Blocked', 'Last Activity', ''].map((h, i) => (
+                {['Tenant', 'Status', 'Devices', 'Policies', 'Web Traffic (30D)', 'Threats Blocked', 'Last Activity', ''].map((h, i) => (
                   <TH key={i} className="px-3">{h}</TH>
                 ))}
               </tr>
